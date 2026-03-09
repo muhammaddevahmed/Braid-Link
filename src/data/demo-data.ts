@@ -72,7 +72,7 @@ export interface User {
   phone: string;
   avatar: string;
   joinDate: string;
-  status: "active" | "suspended";
+  status: "active" | "suspended" | "pending";
 }
 
 export const hairstyles: Hairstyle[] = [
@@ -240,8 +240,8 @@ export const subscriptionPlans = [
   {
     id: "basic",
     name: "Basic",
-    price: 19,
-    period: "month",
+    monthlyPrice: 19,
+    yearlyPrice: 190,
     description: "Perfect for new stylists just getting started",
     features: [
       "Profile listing",
@@ -261,8 +261,8 @@ export const subscriptionPlans = [
   {
     id: "professional",
     name: "Professional",
-    price: 39,
-    period: "month",
+    monthlyPrice: 39,
+    yearlyPrice: 390,
     popular: true,
     description: "Best for growing stylists building their clientele",
     features: [
@@ -282,8 +282,8 @@ export const subscriptionPlans = [
   {
     id: "premium",
     name: "Premium",
-    price: 69,
-    period: "month",
+    monthlyPrice: 69,
+    yearlyPrice: 690,
     description: "For established stylists who want maximum visibility",
     features: [
       "Profile listing",

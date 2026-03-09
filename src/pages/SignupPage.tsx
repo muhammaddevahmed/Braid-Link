@@ -2,26 +2,87 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Phone, User as UserIcon } from "lucide-react";
+import { toast } from "sonner";
 
 const SignupPage = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "", role: "customer" as "customer" | "stylist" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: "customer" as "customer" | "stylist",
+    profileImage: null as File | null,
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (form.password !== form.confirmPassword) { setError("Passwords don't match"); return; }
-    if (form.password.length < 6) { setError("Password must be at least 6 characters"); return; }
-    
-    signup({ name: form.name, email: form.email, phone: form.phone, role: form.role });
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
-    if (form.role === 'customer') {
-      navigate('/booking');
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const MAX_SIZE_MB = 2;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > MAX_SIZE_BYTES) {
+        toast.error(`Image size cannot exceed ${MAX_SIZE_MB}MB.`);
+        e.target.value = ""; // Clear the file input
+        return;
+      }
+      setForm({ ...form, profileImage: file });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(""); // Reset error on new submission
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    let profileImageBase64 = "";
+    if (form.profileImage) {
+      try {
+        profileImageBase64 = await fileToBase64(form.profileImage);
+      } catch (error) {
+        setError("Failed to process profile image.");
+        return;
+      }
+    }
+
+    const success = signup({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      role: form.role,
+      profileImage: profileImageBase64,
+    });
+
+    if (success) {
+      toast.success("Account created successfully!");
+      if (form.role === "customer") {
+        navigate('/booking');
+      } else {
+        navigate('/become-stylist');
+      }
     } else {
-      navigate('/become-stylist');
+      setError("An account with this email already exists.");
     }
   };
 
@@ -60,6 +121,25 @@ const SignupPage = () => {
                 <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Your full name" required />
               </div>
             </div>
+
+            {form.role === "customer" && (
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-detail/10">
+                  {form.profileImage ? (
+                    <img src={URL.createObjectURL(form.profileImage)} alt="Profile Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <UserIcon className="w-8 h-8 text-muted-foreground" />
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="profile-image-upload" className="text-sm font-medium text-primary cursor-pointer bg-accent/10 px-3 py-2 rounded-lg border border-accent/20 hover:bg-accent/20">
+                    Upload Profile Image
+                  </label>
+                  <input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
+                  <p className="text-xs text-muted-foreground mt-1.5">Optional. PNG or JPG, max 2MB.</p>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="text-sm font-medium mb-1.5 block text-primary">Email</label>

@@ -1,19 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, ChevronLeft, Upload, LogIn, Shield, X, CreditCard, User as UserIcon, Clock } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, LogIn, Shield, X, CreditCard, Clock } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { subscriptionPlans } from "@/data/demo-data";
 import { toast } from "sonner";
 const steps = ["Personal Details", "Services", "Availability", "Submit"];
 
-const fileToBase64 = (file: File): Promise<string> => 
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-  });
+
 
 const BecomeStylistPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -21,7 +15,6 @@ const BecomeStylistPage = () => {
   const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: user?.name || "", email: user?.email || "", phone: "", bio: "", experience: "", location: "", postalCode: "",
-    profileImage: null as File | null,
     services: [{ name: "", price: "", duration: "" }],
     availability: {} as Record<string, { start: string; end: string }>,
   });
@@ -41,20 +34,7 @@ const BecomeStylistPage = () => {
     }
   }, [user]);
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const MAX_SIZE_MB = 2;
-    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > MAX_SIZE_BYTES) {
-        toast.error(`Image size cannot exceed ${MAX_SIZE_MB}MB.`);
-        e.target.value = ""; // Clear the file input
-        return;
-      }
-      setForm({ ...form, profileImage: file });
-    }
-  };
 
   const handleSubmit = async () => {
     if (!user) {
@@ -63,14 +43,8 @@ const BecomeStylistPage = () => {
     }
     setIsSubmitting(true);
     try {
-      let profileImageBase64 = "";
-      if (form.profileImage) {
-        profileImageBase64 = await fileToBase64(form.profileImage);
-      }
-      
       const applicationData = {
         ...form,
-        profileImage: profileImageBase64,
         status: 'pending',
         submittedAt: new Date().toISOString(),
       };
@@ -224,20 +198,7 @@ const BecomeStylistPage = () => {
                     <div><label className="text-sm font-medium mb-1 block text-primary">Phone</label><input className="w-full px-3 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:ring-2 focus:ring-accent" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
                     <div><label className="text-sm font-medium mb-1 block text-primary">Experience (years)</label><input type="number" className="w-full px-3 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:ring-2 focus:ring-accent" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} /></div>
                   </div>
-                  <div className="col-span-1 sm:col-span-2 flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-detail/10">
-                      {form.profileImage ? (
-                        <img src={URL.createObjectURL(form.profileImage)} alt="Profile Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <UserIcon className="w-8 h-8 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div>
-                      <label htmlFor="profile-image-upload" className="text-sm font-medium text-primary cursor-pointer bg-accent/10 px-3 py-2 rounded-lg border border-accent/20 hover:bg-accent/20">Upload Profile Image</label>
-                      <input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
-                      <p className="text-xs text-muted-foreground mt-1.5">PNG or JPG, max 2MB. Recommended 200x200px.</p>
-                    </div>
-                  </div>
+
                   <div><label className="text-sm font-medium mb-1 block text-primary">Bio</label><textarea className="w-full px-3 py-2.5 rounded-lg border border-detail/20 bg-background text-sm h-24 resize-none focus:ring-2 focus:ring-accent" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} /></div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div><label className="text-sm font-medium mb-1 block text-primary">Location</label><input className="w-full px-3 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:ring-2 focus:ring-accent" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="City, State" /></div>
