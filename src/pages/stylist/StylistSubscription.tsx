@@ -12,7 +12,7 @@ const StylistSubscription = () => {
         {subscriptionPlans.map((plan) => (
           <div key={plan.id} className={`bg-card rounded-xl p-5 border ${current === plan.id ? "border-cta ring-2 ring-cta/20" : "border-border"}`}>
             <h3 className="font-serif font-semibold">{plan.name}</h3>
-            <div className="mt-2 mb-4"><span className="text-3xl font-bold">${plan.price}</span><span className="text-muted-foreground">/{plan.period}</span></div>
+            <div className="mt-2 mb-4"><span className="text-3xl font-bold">${plan.monthlyPrice}</span><span className="text-muted-foreground">/month</span></div>
             <div className="space-y-2 mb-4">
               {plan.features.map((f) => <div key={f} className="flex items-center gap-2 text-sm"><Check className="w-3.5 h-3.5 text-green-600" />{f}</div>)}
               {plan.notIncluded.map((f) => <div key={f} className="flex items-center gap-2 text-sm text-muted-foreground"><X className="w-3.5 h-3.5" />{f}</div>)}
