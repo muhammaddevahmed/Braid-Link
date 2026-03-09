@@ -1,0 +1,287 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm Sandstone - Background */
+    --background: 36 43% 93%;
+    --foreground: 240 2% 10%;
+
+    --card: 36 40% 97%;
+    --card-foreground: 240 2% 10%;
+
+    --popover: 36 40% 97%;
+    --popover-foreground: 240 2% 10%;
+
+    /* Obsidian Charcoal - Primary */
+    --primary: 240 2% 10%;
+    --primary-foreground: 36 43% 93%;
+
+    /* Warm Sandstone - Secondary */
+    --secondary: 36 43% 93%;
+    --secondary-foreground: 240 2% 10%;
+
+    /* Muted tones */
+    --muted: 36 30% 88%;
+    --muted-foreground: 24 20% 35%;
+
+    /* Metallic Sahara Gold - Accent */
+    --accent: 46 66% 52%;
+    --accent-foreground: 240 2% 10%;
+
+    /* Deep Cocoa - Detail */
+    --detail: 24 33% 18%;
+    --detail-foreground: 36 43% 93%;
+
+    /* Destructive */
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* CTA = Metallic Gold */
+    --cta: 46 66% 52%;
+    --cta-foreground: 240 2% 10%;
+
+    --border: 36 25% 85%;
+    --input: 36 25% 85%;
+    --ring: 46 66% 52%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar = Obsidian Charcoal */
+    --sidebar-background: 240 2% 10%;
+    --sidebar-foreground: 36 43% 93%;
+    --sidebar-primary: 46 66% 52%;
+    --sidebar-primary-foreground: 240 2% 10%;
+    --sidebar-accent: 24 33% 18%;
+    --sidebar-accent-foreground: 36 43% 93%;
+    --sidebar-border: 24 20% 20%;
+    --sidebar-ring: 46 66% 52%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(240 2% 10%), hsl(24 33% 18%));
+    --gradient-gold: linear-gradient(135deg, hsl(46 66% 52%), hsl(46 70% 65%));
+    --gradient-cta: linear-gradient(135deg, hsl(46 66% 52%), hsl(46 60% 45%));
+    --gradient-warm: linear-gradient(135deg, hsl(36 43% 93%), hsl(36 40% 88%));
+    --gradient-cocoa: linear-gradient(135deg, hsl(24 33% 18%), hsl(240 2% 10%));
+    --gradient-sandstone: linear-gradient(
+      180deg,
+      hsl(36 43% 93%) 0%,
+      hsl(36 40% 97%) 100%
+    );
+
+    --shadow-card: 0 4px 24px -6px hsl(240 2% 10% / 0.08);
+    --shadow-elevated: 0 16px 48px -12px hsl(240 2% 10% / 0.15);
+    --shadow-glow: 0 0 40px -10px hsl(46 66% 52% / 0.3);
+    --shadow-gold: 0 8px 32px -8px hsl(46 66% 52% / 0.4);
+  }
+
+  .dark {
+    --background: 240 5% 6%;
+    --foreground: 36 43% 93%;
+    --card: 240 5% 10%;
+    --card-foreground: 36 43% 93%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 36 43% 93%;
+    --primary: 46 66% 52%;
+    --primary-foreground: 240 2% 10%;
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 36 43% 93%;
+    --muted: 240 5% 18%;
+    --muted-foreground: 36 30% 65%;
+    --accent: 46 66% 52%;
+    --accent-foreground: 240 2% 10%;
+    --detail: 24 33% 25%;
+    --detail-foreground: 36 43% 93%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --cta: 46 66% 52%;
+    --cta-foreground: 240 2% 10%;
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 46 66% 52%;
+    --sidebar-background: 240 5% 6%;
+    --sidebar-foreground: 36 43% 93%;
+    --sidebar-primary: 46 66% 52%;
+    --sidebar-primary-foreground: 240 2% 10%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 36 43% 93%;
+    --sidebar-border: 240 5% 20%;
+    --sidebar-ring: 46 66% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Playfair Display", serif;
+  }
+
+  ::selection {
+    background: hsl(46 66% 52% / 0.25);
+    color: hsl(240 2% 10%);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .font-brand {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+  }
+
+  .font-tagline {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+  }
+
+  .btn-cta {
+    @apply text-cta-foreground font-semibold rounded-xl px-6 py-3 transition-all duration-300 relative overflow-hidden;
+    font-family: "Montserrat", sans-serif;
+    background: var(--gradient-gold);
+    box-shadow: 0 4px 16px -4px hsl(46 66% 52% / 0.4);
+  }
+  .btn-cta:hover {
+    @apply scale-[1.03];
+    box-shadow: 0 8px 28px -4px hsl(46 66% 52% / 0.5);
+    filter: brightness(1.05);
+  }
+  .btn-cta:active {
+    @apply scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply text-primary-foreground font-semibold rounded-xl px-6 py-3 transition-all duration-300;
+    font-family: "Montserrat", sans-serif;
+    background: hsl(240 2% 10%);
+    box-shadow: 0 4px 16px -4px hsl(240 2% 10% / 0.25);
+  }
+  .btn-primary:hover {
+    @apply scale-[1.03];
+    box-shadow: 0 8px 28px -4px hsl(240 2% 10% / 0.35);
+  }
+  .btn-primary:active {
+    @apply scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply font-semibold rounded-xl px-6 py-3 transition-all duration-300 border-2 bg-transparent;
+    font-family: "Montserrat", sans-serif;
+    border-color: hsl(46 66% 52%);
+    color: hsl(240 2% 10%);
+  }
+  .btn-outline:hover {
+    background: hsl(46 66% 52%);
+    color: hsl(240 2% 10%);
+    @apply scale-[1.03];
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 rounded-xl;
+    box-shadow: var(--shadow-card);
+  }
+  .card-hover:hover {
+    @apply -translate-y-1.5;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-gold);
+  }
+
+  .gradient-text-cocoa {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-cocoa);
+  }
+
+  .glass {
+    @apply backdrop-blur-xl border border-border/50;
+    background: hsl(36 40% 97% / 0.85);
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-xl;
+    background: hsl(240 2% 10% / 0.9);
+  }
+
+  .skeleton-loading {
+    @apply animate-pulse bg-muted rounded-xl;
+  }
+
+  .link-hover {
+    @apply relative;
+  }
+  .link-hover::after {
+    content: "";
+    @apply absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300;
+    background: hsl(46 66% 52%);
+  }
+  .link-hover:hover::after {
+    @apply w-full;
+  }
+
+  .glow-dot {
+    @apply relative;
+  }
+  .glow-dot::before {
+    content: "";
+    @apply absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full;
+    background: hsl(46 66% 52%);
+    box-shadow: 0 0 8px hsl(46 66% 52% / 0.5);
+  }
+
+  .section-divider {
+    @apply relative;
+  }
+  .section-divider::before {
+    content: "";
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full;
+    background: var(--gradient-gold);
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .text-gold {
+    color: hsl(46 66% 52%);
+  }
+
+  .bg-gold {
+    background: hsl(46 66% 52%);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(36 43% 93%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(36 25% 75%);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(46 66% 52%);
+}
