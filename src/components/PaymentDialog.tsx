@@ -32,6 +32,26 @@ export const PaymentDialog = ({ booking, onClose, onPaymentSuccess }: PaymentDia
 
   const handlePayment = () => {
     // Basic validation
+    if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ''))) {
+      toast.error("Invalid card number. Please enter a 16-digit card number.");
+      return;
+    }
+
+    if (!/^[a-zA-Z\s]+$/.test(cardName)) {
+      toast.error("Invalid card name. Please enter a valid name.");
+      return;
+    }
+
+    if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(cardExpiry)) {
+      toast.error("Invalid expiry date. Please use MM/YY format.");
+      return;
+    }
+
+    if (!/^[0-9]{3,4}$/.test(cardCvv)) {
+      toast.error("Invalid CVV. Please enter a 3 or 4-digit CVV.");
+      return;
+    }
+
     if (!cardNumber || !cardName || !cardExpiry || !cardCvv) {
       toast.error("Please fill in all card details.");
       return;
@@ -68,20 +88,20 @@ export const PaymentDialog = ({ booking, onClose, onPaymentSuccess }: PaymentDia
           </div>
           <div className="grid gap-2">
             <Label htmlFor="card-number">Card Number</Label>
-            <Input id="card-number" placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(e.target.value)} />
+            <Input id="card-number" placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(e.target.value)} required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="card-name">Name on Card</Label>
-            <Input id="card-name" placeholder="John Doe" value={cardName} onChange={e => setCardName(e.target.value)} />
+            <Input id="card-name" placeholder="John Doe" value={cardName} onChange={e => setCardName(e.target.value)} required />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="expiry-date">Expiry</Label>
-              <Input id="expiry-date" placeholder="MM/YY" value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} />
+              <Input id="expiry-date" placeholder="MM/YY" value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="cvv">CVV</Label>
-              <Input id="cvv" placeholder="123" type="password" value={cardCvv} onChange={e => setCardCvv(e.target.value)} />
+              <Input id="cvv" placeholder="123" type="password" value={cardCvv} onChange={e => setCardCvv(e.target.value)} required />
             </div>
           </div>
         </div>

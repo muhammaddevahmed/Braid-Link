@@ -7,7 +7,17 @@ import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [postalCode, setPostalCode] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const handleFindStylists = () => {
+    if (!/^\d{5}$/.test(postalCode)) {
+      setError("Please enter a valid 5-digit postal code.");
+      return;
+    }
+    setError("");
+    navigate(`/booking?postal=${postalCode}&step=1`);
+  };
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -59,17 +69,23 @@ const HomePage = () => {
                   type="text"
                   placeholder="Enter your postal code"
                   value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d{0,5}$/.test(value)) {
+                      setPostalCode(value);
+                    }
+                  }}
                   className="w-full bg-transparent text-sm py-3 outline-none text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <button
-                onClick={() => navigate("/booking?postal=" + postalCode)}
+                onClick={handleFindStylists}
                 className="btn-cta flex items-center justify-center gap-2 text-sm whitespace-nowrap"
               >
                 <Search className="w-4 h-4" /> Find Stylists
               </button>
             </motion.div>
+            {error && <p className="text-sm text-destructive mt-2">{error}</p>}
           </motion.div>
         </div>
         <div className="absolute bottom-0 left-0 right-0">

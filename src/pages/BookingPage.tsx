@@ -17,15 +17,30 @@ const BookingPage = () => {
   const initPostal = params.get("postal") || "";
   const initStyleId = params.get("style") || "";
   const initStylistId = params.get("stylist") || "";
-  const initServiceId = params.get("service") || "";
 
-  const [step, setStep] = useState(initStylistId ? 2 : initStyleId ? 1 : 0);
+  const getBookingType = () => {
+    if (initStylistId) return 'stylist';
+    if (initStyleId) return 'hairstyle';
+    return 'location';
+  };
+
+  const bookingType = getBookingType();
+
+  const getInitialStep = () => {
+    switch (bookingType) {
+      case 'stylist': return 2;
+      case 'hairstyle': return 1;
+      default: return 0;
+    }
+  }
+
+  const [step, setStep] = useState(getInitialStep());
   const [postalCode, setPostalCode] = useState(initPostal);
   const [selectedStyle, setSelectedStyle] = useState(initStyleId);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedStylist, setSelectedStylist] = useState(initStylistId);
-  const [selectedServiceId, setSelectedServiceId] = useState(initServiceId);
+  const [selectedServiceId, setSelectedServiceId] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [notes, setNotes] = useState("");
 
@@ -36,6 +51,7 @@ const BookingPage = () => {
   });
 
   const matchedStylists = stylists.filter((s) => {
+    if (bookingType === 'stylist') return s.id === initStylistId;
     if (selectedStyle) return s.specialties.some((sp) => hairstyles.find((h) => h.id === selectedStyle)?.name === sp);
     return true;
   });
@@ -50,8 +66,15 @@ const BookingPage = () => {
   const platformFee = Math.round(servicePrice * 0.05);
   const totalAmount = servicePrice + platformFee;
 
-  const stepTitles = ["Enter Location", "Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"];
+  const stepTitles = bookingType === 'stylist'
+    ? ["Select Date & Time", "Select Service", "Review & Request"]
+    : bookingType === 'hairstyle'
+      ? ["Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"]
+      : ["Enter Location", "Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"];
   const totalSteps = stepTitles.length;
+
+  const currentStepTitle = stepTitles[step - getInitialStep()] || stepTitles[0];
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -123,18 +146,20 @@ const BookingPage = () => {
     );
   }
 
+  const actualStep = step - getInitialStep();
+
   return (
     <div className="py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <h1 className="font-serif text-3xl font-bold text-center mb-2">Book Your Appointment</h1>
-        <p className="text-muted-foreground text-center mb-8">Step {step + 1} of {totalSteps} — {stepTitles[step]}</p>
+        <p className="text-muted-foreground text-center mb-8">Step {actualStep + 1} of {totalSteps} — {currentStepTitle}</p>
 
         <div className="w-full bg-muted rounded-full h-2.5 mb-8 overflow-hidden">
           <motion.div
             className="h-2.5 rounded-full"
             style={{ background: "var(--gradient-ocean)" }}
             initial={{ width: 0 }}
-            animate={{ width: `${((step + 1) / totalSteps) * 100}%` }}
+            animate={{ width: `${((actualStep + 1) / totalSteps) * 100}%` }}
             transition={{ duration: 0.4 }}
           />
         </div>
@@ -144,13 +169,19 @@ const BookingPage = () => {
             <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
               {/* Steps 0-4 are largely the same, so they are omitted for brevity in this thought block but are included in the final code */}
               
-              {step === 0 && (
+              {step === 0 && bookingType === 'location' && (
                 <div className="space-y-4">
                   <h2 className="font-serif text-lg font-semibold">Where are you located?</h2>
                   <div className="relative max-w-sm">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="Enter postal code" className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <input type="text" value={postalCode} onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d{0,5}$/.test(value)) {
+                        setPostalCode(value);
+                      }
+                    }} placeholder="Enter 5-digit postal code" className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" required />
                   </div>
+                  {postalCode && !/^\d{5}$/.test(postalCode) && <p className="text-sm text-destructive">Please enter a valid 5-digit postal code.</p>}
                 </div>
               )}
 
@@ -280,16 +311,17 @@ const BookingPage = () => {
           </AnimatePresence>
 
           <div className="flex justify-between mt-8 pt-5 border-t border-border">
-            <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors">
+            <button onClick={() => setStep(Math.max(getInitialStep(), step - 1))} disabled={step === getInitialStep()} className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors">
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
-            {step < totalSteps - 1 ? (
+            {step < 5 ? (
               <button onClick={() => setStep(step + 1)} disabled={
+                  (step === 0 && !postalCode) ||
                   (step === 1 && !selectedStyle) ||
                   (step === 2 && (!selectedDate || !selectedTime)) ||
                   (step === 3 && !selectedStylist) ||
                   (step === 4 && !selectedServiceId)
-                } 
+                }
                 className="btn-primary flex items-center gap-1 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue <ChevronRight className="w-4 h-4" />

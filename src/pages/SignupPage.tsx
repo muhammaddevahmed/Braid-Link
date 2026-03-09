@@ -47,12 +47,28 @@ const SignupPage = () => {
     e.preventDefault();
     setError(""); // Reset error on new submission
 
+    if (!/^[a-zA-Z\s]+$/.test(form.name)) {
+      setError("Name can only contain letters and spaces.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setError("Invalid email format.");
+      return;
+    }
+
+    if (!/^\+?([0-9]{1,3})\)?[-. ]?([0-9]{10})$/.test(form.phone)) {
+      setError("Invalid phone number format.");
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       setError("Passwords don't match");
       return;
     }
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
+    
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(form.password)) {
+      setError("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
       return;
     }
 
