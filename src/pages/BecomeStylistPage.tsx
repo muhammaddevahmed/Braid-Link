@@ -68,7 +68,7 @@ const BecomeStylistPage = () => {
               <LogIn className="w-8 h-8 text-accent" />
             </div>
             <h2 className="font-serif text-2xl font-bold mb-3 text-primary">Authentication Required</h2>
-            <p className="text-muted-foreground mb-8">Please log in as a customer to apply for a stylist account.</p>
+            <p className="text-muted-foreground mb-8">Please log in as a stylist to apply for a stylist account.</p>
             <Link to="/login" className="btn-cta w-full block text-center py-3">Log In / Sign Up</Link>
           </div>
         </div>
