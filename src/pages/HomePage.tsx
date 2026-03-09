@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Star, Clock, Shield, ArrowRight, MapPin, Sparkles } from "lucide-react";
+import { Search, Star, Clock, Shield, ArrowRight, MapPin, Sparkles, Crown } from "lucide-react";
 import { stylists } from "@/data/demo-data";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -107,9 +107,14 @@ const HomePage = () => {
             <Link to="/find-stylist" className="hidden sm:flex text-sm font-semibold text-accent items-center gap-1.5 link-hover pb-1">View All <ArrowRight className="w-4 h-4" /></Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stylists.slice(0, 3).map((stylist, i) => (
+            {stylists.filter(s => s.featured).slice(0, 3).map((stylist, i) => (
               <motion.div key={stylist.id} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-                <Link to={`/stylist/${stylist.id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border/50 group">
+                <Link to={`/stylist/${stylist.id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border-2 border-accent/50 group relative">
+                  {/* Featured Badge */}
+                  <div className="absolute top-4 right-4 z-10 flex items-center gap-1 bg-accent text-primary px-3 py-1.5 rounded-full font-semibold text-xs shadow-lg">
+                    <Crown className="w-3.5 h-3.5" /> Featured
+                  </div>
+                  
                   <div className="aspect-[4/3] relative overflow-hidden">
                     <img src={stylist.photo.replace("w=200&h=200", "w=800&h=600")} alt={stylist.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
