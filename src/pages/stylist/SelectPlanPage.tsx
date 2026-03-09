@@ -5,11 +5,14 @@ import { subscriptionPlans } from "@/data/demo-data";
 import { Check, CreditCard, Lock, ShieldCheck, ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const SelectPlanPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState('professional');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [step, setStep] = useState(1); // 1: Plan Selection, 2: Payment
 
   // Payment State
@@ -43,13 +46,15 @@ const SelectPlanPage = () => {
       if (appData) {
         const app = JSON.parse(appData);
         app.planId = selectedPlan;
+        app.billingCycle = billingCycle;
         app.status = 'active'; // Mark as active after plan selection
         localStorage.setItem(appKey, JSON.stringify(app));
         
         toast.dismiss(toastId);
-        toast.success(`Payment successful! Subscribed to ${subscriptionPlans.find(p => p.id === selectedPlan)?.name} plan.`);
+        toast.success(`Payment successful! Subscribed to ${subscriptionPlans.find(p => p.id === selectedPlan)?.name} (${billingCycle}) plan.`);
         navigate('/stylist/dashboard');
       } else {
+        // This case is unlikely if they got to this page, but good to have.
         toast.dismiss(toastId);
         toast.error("Application data not found. Please contact support.");
       }
@@ -57,6 +62,7 @@ const SelectPlanPage = () => {
   };
 
   const selectedPlanDetails = subscriptionPlans.find(p => p.id === selectedPlan);
+  const currentPrice = selectedPlanDetails ? (billingCycle === 'monthly' ? selectedPlanDetails.monthlyPrice : selectedPlanDetails.yearlyPrice) : 0;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -67,23 +73,44 @@ const SelectPlanPage = () => {
       >
         {step === 1 ? (
           <>
-            <div className="text-center mb-8">
+            <div className="text-center mb-4">
               <h1 className="font-serif text-3xl font-bold text-primary">Congratulations & Welcome!</h1>
               <p className="text-muted-foreground mt-2">Your application is approved. Choose a subscription plan to get started.</p>
             </div>
+            
+            <div className="flex items-center justify-center gap-4 my-6">
+              <Label htmlFor="billing-cycle" className={`font-medium transition-colors ${billingCycle === 'monthly' ? 'text-primary' : 'text-detail'}`}>
+                Monthly
+              </Label>
+              <Switch
+                id="billing-cycle"
+                checked={billingCycle === "yearly"}
+                onCheckedChange={(checked) =>
+                  setBillingCycle(checked ? "yearly" : "monthly")
+                }
+              />
+              <Label htmlFor="billing-cycle" className={`font-medium transition-colors ${billingCycle === 'yearly' ? 'text-primary' : 'text-detail'}`}>
+                Yearly
+              </Label>
+              <span className="text-xs font-semibold bg-accent/20 text-accent px-2 py-1 rounded-md">SAVE 15%</span>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {subscriptionPlans.map((plan) => (
                 <div 
                   key={plan.id}
                   onClick={() => setSelectedPlan(plan.id)}
-                  className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${selectedPlan === plan.id ? 'border-accent bg-accent/5 ring-2 ring-accent' : 'border-detail/10 hover:border-detail/30'}`}
+                  className={`cursor-pointer rounded-xl border-2 p-6 transition-all h-full flex flex-col ${selectedPlan === plan.id ? 'border-accent bg-accent/5 ring-2 ring-accent' : 'border-detail/10 hover:border-detail/30'}`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-primary text-lg">{plan.name}</h3>
-                    {selectedPlan === plan.id && <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center"><Check className="w-4 h-4 text-primary" /></div>}
+                    {selectedPlan === plan.id && <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><Check className="w-4 h-4 text-primary" /></div>}
                   </div>
-                  <div className="text-3xl font-serif font-bold text-primary mb-2">${plan.price}<span className="text-sm font-sans font-normal text-muted-foreground">/{plan.period}</span></div>
-                  <p className="text-xs text-muted-foreground mb-4 h-12">{plan.description}</p>
+                  <div className="text-3xl font-serif font-bold text-primary mb-2">
+                    ${billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
+                    <span className="text-sm font-sans font-normal text-muted-foreground">/{billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4 h-12 flex-grow">{plan.description}</p>
                   <ul className="space-y-2">
                     {plan.features.slice(0, 4).map((feature, i) => (
                       <li key={i} className="text-xs flex items-start gap-2 text-detail"><Check className="w-3 h-3 text-green-600 mt-0.5 shrink-0" /> {feature}</li>
@@ -108,52 +135,27 @@ const SelectPlanPage = () => {
                 <h2 className="font-serif text-2xl font-bold text-primary mb-4">Payment Details</h2>
                 <p className="text-muted-foreground mb-6">Complete your subscription to activate your account.</p>
                 
+                {/* Payment form from original component */}
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Card Number</label>
                     <div className="relative">
                       <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <input 
-                        type="text" 
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 16))}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                        placeholder="0000 0000 0000 0000"
-                      />
+                      <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 16))} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="0000 0000 0000 0000" />
                     </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Cardholder Name</label>
-                    <input 
-                      type="text" 
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                      placeholder="John Doe"
-                    />
+                    <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="John Doe" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">Expiry Date</label>
-                      <input 
-                        type="text" 
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                        placeholder="MM/YY"
-                        maxLength={5}
-                      />
+                      <input type="text" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="MM/YY" maxLength={5} />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">CVC</label>
-                      <input 
-                        type="password" 
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                        className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                        placeholder="123"
-                        maxLength={4}
-                      />
+                      <input type="password" value={cardCvv} onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))} className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="123" maxLength={4} />
                     </div>
                   </div>
                 </div>
@@ -172,18 +174,18 @@ const SelectPlanPage = () => {
                 </div>
                 <div className="flex justify-between items-center mb-4 pb-4 border-b border-border">
                   <span className="text-muted-foreground">Billing Cycle</span>
-                  <span className="font-medium">Monthly</span>
+                  <span className="font-medium capitalize">{billingCycle}</span>
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="font-bold text-lg">Total</span>
-                  <span className="font-bold text-2xl text-primary">${selectedPlanDetails?.price}</span>
+                  <span className="font-bold text-2xl text-primary">${currentPrice}</span>
                 </div>
                 
                 <button onClick={handlePayment} className="btn-cta w-full py-3 flex items-center justify-center gap-2">
-                  <Lock className="w-4 h-4" /> Pay ${selectedPlanDetails?.price} & Activate
+                  <Lock className="w-4 h-4" /> Pay ${currentPrice} & Activate
                 </button>
                 <p className="text-xs text-center text-muted-foreground mt-4">
-                  By confirming, you agree to our Terms of Service. Subscription auto-renews monthly.
+                  By confirming, you agree to our Terms of Service. Subscription auto-renews.
                 </p>
               </div>
             </div>

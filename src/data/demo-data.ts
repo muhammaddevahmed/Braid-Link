@@ -47,7 +47,7 @@ export interface Booking {
   date: string;
   time: string;
   price: number;
-  status: "upcoming" | "completed" | "cancelled" | "pending";
+  status: "pending-approval" | "approved" | "upcoming" | "completed" | "cancelled" | "rejected";
   notes?: string;
 }
 
@@ -203,12 +203,12 @@ export const bookings: Booking[] = [
   { id: "b5", customerId: "c1", customerName: "Sarah Mitchell", stylistId: "s5", stylistName: "Maya Robinson", service: "Knotless Braids", date: "2026-03-15", time: "9:00 AM", price: 160, status: "upcoming" },
   { id: "b6", customerId: "c2", customerName: "Lisa Thompson", stylistId: "s1", stylistName: "Angela Johnson", service: "Knotless Braids", date: "2026-03-10", time: "11:00 AM", price: 150, status: "upcoming" },
   { id: "b7", customerId: "c2", customerName: "Lisa Thompson", stylistId: "s4", stylistName: "Tiffany Moore", service: "Crochet Braids", date: "2026-02-22", time: "1:00 PM", price: 100, status: "completed" },
-  { id: "b8", customerId: "c3", customerName: "Kim Brown", stylistId: "s2", stylistName: "Destiny Williams", service: "Goddess Locs", date: "2026-03-14", time: "10:00 AM", price: 200, status: "pending" },
+  { id: "b8", customerId: "c3", customerName: "Kim Brown", stylistId: "s2", stylistName: "Destiny Williams", service: "Goddess Locs", date: "2026-03-14", time: "10:00 AM", price: 200, status: "pending-approval" },
   { id: "b9", customerId: "c3", customerName: "Kim Brown", stylistId: "s5", stylistName: "Maya Robinson", service: "Micro Braids", date: "2026-03-20", time: "8:00 AM", price: 250, status: "upcoming" },
-  { id: "b10", customerId: "c4", customerName: "Aisha Patel", stylistId: "s3", stylistName: "Jasmine Carter", service: "Lemonade Braids", date: "2026-03-11", time: "12:00 PM", price: 130, status: "upcoming" },
+  { id: "b10", customerId: "c4", customerName: "Aisha Patel", stylistId: "s3", stylistName: "Jasmine Carter", service: "Lemonade Braids", date: "2026-03-11", time: "12:00 PM", price: 130, status: "approved" },
   { id: "b11", customerId: "c2", customerName: "Lisa Thompson", stylistId: "s1", stylistName: "Angela Johnson", service: "Box Braids", date: "2026-02-05", time: "10:00 AM", price: 120, status: "completed" },
   { id: "b12", customerId: "c3", customerName: "Kim Brown", stylistId: "s1", stylistName: "Angela Johnson", service: "Cornrows", date: "2026-02-12", time: "2:00 PM", price: 75, status: "completed" },
-  { id: "b13", customerId: "c4", customerName: "Aisha Patel", stylistId: "s1", stylistName: "Angela Johnson", service: "Knotless Braids", date: "2026-03-18", time: "11:00 AM", price: 150, status: "pending" },
+  { id: "b13", customerId: "c4", customerName: "Aisha Patel", stylistId: "s1", stylistName: "Angela Johnson", service: "Knotless Braids", date: "2026-03-18", time: "11:00 AM", price: 150, status: "pending-approval" },
   { id: "b14", customerId: "c1", customerName: "Sarah Mitchell", stylistId: "s1", stylistName: "Angela Johnson", service: "Box Braids", date: "2026-01-10", time: "9:00 AM", price: 120, status: "completed" },
 ];
 
