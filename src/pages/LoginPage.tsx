@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useBooking } from "@/contexts/BookingContext";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 const LoginPage = () => {
   const { login } = useAuth();
+  const { getRejectedInstantMatchForCustomer } = useBooking();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState("");
@@ -14,6 +16,15 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const navigateAfterLogin = (user: { role: string; id: string }) => {
+    // Check if customer has a rejected instant match
+    if (user.role === "customer") {
+      const rejectedMatch = getRejectedInstantMatchForCustomer(user.id);
+      if (rejectedMatch) {
+        navigate("/instant-match-result", { replace: true });
+        return;
+      }
+    }
+
     const from = location.state?.from?.pathname;
     // If the user was redirected from a page, send them back there after login.
     // The ProtectedRoute will handle authorization, so this is safe.

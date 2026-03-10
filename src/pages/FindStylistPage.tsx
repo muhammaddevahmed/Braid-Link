@@ -1,18 +1,42 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { stylists, hairstyles } from "@/data/demo-data";
 import { Star, MapPin, Search, SlidersHorizontal, Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import InstantMatchButton from "@/components/smart-match/InstantMatchButton";
+import MatchModal from "@/components/smart-match/MatchModal";
 
 const FindStylistPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterStyle, setFilterStyle] = useState("");
   const [filterRating, setFilterRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+
+  const handleInstantMatch = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      toast("Please log in to use Instant Match");
+      return;
+    }
+    
+    if (user?.role !== 'customer') {
+      toast("Only customers can use Instant Match. Stylists, please browse or create your profile.");
+      return;
+    }
+    
+    if (!user?.postalCode) {
+      toast("Please add your postal code to your profile");
+      return;
+    }
+    
+    setIsMatchModalOpen(true);
+  };
 
   useEffect(() => {
     if (user) {
@@ -53,9 +77,12 @@ const FindStylistPage = () => {
   return (
     <div className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        <div className="mb-10">
-          <h1 className="font-serif text-4xl font-bold text-primary">Find a Stylist</h1>
-          <p className="text-detail mt-2 font-brand">Search from our network of talented braiding professionals</p>
+        <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-serif text-4xl font-bold text-primary">Find a Stylist</h1>
+            <p className="text-detail mt-2 font-brand">Search from our network of talented braiding professionals</p>
+          </div>
+          <InstantMatchButton onClick={handleInstantMatch} size="md" variant="primary" />
         </div>
 
         {/* Search & Filters */}
@@ -146,6 +173,13 @@ const FindStylistPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      <MatchModal 
+        isOpen={isMatchModalOpen} 
+        onClose={() => setIsMatchModalOpen(false)} 
+        customerPostalCode={user?.postalCode || ""}
+      />
     </div>
   );
 };

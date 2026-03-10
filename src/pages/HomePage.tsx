@@ -4,11 +4,37 @@ import { Search, Star, Clock, Shield, ArrowRight, MapPin, Sparkles, Crown } from
 import { stylists } from "@/data/demo-data";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import InstantMatchButton from "@/components/smart-match/InstantMatchButton";
+import MatchModal from "@/components/smart-match/MatchModal";
+import { toast } from "sonner";
 
 const HomePage = () => {
   const [postalCode, setPostalCode] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+
+  const handleInstantMatch = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      toast("Please log in to use Instant Match");
+      return;
+    }
+    
+    if (user?.role !== 'customer') {
+      toast("Only customers can use Instant Match. Stylists, please browse or create your profile.");
+      return;
+    }
+    
+    if (!user?.postalCode) {
+      toast("Please add your postal code to your profile");
+      return;
+    }
+    
+    setIsMatchModalOpen(true);
+  };
 
   const handleFindStylists = () => {
     if (!/^\d{5}$/.test(postalCode)) {
@@ -86,6 +112,16 @@ const HomePage = () => {
               </button>
             </motion.div>
             {error && <p className="text-sm text-destructive mt-2">{error}</p>}
+            
+            {/* Instant Match Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="mt-8 flex justify-center"
+            >
+              <InstantMatchButton onClick={handleInstantMatch} size="md" variant="secondary" />
+            </motion.div>
           </motion.div>
         </div>
         <div className="absolute bottom-0 left-0 right-0">
@@ -94,6 +130,13 @@ const HomePage = () => {
           </svg>
         </div>
       </section>
+
+      {/* Modal */}
+      <MatchModal 
+        isOpen={isMatchModalOpen} 
+        onClose={() => setIsMatchModalOpen(false)}
+        customerPostalCode={user?.postalCode || ""}
+      />
 
       {/* Top Stylists */}
       <section className="py-20 relative overflow-hidden bg-secondary/30">

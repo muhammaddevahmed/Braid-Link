@@ -18,6 +18,8 @@ export interface Stylist {
   monthlyEarnings: number;
   featured: boolean;
   subscriptionPlan: "starter" | "growth" | "pro";
+  responseSpeed?: "fast" | "medium" | "slow";
+  distanceFromCustomer?: number;
 }
 
 export interface Service {
@@ -70,6 +72,12 @@ export interface Booking {
     | "cancelled"
     | "rejected";
   notes?: string;
+  bookingType?: "instant-match" | "stylist" | "hairstyle" | "location";
+  searchCriteria?: {
+    hairstyle: string;
+    minPrice: number;
+    maxPrice: number;
+  };
 }
 
 export interface Review {
@@ -94,6 +102,7 @@ export interface User {
   avatar: string;
   joinDate: string;
   status: "active" | "suspended" | "pending";
+  postalCode?: string;
 }
 
 export const hairstyles: Hairstyle[] = [
@@ -409,6 +418,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 3800,
     featured: true,
     subscriptionPlan: "growth",
+    responseSpeed: "fast",
   },
   {
     id: "s2",
@@ -466,6 +476,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 5200,
     featured: true,
     subscriptionPlan: "pro",
+    responseSpeed: "fast",
   },
   {
     id: "s3",
@@ -523,6 +534,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 2900,
     featured: false,
     subscriptionPlan: "starter",
+    responseSpeed: "medium",
   },
   {
     id: "s4",
@@ -580,6 +592,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 4100,
     featured: false,
     subscriptionPlan: "growth",
+    responseSpeed: "medium",
   },
   {
     id: "s5",
@@ -638,6 +651,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 6700,
     featured: true,
     subscriptionPlan: "pro",
+    responseSpeed: "fast",
   },
   {
     id: "s6",
@@ -685,6 +699,7 @@ export const stylists: Stylist[] = [
     monthlyEarnings: 2100,
     featured: false,
     subscriptionPlan: "starter",
+    responseSpeed: "slow",
   },
 ];
 
@@ -1013,6 +1028,7 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-06-15",
     status: "active",
+    postalCode: "11201",
   },
   {
     id: "c2",
@@ -1024,6 +1040,7 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-08-20",
     status: "active",
+    postalCode: "60601",
   },
   {
     id: "c3",
@@ -1035,6 +1052,7 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-09-10",
     status: "active",
+    postalCode: "90001",
   },
   {
     id: "c4",
@@ -1046,6 +1064,7 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-10-05",
     status: "active",
+    postalCode: "77001",
   },
   {
     id: "s1",
@@ -1106,11 +1125,7 @@ export const subscriptionPlans = [
       "Email support",
       "1 portfolio image",
     ],
-    notIncluded: [
-      "Priority listing",
-      "Unlimited bookings",
-      "Featured badge",
-    ],
+    notIncluded: ["Priority listing", "Unlimited bookings", "Featured badge"],
   },
   {
     id: "professional",
@@ -1124,7 +1139,7 @@ export const subscriptionPlans = [
       "Unlimited bookings",
       "Priority support",
       "Up to 20 portfolio images",
-      "Priority listing"
+      "Priority listing",
     ],
     notIncluded: ["Featured badge"],
   },

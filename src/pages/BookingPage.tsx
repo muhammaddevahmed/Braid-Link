@@ -14,11 +14,15 @@ const BookingPage = () => {
   const { isAuthenticated, user } = useAuth();
   const { createBooking } = useBooking();
 
-  const initPostal = params.get("postal") || "";
+  const initPostal = params.get("postal") || user?.postalCode || "";
   const initStyleId = params.get("style") || "";
   const initStylistId = params.get("stylist") || "";
+  const initDate = params.get("date") || "";
+  const initTime = params.get("time") || "";
+  const isInstantMatch = params.get("isInstantMatch") === "true";
 
   const getBookingType = () => {
+    if (isInstantMatch) return 'instant-match';
     if (initStylistId) return 'stylist';
     if (initStyleId) return 'hairstyle';
     return 'location';
@@ -28,6 +32,7 @@ const BookingPage = () => {
 
   const getInitialStep = () => {
     switch (bookingType) {
+      case 'instant-match': return 5; // Skip directly to review/invoice step
       case 'stylist': return 2;
       case 'hairstyle': return 1;
       default: return 0;
@@ -37,8 +42,8 @@ const BookingPage = () => {
   const [step, setStep] = useState(getInitialStep());
   const [postalCode, setPostalCode] = useState(initPostal);
   const [selectedStyle, setSelectedStyle] = useState(initStyleId);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState(isInstantMatch ? initDate : "");
+  const [selectedTime, setSelectedTime] = useState(isInstantMatch ? initTime : "");
   const [selectedStylist, setSelectedStylist] = useState(initStylistId);
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [confirmed, setConfirmed] = useState(false);
@@ -66,11 +71,13 @@ const BookingPage = () => {
   const platformFee = Math.round(servicePrice * 0.05);
   const totalAmount = servicePrice + platformFee;
 
-  const stepTitles = bookingType === 'stylist'
-    ? ["Select Date & Time", "Select Service", "Review & Request"]
-    : bookingType === 'hairstyle'
-      ? ["Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"]
-      : ["Enter Location", "Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"];
+  const stepTitles = bookingType === 'instant-match'
+    ? ["Review & Confirm Booking"]
+    : bookingType === 'stylist'
+      ? ["Select Date & Time", "Select Service", "Review & Request"]
+      : bookingType === 'hairstyle'
+        ? ["Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"]
+        : ["Enter Location", "Choose Hairstyle", "Select Date & Time", "Choose Stylist", "Select Service", "Review & Request"];
   const totalSteps = stepTitles.length;
 
   const currentStepTitle = stepTitles[step - getInitialStep()] || stepTitles[0];
@@ -85,6 +92,18 @@ const BookingPage = () => {
       navigate("/", { replace: true });
     }
   }, [isAuthenticated, user, navigate, location]);
+
+  // Auto-select service for instant match
+  useEffect(() => {
+    if (isInstantMatch && selectedStyle && chosenStylist && !selectedServiceId) {
+      const matchingService = chosenStylist.services.find((sv) => sv.name === chosenStyle?.name);
+      if (matchingService) {
+        setSelectedServiceId(matchingService.id);
+      } else if (chosenStylist.services.length > 0) {
+        setSelectedServiceId(chosenStylist.services[0].id);
+      }
+    }
+  }, [isInstantMatch, selectedStyle, chosenStylist, chosenStyle, selectedServiceId]);
 
   const handleRequestAppointment = () => {
     if (!user || !chosenStylist || !chosenService || !selectedDate || !selectedTime) {
@@ -102,6 +121,12 @@ const BookingPage = () => {
       time: selectedTime,
       price: totalAmount,
       notes,
+      bookingType: bookingType as "instant-match" | "stylist" | "hairstyle" | "location",
+      searchCriteria: isInstantMatch && chosenStyle ? {
+        hairstyle: chosenStyle.name,
+        minPrice: Math.min(...chosenStylist.services.map(s => s.price)),
+        maxPrice: Math.max(...chosenStylist.services.map(s => s.price)),
+      } : undefined,
     });
 
     if (success) {
