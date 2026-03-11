@@ -1,6 +1,12 @@
 import { stylists } from "@/data/demo-data";
-import { DollarSign, TrendingUp, Clock, CreditCard, Check, AlertCircle, Lock } from "lucide-react";
+import { 
+  DollarSign, TrendingUp, Clock, CreditCard, Check, 
+  AlertCircle, Lock, Wallet, ArrowUpRight, Calendar,
+  Download, Receipt, History, Shield, Sparkles,
+  ChevronRight, PiggyBank, Banknote, Landmark
+} from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const StylistEarnings = () => {
   const s = stylists[0];
@@ -9,10 +15,15 @@ const StylistEarnings = () => {
   const [cardName, setCardName] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [step, setStep] = useState("form"); // form, confirm, submitted
+  const [selectedPeriod, setSelectedPeriod] = useState("6m");
 
   const monthlyData = [
-    { month: "Oct", amount: 3200 }, { month: "Nov", amount: 3800 }, { month: "Dec", amount: 4500 },
-    { month: "Jan", amount: 3600 }, { month: "Feb", amount: 4100 }, { month: "Mar", amount: 3800 },
+    { month: "Oct", amount: 3200 }, 
+    { month: "Nov", amount: 3800 }, 
+    { month: "Dec", amount: 4500 },
+    { month: "Jan", amount: 3600 }, 
+    { month: "Feb", amount: 4100 }, 
+    { month: "Mar", amount: 3800 },
   ];
 
   const [withdrawals, setWithdrawals] = useState([
@@ -35,128 +46,406 @@ const StylistEarnings = () => {
     setStep("submitted");
   };
 
+  const totalPending = 420;
+  const totalAvailable = s.totalEarnings - withdrawals.reduce((sum, w) => sum + w.amount, 0);
+
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return (
-    <div className="space-y-6">
-      <h2 className="font-serif text-2xl font-bold">Earnings</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-2xl p-5 border border-border card-hover"><div className="flex items-center gap-2 text-muted-foreground text-sm mb-2"><DollarSign className="w-4 h-4" /> Total Earnings</div><p className="text-3xl font-bold">${s.totalEarnings.toLocaleString()}</p></div>
-        <div className="bg-card rounded-2xl p-5 border border-border card-hover"><div className="flex items-center gap-2 text-muted-foreground text-sm mb-2"><TrendingUp className="w-4 h-4" /> This Month</div><p className="text-3xl font-bold">${s.monthlyEarnings.toLocaleString()}</p></div>
-        <div className="bg-card rounded-2xl p-5 border border-border card-hover"><div className="flex items-center gap-2 text-muted-foreground text-sm mb-2"><Clock className="w-4 h-4" /> Pending</div><p className="text-3xl font-bold">$420</p></div>
-      </div>
-
-      <div className="bg-card rounded-2xl p-5 border border-border">
-        <h3 className="font-serif font-semibold mb-4">Monthly Earnings</h3>
-        <div className="flex items-end gap-2 h-40">
-          {monthlyData.map((m) => (
-            <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full rounded-t-lg transition-all hover:opacity-90" style={{ height: `${(m.amount / 5000) * 100}%`, background: "var(--gradient-hero)" }} />
-              <span className="text-xs text-muted-foreground">{m.month}</span>
-              <span className="text-xs font-medium">${(m.amount / 1000).toFixed(1)}k</span>
-            </div>
-          ))}
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+              <Wallet className="w-3.5 h-3.5" />
+              Earnings Dashboard
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-bold text-primary">Earnings</h2>
+          <p className="text-detail mt-1 font-brand">Track your income and manage withdrawals</p>
         </div>
+
+        
+      </motion.div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { 
+            label: "Total Earnings", 
+            value: formatCurrency(s.totalEarnings), 
+            icon: DollarSign, 
+            trend: "+12.5%",
+            color: "from-green-500/20 to-green-500/5",
+            iconColor: "text-green-600"
+          },
+          { 
+            label: "This Month", 
+            value: formatCurrency(s.monthlyEarnings), 
+            icon: TrendingUp, 
+            trend: "+8.2%",
+            color: "from-blue-500/20 to-blue-500/5",
+            iconColor: "text-blue-600"
+          },
+          { 
+            label: "Available", 
+            value: formatCurrency(totalAvailable), 
+            icon: Banknote, 
+            trend: "Ready to withdraw",
+            color: "from-purple-500/20 to-purple-500/5",
+            iconColor: "text-purple-600"
+          },
+          { 
+            label: "Pending", 
+            value: formatCurrency(totalPending), 
+            icon: Clock, 
+            trend: "Processing",
+            color: "from-orange-500/20 to-orange-500/5",
+            iconColor: "text-orange-600"
+          },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            custom={i}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            whileHover={{ y: -4 }}
+            className="bg-card rounded-2xl p-5 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
+              </div>
+              <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                {stat.trend}
+              </span>
+            </div>
+            <p className="text-3xl font-bold text-primary mb-1">{stat.value}</p>
+            <p className="text-sm text-detail">{stat.label}</p>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Withdrawal Request - Card Only */}
-      <div className="bg-card rounded-2xl p-6 border border-border">
-        <h3 className="font-serif font-semibold mb-5 flex items-center gap-2"><CreditCard className="w-5 h-5 text-primary" /> Request Withdrawal</h3>
+    
 
-        {step === "submitted" ? (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-accent" /></div>
-            <h4 className="font-serif font-semibold text-lg mb-2">Withdrawal Requested!</h4>
-            <p className="text-sm text-muted-foreground mb-1">Amount: <strong>${withdrawAmount}</strong></p>
-            <p className="text-sm text-muted-foreground mb-4">Processing takes <strong>3-4 business days</strong>. You'll be notified when funds are transferred to your card.</p>
-            <div className="bg-muted/50 rounded-xl p-4 text-left text-sm space-y-2 max-w-sm mx-auto">
-              <div className="flex justify-between"><span className="text-muted-foreground">Status</span><span className="text-secondary font-semibold">Pending Review</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Card</span><span className="font-medium">****{cardNumber.slice(-4)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Est. Completion</span><span className="font-medium">{(() => { const d = new Date(); d.setDate(d.getDate() + 4); return d.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }); })()}</span></div>
-            </div>
-            <button onClick={() => { setStep("form"); setWithdrawAmount(""); setCardNumber(""); setCardName(""); setCardExpiry(""); }} className="btn-primary text-sm mt-5">New Request</button>
+      {/* Withdrawal Request Card */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-card rounded-2xl p-6 border border-border/50 hover:shadow-xl transition-all"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <CreditCard className="w-6 h-6 text-primary" />
           </div>
-        ) : step === "confirm" ? (
-          <div className="max-w-md space-y-4">
-            <div className="bg-muted/40 rounded-xl p-5 space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Withdrawal Amount</span><span className="font-bold text-lg">${withdrawAmount}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Card</span><span className="font-medium flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" /> ****{cardNumber.slice(-4)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Cardholder</span><span className="font-medium">{cardName}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Processing Time</span><span className="font-medium">3-4 business days</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Platform Fee</span><span className="font-medium">$0.00</span></div>
-              <div className="border-t border-border pt-2 flex justify-between font-bold"><span>You'll Receive</span><span className="text-accent">${withdrawAmount}</span></div>
-            </div>
-            <div className="bg-secondary/10 rounded-xl p-3 flex items-start gap-2 text-sm border border-secondary/20">
-              <AlertCircle className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
-              <p className="text-muted-foreground">Your withdrawal will be reviewed by admin and funds will be transferred to your card within 3-4 business days.</p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setStep("form")} className="btn-outline text-sm flex-1 py-2.5">Go Back</button>
-              <button onClick={handleSubmitRequest} className="btn-cta text-sm flex-1 py-2.5">Confirm Withdrawal</button>
-            </div>
+          <div>
+            <h3 className="font-serif text-xl font-bold text-primary">Request Withdrawal</h3>
+            <p className="text-xs text-detail">Transfer your earnings to your bank account</p>
           </div>
-        ) : (
-          <div className="max-w-md space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">Withdrawal Amount ($)</label>
-              <input type="number" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Enter amount" />
-            </div>
+          <div className="ml-auto flex items-center gap-1 text-xs text-detail">
+            <Lock className="w-3 h-3 text-primary" /> Secure Transaction
+          </div>
+        </div>
 
-            <div className="pt-2 border-t border-border">
-              <div className="flex items-center gap-2 mb-3">
-                <CreditCard className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold">Card Details</span>
-                <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lock className="w-3 h-3" /> Secure
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Card Number</label>
-                  <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 16))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="1234 5678 9012 3456" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Name on Card</label>
-                  <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Angela Johnson" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Expiry Date</label>
-                  <input type="text" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="MM/YY" maxLength={5} />
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setStep("confirm")}
-              disabled={!withdrawAmount || Number(withdrawAmount) <= 0 || !cardNumber || !cardName}
-              className="btn-cta text-sm w-full disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+        <AnimatePresence mode="wait">
+          {step === "submitted" ? (
+            <motion.div
+              key="submitted"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center py-8"
             >
-              Continue to Review
-            </button>
-          </div>
-        )}
-      </div>
+              <div className="relative w-20 h-20 mx-auto mb-4">
+                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+                  <Check className="w-10 h-10 text-green-600" />
+                </div>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center"
+                >
+                  <Sparkles className="w-3 h-3 text-white" />
+                </motion.div>
+              </div>
+              
+              <h4 className="font-serif text-xl font-bold text-primary mb-2">Withdrawal Requested!</h4>
+              <p className="text-detail mb-6">Your withdrawal request has been submitted successfully</p>
+              
+              <div className="bg-primary/5 rounded-xl p-5 border border-primary/20 max-w-sm mx-auto text-left mb-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-detail">Amount</span>
+                    <span className="text-lg font-bold text-primary">${withdrawAmount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-detail">Card</span>
+                    <span className="text-sm font-medium text-primary">****{cardNumber.slice(-4)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-detail">Status</span>
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Pending Review</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-detail">Est. Completion</span>
+                    <span className="text-sm font-medium text-primary">
+                      {(() => { const d = new Date(); d.setDate(d.getDate() + 4); 
+                        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); })()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => { setStep("form"); setWithdrawAmount(""); setCardNumber(""); setCardName(""); setCardExpiry(""); }} 
+                className="btn-primary text-sm px-6 py-3 rounded-xl"
+              >
+                New Request
+              </button>
+            </motion.div>
+          ) : step === "confirm" ? (
+            <motion.div
+              key="confirm"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="max-w-md mx-auto space-y-6"
+            >
+              <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
+                <h4 className="font-serif font-semibold text-primary mb-4">Review Your Request</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-detail">Withdrawal Amount</span>
+                    <span className="font-bold text-xl text-primary">${withdrawAmount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-detail">Card</span>
+                    <span className="font-medium flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-primary" /> ****{cardNumber.slice(-4)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-detail">Cardholder</span>
+                    <span className="font-medium">{cardName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-detail">Processing Time</span>
+                    <span className="font-medium">3-4 business days</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-border">
+                    <span className="font-semibold text-primary">You'll Receive</span>
+                    <span className="font-bold text-xl text-primary">${withdrawAmount}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-700">
+                  Your withdrawal will be reviewed by admin and funds will be transferred to your card within 3-4 business days.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setStep("form")} 
+                  className="flex-1 btn-outline text-sm py-3 rounded-xl"
+                >
+                  Go Back
+                </button>
+                <button 
+                  onClick={handleSubmitRequest} 
+                  className="flex-1 btn-cta text-sm py-3 rounded-xl"
+                >
+                  Confirm Withdrawal
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="max-w-md mx-auto space-y-6"
+            >
+              {/* Available Balance */}
+              <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 flex justify-between items-center">
+                <span className="text-sm text-detail">Available for withdrawal</span>
+                <span className="text-2xl font-bold text-primary">{formatCurrency(totalAvailable)}</span>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-primary mb-2 block">Withdrawal Amount</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                    <input 
+                      type="number" 
+                      value={withdrawAmount} 
+                      onChange={(e) => setWithdrawAmount(e.target.value)} 
+                      className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" 
+                      placeholder="Enter amount"
+                      max={totalAvailable}
+                    />
+                  </div>
+                  <p className="text-xs text-detail mt-2">
+                    Min: $50 • Max: {formatCurrency(totalAvailable)}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-border">
+                  <div className="flex items-center gap-2 mb-4">
+                    <CreditCard className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold text-primary">Card Details</span>
+                    <div className="ml-auto flex items-center gap-1 text-xs text-detail">
+                      <Lock className="w-3 h-3 text-primary" /> Encrypted
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs text-detail mb-1 block">Card Number</label>
+                      <input 
+                        type="text" 
+                        value={cardNumber} 
+                        onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 16))} 
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" 
+                        placeholder="1234 5678 9012 3456" 
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-detail mb-1 block">Name on Card</label>
+                      <input 
+                        type="text" 
+                        value={cardName} 
+                        onChange={(e) => setCardName(e.target.value)} 
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" 
+                        placeholder="Angela Johnson" 
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-detail mb-1 block">Expiry Date</label>
+                      <input 
+                        type="text" 
+                        value={cardExpiry} 
+                        onChange={(e) => setCardExpiry(e.target.value)} 
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" 
+                        placeholder="MM/YY" 
+                        maxLength={5} 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setStep("confirm")}
+                  disabled={!withdrawAmount || Number(withdrawAmount) <= 0 || !cardNumber || !cardName || !cardExpiry}
+                  className="btn-cta text-sm w-full py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed mt-4 flex items-center justify-center gap-2"
+                >
+                  Continue to Review <ArrowUpRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Withdrawal History */}
-      <div className="bg-card rounded-2xl p-5 border border-border">
-        <h3 className="font-serif font-semibold mb-4">Withdrawal History</h3>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-card rounded-2xl p-6 border border-border/50 hover:shadow-xl transition-all"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <History className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-serif font-semibold text-lg text-primary">Withdrawal History</h3>
+              <p className="text-xs text-detail">Recent transactions</p>
+            </div>
+          </div>
+         
+        </div>
+
         <div className="space-y-3">
-          {withdrawals.map((w) => (
-            <div key={w.id} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div>
-                <p className="text-sm font-medium">${w.amount.toLocaleString()} to {w.card}</p>
-                <p className="text-xs text-muted-foreground">Requested: {w.requestDate}</p>
+          {withdrawals.map((w, i) => (
+            <motion.div
+              key={w.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/10 hover:border-primary/30 transition-all"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  w.status === "completed" ? "bg-green-100" :
+                  w.status === "processing" ? "bg-blue-100" : "bg-yellow-100"
+                }`}>
+                  {w.status === "completed" ? (
+                    <Check className="w-5 h-5 text-green-600" />
+                  ) : w.status === "processing" ? (
+                    <Clock className="w-5 h-5 text-blue-600" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-primary">${w.amount.toLocaleString()} to {w.card}</p>
+                  <p className="text-xs text-detail">Requested: {w.requestDate}</p>
+                </div>
               </div>
               <div className="text-right">
-                <span className={`text-xs px-2.5 py-1 rounded-full capitalize font-medium ${
-                  w.status === "completed" ? "bg-accent/15 text-accent" :
-                  w.status === "processing" ? "bg-primary/10 text-primary" :
-                  "bg-secondary/15 text-secondary-foreground"
-                }`}>{w.status}</span>
-                <p className="text-xs text-muted-foreground mt-1">{w.processDate}</p>
+                <span className={`text-xs px-3 py-1.5 rounded-full capitalize font-medium ${
+                  w.status === "completed" ? "bg-green-100 text-green-700" :
+                  w.status === "processing" ? "bg-blue-100 text-blue-700" :
+                  "bg-yellow-100 text-yellow-700"
+                }`}>
+                  {w.status}
+                </span>
+                <p className="text-xs text-detail mt-1">{w.processDate}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+
+        {/* Summary Footer */}
+        <div className="mt-6 pt-6 border-t border-border flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-primary" />
+            <span className="text-detail">All transactions are secure and encrypted</span>
+          </div>
+          <span className="text-xs text-detail">
+            Total withdrawn: ${withdrawals.reduce((sum, w) => sum + w.amount, 0).toLocaleString()}
+          </span>
+        </div>
+      </motion.div>
     </div>
   );
 };

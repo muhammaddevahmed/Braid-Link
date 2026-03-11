@@ -8,7 +8,9 @@
   :root {
     /* Warm Sandstone - Background */
     --background: 36 43% 93%;
+    --background-rgb: 245, 240, 232; /* RGB equivalent for rgba usage */
     --foreground: 240 2% 10%;
+    --foreground-rgb: 26, 26, 26;
 
     --card: 36 40% 97%;
     --card-foreground: 240 2% 10%;
@@ -18,6 +20,7 @@
 
     /* Obsidian Charcoal - Primary */
     --primary: 240 2% 10%;
+    --primary-rgb: 26, 26, 26;
     --primary-foreground: 36 43% 93%;
 
     /* Warm Sandstone - Secondary */
@@ -30,6 +33,7 @@
 
     /* Metallic Sahara Gold - Accent */
     --accent: 46 66% 52%;
+    --accent-rgb: 212, 175, 55; /* RGB equivalent for rgba usage */
     --accent-foreground: 240 2% 10%;
 
     /* Deep Cocoa - Detail */
@@ -39,6 +43,14 @@
     /* Destructive */
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
+
+    /* Success & Info - Adding for completeness */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --info: 200 70% 45%;
+    --info-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
 
     /* CTA = Metallic Gold */
     --cta: 46 66% 52%;
@@ -71,16 +83,41 @@
       hsl(36 43% 93%) 0%,
       hsl(36 40% 97%) 100%
     );
+    --gradient-gold-radial: radial-gradient(circle at top right, hsl(46 66% 52% / 0.2), transparent 70%);
 
+    /* Shadows */
     --shadow-card: 0 4px 24px -6px hsl(240 2% 10% / 0.08);
     --shadow-elevated: 0 16px 48px -12px hsl(240 2% 10% / 0.15);
     --shadow-glow: 0 0 40px -10px hsl(46 66% 52% / 0.3);
     --shadow-gold: 0 8px 32px -8px hsl(46 66% 52% / 0.4);
+    --shadow-inner: inset 0 2px 4px 0 hsl(240 2% 10% / 0.05);
+    
+    /* Spacing - Adding consistent spacing scale */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Typography scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
   }
 
   .dark {
     --background: 240 5% 6%;
+    --background-rgb: 15, 15, 18;
     --foreground: 36 43% 93%;
+    --foreground-rgb: 240, 235, 225;
+    
     --card: 240 5% 10%;
     --card-foreground: 36 43% 93%;
     --popover: 240 5% 10%;
@@ -110,6 +147,10 @@
     --sidebar-accent-foreground: 36 43% 93%;
     --sidebar-border: 240 5% 20%;
     --sidebar-ring: 46 66% 52%;
+    
+    /* Adjust shadows for dark mode */
+    --shadow-card: 0 4px 24px -6px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 16px 48px -12px hsl(0 0% 0% / 0.5);
   }
 }
 
@@ -121,6 +162,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Montserrat", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -130,6 +173,7 @@
   h5,
   h6 {
     font-family: "Playfair Display", serif;
+    @apply font-medium tracking-tight;
   }
 
   ::selection {
@@ -137,8 +181,18 @@
     color: hsl(240 2% 10%);
   }
 
+  ::-moz-selection {
+    background: hsl(46 66% 52% / 0.25);
+    color: hsl(240 2% 10%);
+  }
+
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
   }
 }
 
@@ -153,6 +207,7 @@
     font-style: italic;
   }
 
+  /* Button styles */
   .btn-cta {
     @apply text-cta-foreground font-semibold rounded-xl px-6 py-3 transition-all duration-300 relative overflow-hidden;
     font-family: "Montserrat", sans-serif;
@@ -166,6 +221,13 @@
   }
   .btn-cta:active {
     @apply scale-[0.98];
+  }
+  .btn-cta::before {
+    content: '';
+    @apply absolute inset-0 bg-white/20 translate-x-[-100%] transition-transform duration-500;
+  }
+  .btn-cta:hover::before {
+    @apply translate-x-0;
   }
 
   .btn-primary {
@@ -194,6 +256,22 @@
     @apply scale-[1.03];
   }
 
+  .btn-outline-light {
+    @apply font-semibold rounded-xl px-6 py-3 transition-all duration-300 border-2 bg-transparent;
+    font-family: "Montserrat", sans-serif;
+    border-color: hsl(36 43% 93%);
+    color: hsl(36 43% 93%);
+  }
+  .btn-outline-light:hover {
+    background: hsl(36 43% 93% / 0.1);
+    @apply scale-[1.03];
+  }
+
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  /* Card styles */
   .card-hover {
     @apply transition-all duration-300 rounded-xl;
     box-shadow: var(--shadow-card);
@@ -203,6 +281,11 @@
     box-shadow: var(--shadow-elevated);
   }
 
+  .card-gold {
+    @apply border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10;
+  }
+
+  /* Text gradients */
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-gold);
@@ -213,20 +296,33 @@
     background-image: var(--gradient-cocoa);
   }
 
+  .gradient-text-warm {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-warm);
+  }
+
+  /* Glass effects */
   .glass {
     @apply backdrop-blur-xl border border-border/50;
     background: hsl(36 40% 97% / 0.85);
   }
 
   .glass-dark {
-    @apply backdrop-blur-xl;
+    @apply backdrop-blur-xl border border-white/10;
     background: hsl(240 2% 10% / 0.9);
   }
 
+  .glass-gold {
+    @apply backdrop-blur-xl border border-accent/20;
+    background: hsl(46 66% 52% / 0.1);
+  }
+
+  /* Skeleton loading */
   .skeleton-loading {
     @apply animate-pulse bg-muted rounded-xl;
   }
 
+  /* Link hover effect */
   .link-hover {
     @apply relative;
   }
@@ -239,6 +335,11 @@
     @apply w-full;
   }
 
+  .link-hover-light::after {
+    background: hsl(36 43% 93%);
+  }
+
+  /* Glow dot */
   .glow-dot {
     @apply relative;
   }
@@ -249,6 +350,7 @@
     box-shadow: 0 0 8px hsl(46 66% 52% / 0.5);
   }
 
+  /* Section divider */
   .section-divider {
     @apply relative;
   }
@@ -258,10 +360,20 @@
     background: var(--gradient-gold);
   }
 
+  .section-divider-left::before {
+    @apply left-0 translate-x-0;
+  }
+
+  /* Scale hover */
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
   }
 
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Text colors */
   .text-gold {
     color: hsl(46 66% 52%);
   }
@@ -269,19 +381,146 @@
   .bg-gold {
     background: hsl(46 66% 52%);
   }
+
+  /* Layout utilities */
+  .container-custom {
+    @apply container mx-auto px-4 md:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Flex/Grid utilities */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  /* Animation utilities */
+  .animate-enter {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-gold {
+    0%, 100% {
+      box-shadow: 0 0 20px -5px hsl(46 66% 52% / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px -5px hsl(46 66% 52% / 0.5);
+    }
+  }
+
+  .animate-pulse-gold {
+    animation: pulse-gold 2s infinite;
+  }
+
+  /* Form styles */
+  .input-base {
+    @apply w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all;
+  }
+
+  .label-base {
+    @apply text-sm font-medium text-primary flex items-center gap-1.5;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply bg-accent/10 text-accent border border-accent/20;
+  }
+
+  .badge-success {
+    @apply bg-success/10 text-success border border-success/20;
+  }
+
+  .badge-destructive {
+    @apply bg-destructive/10 text-destructive border border-destructive/20;
+  }
+
+  /* Avatar styles */
+  .avatar {
+    @apply rounded-full object-cover ring-2 ring-accent/30;
+  }
+
+  .avatar-initials {
+    @apply rounded-full bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center font-bold text-accent;
+  }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: hsl(36 43% 93%);
+  border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb {
   background: hsl(36 25% 75%);
   border-radius: 4px;
+  transition: background 0.2s;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(46 66% 52%);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: hsl(240 5% 10%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(240 5% 30%);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(46 66% 52%);
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  @apply w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin;
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  h1 {
+    font-size: var(--text-3xl);
+  }
+  h2 {
+    font-size: var(--text-2xl);
+  }
 }

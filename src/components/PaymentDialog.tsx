@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useBooking } from "@/contexts/BookingContext";
+import { useBooking } from "@/contexts/useBookingHook";
 import { Booking } from "@/data/demo-data";
 import { toast } from "sonner";
 import { CreditCard, Lock } from "lucide-react";

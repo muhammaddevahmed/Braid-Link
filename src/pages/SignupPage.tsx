@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, User, Phone, User as UserIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Mail, Lock, Eye, EyeOff, User, Phone, User as UserIcon,
+  Sparkles, Shield, CheckCircle, AlertCircle, Camera, ArrowRight,
+  Crown, Scissors, Calendar, Star, MapPin, Hash
+} from "lucide-react";
 import { toast } from "sonner";
 
 const SignupPage = () => {
@@ -16,9 +20,15 @@ const SignupPage = () => {
     confirmPassword: "",
     role: "customer" as "customer" | "stylist",
     profileImage: null as File | null,
+    city: "",
+    country: "UK" as "UK" | "USA",
+    postalCode: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const fileToBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -43,32 +53,54 @@ const SignupPage = () => {
     }
   };
 
+  const checkPasswordStrength = (password: string) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (/[a-z]/.test(password)) strength += 25;
+    if (/[A-Z]/.test(password)) strength += 25;
+    if (/[0-9]/.test(password)) strength += 15;
+    if (/[@$!%*?&]/.test(password)) strength += 10;
+    setPasswordStrength(strength);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setForm({ ...form, password: newPassword });
+    checkPasswordStrength(newPassword);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Reset error on new submission
+    setError("");
+    setIsLoading(true);
 
     if (!/^[a-zA-Z\s]+$/.test(form.name)) {
       setError("Name can only contain letters and spaces.");
+      setIsLoading(false);
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       setError("Invalid email format.");
+      setIsLoading(false);
       return;
     }
 
     if (!/^\+?([0-9]{1,3})\)?[-. ]?([0-9]{10})$/.test(form.phone)) {
       setError("Invalid phone number format.");
+      setIsLoading(false);
       return;
     }
 
     if (form.password !== form.confirmPassword) {
       setError("Passwords don't match");
+      setIsLoading(false);
       return;
     }
     
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(form.password)) {
       setError("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+      setIsLoading(false);
       return;
     }
 
@@ -78,127 +110,460 @@ const SignupPage = () => {
         profileImageBase64 = await fileToBase64(form.profileImage);
       } catch (error) {
         setError("Failed to process profile image.");
+        setIsLoading(false);
         return;
       }
     }
 
-    const success = signup({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      role: form.role,
-      profileImage: profileImageBase64,
-    });
-
-    if (success) {
-      toast.success("Account created successfully!");
-      if (form.role === "customer") {
-        navigate('/booking');
+    // Parse city and country from form fields
+    const city = form.role === "customer" ? form.city : "";
+    const country = form.country;
+    
+    if (form.role === "customer") {
+      // Validate postal code based on country
+      if (form.country === "USA") {
+        if (!/^\d{5}$/.test(form.postalCode)) {
+          setError("Please enter a valid 5-digit US zip code.");
+          setIsLoading(false);
+          return;
+        }
       } else {
-        navigate('/become-stylist');
+        if (!/^[A-Z]{1,2}[0-9R][0-9A-Z]? ?[0-9][A-Z]{2}$/i.test(form.postalCode)) {
+          setError("Please enter a valid UK postcode.");
+          setIsLoading(false);
+          return;
+        }
       }
-    } else {
-      setError("An account with this email already exists.");
     }
+
+    // Simulate API call
+    setTimeout(() => {
+      const success = signup({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        role: form.role,
+        profileImage: profileImageBase64,
+        city,
+        country,
+      });
+
+      if (success) {
+        toast.success("Account created successfully!");
+        if (form.role === "customer") {
+          navigate('/booking');
+        } else {
+          navigate('/become-stylist');
+        }
+      } else {
+        setError("An account with this email already exists.");
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
+  };
+
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength < 50) return "bg-destructive";
+    if (passwordStrength < 75) return "bg-yellow-500";
+    return "bg-green-500";
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 bg-background">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-b from-background to-secondary/10">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-accent/5 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-accent/5 rounded-full blur-[120px] animate-pulse delay-1000" />
+        <div className="absolute inset-0 opacity-5" 
+             style={{ backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="w-full max-w-md relative z-10"
+      >
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl font-bold text-primary">Create Account</h1>
-          <p className="text-detail mt-2 font-brand">Join BraidLink today</p>
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center gap-2 bg-accent/10 backdrop-blur-sm text-accent text-xs font-medium px-5 py-2.5 rounded-full mb-4 border border-accent/30"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Join BraidLink Today</span>
+          </motion.div>
+          
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">Create Account</h1>
+          <p className="text-detail font-brand">Start your journey with us</p>
         </div>
 
-        <div className="bg-card rounded-xl p-6 shadow-sm border border-detail/20">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</div>}
-
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Account Type</label>
-              <div className="grid grid-cols-2 gap-2">
-                {(["customer", "stylist"] as const).map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setForm({ ...form, role })}
-                    className={`py-2.5 rounded-lg text-sm font-medium border transition-colors ${form.role === role ? "bg-accent text-primary border-accent" : "border-detail/20 text-primary hover:bg-accent/10"}`}
-                  >
-                    {role === "customer" ? "Customer" : "Hair Stylist"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
-                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Your full name" required />
-              </div>
-            </div>
-
-            {form.role === "customer" && (
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-detail/10">
-                  {form.profileImage ? (
-                    <img src={URL.createObjectURL(form.profileImage)} alt="Profile Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <UserIcon className="w-8 h-8 text-muted-foreground" />
+        {/* Main Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card rounded-2xl p-6 md:p-8 shadow-2xl border border-border/50"
+        >
+          {/* Role Selection Cards */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mb-6"
+          >
+            <label className="text-sm font-medium mb-3 flex text-primary items-center gap-2">
+              <User className="w-4 h-4 text-accent" />
+              I want to join as
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: "customer", label: "Customer", icon: Star, desc: "Book appointments" },
+                { value: "stylist", label: "Hair Stylist", icon: Scissors, desc: "Offer services" }
+              ].map((role, i) => (
+                <motion.button
+                  key={role.value}
+                  custom={i}
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  type="button"
+                  onClick={() => setForm({ ...form, role: role.value as "customer" | "stylist" })}
+                  className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                    form.role === role.value 
+                      ? "border-accent bg-accent/5 shadow-lg scale-105" 
+                      : "border-border hover:border-accent/30 hover:bg-accent/5"
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                      form.role === role.value ? "bg-accent" : "bg-accent/10"
+                    }`}>
+                      <role.icon className={`w-5 h-5 ${
+                        form.role === role.value ? "text-primary" : "text-accent"
+                      }`} />
+                    </div>
+                    <span className="text-sm font-semibold text-primary">{role.label}</span>
+                    <span className="text-xs text-detail mt-1">{role.desc}</span>
+                  </div>
+                  {form.role === role.value && (
+                    <CheckCircle className="absolute -top-2 -right-2 w-5 h-5 text-accent bg-card rounded-full" />
                   )}
-                </div>
-                <div>
-                  <label htmlFor="profile-image-upload" className="text-sm font-medium text-primary cursor-pointer bg-accent/10 px-3 py-2 rounded-lg border border-accent/20 hover:bg-accent/20">
-                    Upload Profile Image
-                  </label>
-                  <input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
-                  <p className="text-xs text-muted-foreground mt-1.5">Optional. PNG or JPG, max 2MB.</p>
-                </div>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Error Message */}
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="text-sm text-destructive bg-destructive/10 rounded-xl px-4 py-3 flex items-start gap-2 border border-destructive/20"
+                >
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Full Name */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                <User className="w-4 h-4 text-accent" /> Full Name
+              </label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <input 
+                  type="text" 
+                  value={form.name} 
+                  onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  placeholder="Enter your full name" 
+                  required 
+                />
               </div>
+            </div>
+
+            {/* Profile Image - For both customers and stylists */}
+            {(form.role === "customer" || form.role === "stylist") && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-2"
+              >
+                <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-accent" /> {form.role === "stylist" ? "Professional Photo" : "Profile Image"}
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center overflow-hidden border-2 border-border group-hover:border-accent transition-colors">
+                      {form.profileImage ? (
+                        <img 
+                          src={URL.createObjectURL(form.profileImage)} 
+                          alt="Profile Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <UserIcon className="w-8 h-8 text-accent/50" />
+                      )}
+                    </div>
+                    <label 
+                      htmlFor="profile-image-upload" 
+                      className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-accent flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg"
+                    >
+                      <Camera className="w-4 h-4 text-primary" />
+                    </label>
+                    <input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-detail">
+                      Upload {form.role === "stylist" ? "a professional photo" : "a profile picture"} {form.role === "stylist" ? "(required)" : "(optional)"}
+                    </p>
+                    <p className="text-xs text-detail mt-1">PNG or JPG, max 2MB</p>
+                  </div>
+                </div>
+              </motion.div>
             )}
 
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="your@email.com" required />
+            {/* City & Country - Separate Fields for Customers Only */}
+            {form.role === "customer" && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="space-y-4"
+              >
+                {/* Country Dropdown */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-accent" /> Country
+                  </label>
+                  <select 
+                    value={form.country} 
+                    onChange={(e) => setForm({ ...form, country: e.target.value as "UK" | "USA", postalCode: "" })} 
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all appearance-none cursor-pointer"
+                    required
+                  >
+                    <option value="UK">United Kingdom</option>
+                    <option value="USA">United States</option>
+                  </select>
+                </div>
+
+                {/* Postal Code */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                    <Hash className="w-4 h-4 text-accent" /> Postal Code
+                  </label>
+                  <input 
+                    type="text" 
+                    value={form.postalCode} 
+                    onChange={(e) => setForm({ ...form, postalCode: e.target.value })} 
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                    placeholder={form.country === "USA" ? "Enter 5-digit zip code (e.g., 90210)" : "Enter UK postcode (e.g., SW1A 0AA)"} 
+                    required 
+                  />
+                  <p className="text-xs text-detail">
+                    {form.country === "USA" 
+                      ? "US zip codes should be 5 digits (e.g., 90210)." 
+                      : "UK postcodes are alphanumeric (e.g., SW1A 0AA)."}
+                  </p>
+                </div>
+
+                {/* City */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-accent" /> City
+                  </label>
+                  <input 
+                    type="text" 
+                    value={form.city} 
+                    onChange={(e) => setForm({ ...form, city: e.target.value })} 
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                    placeholder="Enter your city" 
+                    required 
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* Email */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                <Mail className="w-4 h-4 text-accent" /> Email Address
+              </label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <input 
+                  type="email" 
+                  value={form.email} 
+                  onChange={(e) => setForm({ ...form, email: e.target.value })} 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  placeholder="your@email.com" 
+                  required 
+                />
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Phone Number</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
-                <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="(555) 123-4567" required />
+            {/* Phone */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                <Phone className="w-4 h-4 text-accent" /> Phone Number
+              </label>
+              <div className="relative group">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <input 
+                  type="tel" 
+                  value={form.phone} 
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })} 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  placeholder="(555) 123-4567" 
+                  required 
+                />
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
-                <input type={showPassword ? "text" : "password"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="••••••" required />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2">
-                  {showPassword ? <EyeOff className="w-4 h-4 text-detail" /> : <Eye className="w-4 h-4 text-detail" />}
+            {/* Password */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                <Lock className="w-4 h-4 text-accent" /> Password
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={form.password} 
+                  onChange={handlePasswordChange} 
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  placeholder="••••••••" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-detail hover:text-accent transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              
+              {/* Password Strength Indicator */}
+              {form.password && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex gap-1 h-1">
+                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 25 ? getPasswordStrengthColor() : 'bg-muted'}`} />
+                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 50 ? getPasswordStrengthColor() : 'bg-muted'}`} />
+                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 75 ? getPasswordStrengthColor() : 'bg-muted'}`} />
+                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 100 ? getPasswordStrengthColor() : 'bg-muted'}`} />
+                  </div>
+                  <p className="text-xs text-detail">
+                    {passwordStrength < 50 && "Weak password"}
+                    {passwordStrength >= 50 && passwordStrength < 75 && "Medium password"}
+                    {passwordStrength >= 75 && "Strong password"}
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1.5 block text-primary">Confirm Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
-                <input type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-detail/20 bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder="••••••" required />
+            {/* Confirm Password */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                <Lock className="w-4 h-4 text-accent" /> Confirm Password
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <input 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  value={form.confirmPassword} 
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} 
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  placeholder="••••••••" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-detail hover:text-accent transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+              {form.confirmPassword && form.password !== form.confirmPassword && (
+                <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" /> Passwords don't match
+                </p>
+              )}
             </div>
 
-            <button type="submit" className="btn-cta w-full text-sm">Create Account</button>
+            {/* Submit Button */}
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit" 
+              disabled={isLoading}
+              className="btn-cta w-full text-sm py-4 rounded-xl flex items-center justify-center gap-2 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <>Creating Account...</>
+              ) : (
+                <>
+                  Create Account <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
+
+            {/* Terms */}
+            <p className="text-xs text-center text-detail mt-4">
+              By creating an account, you agree to our{" "}
+              <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>
+            </p>
           </form>
 
-          <div className="mt-4 text-center text-sm text-detail font-brand">
-            Already have an account? <Link to="/login" className="text-accent font-semibold hover:underline">Sign In</Link>
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-4 text-detail">Already have an account?</span>
+            </div>
           </div>
-        </div>
+
+          {/* Login Link */}
+          <div className="text-center">
+            <Link 
+              to="/login" 
+              className="text-accent font-semibold text-sm hover:underline inline-flex items-center gap-1"
+            >
+              Sign In <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Trust Badge */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 text-center"
+        >
+          <div className="inline-flex items-center gap-2 text-xs text-detail bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+            <Shield className="w-3 h-3 text-accent" />
+            <span>Your information is secure and encrypted</span>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -103,6 +103,8 @@ export interface User {
   joinDate: string;
   status: "active" | "suspended" | "pending";
   postalCode?: string;
+  country?: "UK" | "USA";
+  city?: string;
 }
 
 export const hairstyles: Hairstyle[] = [
@@ -370,7 +372,7 @@ export const stylists: Stylist[] = [
     rating: 4.8,
     reviewCount: 120,
     location: "Brooklyn, NY",
-    postalCode: "11201",
+    postalCode: "SW1A 0AA",
     services: [
       {
         id: "sv1",
@@ -430,7 +432,7 @@ export const stylists: Stylist[] = [
     rating: 4.9,
     reviewCount: 215,
     location: "Atlanta, GA",
-    postalCode: "30301",
+    postalCode: "M1 1AE",
     services: [
       {
         id: "sv4",
@@ -546,7 +548,7 @@ export const stylists: Stylist[] = [
     rating: 4.6,
     reviewCount: 156,
     location: "Chicago, IL",
-    postalCode: "60601",
+    postalCode: "G2 1AC",
     services: [
       {
         id: "sv10",
@@ -1028,7 +1030,9 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-06-15",
     status: "active",
-    postalCode: "11201",
+    postalCode: "SW1A 0AA",
+    city: "London",
+    country: "UK",
   },
   {
     id: "c2",
@@ -1040,7 +1044,9 @@ export const users: User[] = [
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
     joinDate: "2024-08-20",
     status: "active",
-    postalCode: "60601",
+    postalCode: "G2 1AC",
+    city: "Glasgow",
+    country: "UK",
   },
   {
     id: "c3",
@@ -1053,6 +1059,8 @@ export const users: User[] = [
     joinDate: "2024-09-10",
     status: "active",
     postalCode: "90001",
+    city: "Los Angeles",
+    country: "USA",
   },
   {
     id: "c4",
@@ -1065,6 +1073,8 @@ export const users: User[] = [
     joinDate: "2024-10-05",
     status: "active",
     postalCode: "77001",
+    city: "Houston",
+    country: "USA",
   },
   {
     id: "s1",

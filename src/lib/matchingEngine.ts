@@ -4,9 +4,9 @@ export interface MatchCriteria {
   hairstyle: string;
   date: string;
   time: string;
-  minPrice: number;
-  maxPrice: number;
-  customerPostalCode: string;
+  postcode: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export interface MatchResult {
@@ -15,11 +15,16 @@ export interface MatchResult {
   matchDetails: {
     expertiseMatch: boolean;
     availabilityMatch: boolean;
+    timeMatch: boolean;
     ratingScore: number;
     distanceScore: number;
     priceMatch: boolean;
-    responseSpeedScore: number;
-    popularityScore: number;
+    priceInRange: boolean;
+  };
+  matchedService?: {
+    name: string;
+    price: number;
+    duration: string;
   };
 }
 
@@ -28,55 +33,48 @@ const calculateDistance = (
   customerPostal: string,
   stylistPostal: string,
 ): number => {
-  // Simplified distance calculation based on postal code proximity
   // In a real app, this would use geolocation services
-  if (customerPostal === stylistPostal) return 0.5; // Same postal code
+  if (!customerPostal || !stylistPostal) return 15; // Default distance if postal codes are missing
 
-  const customerFirst3 = customerPostal.substring(0, 3);
-  const stylistFirst3 = stylistPostal.substring(0, 3);
+  const cPostal = customerPostal.toLowerCase().trim();
+  const sPostal = stylistPostal.toLowerCase().trim();
 
-  if (customerFirst3 === stylistFirst3) return 2; // Same region
-  return 5; // Different region
+  if (cPostal === sPostal) return 0.5;
+
+  // Simulate distance based on postcode prefix (e.g., "SW1" vs "SW1A")
+  const cPrefix = cPostal.substring(0, 3);
+  const sPrefix = sPostal.substring(0, 3);
+
+  if (cPrefix === sPrefix) return 2.5;
+  return 12;
 };
 
-// Response speed score (0-100)
-const getResponseSpeedScore = (responseSpeed?: string): number => {
-  switch (responseSpeed) {
-    case "fast":
-      return 100;
-    case "medium":
-      return 70;
-    case "slow":
-      return 40;
-    default:
-      return 60;
-  }
-};
-
-// Check if stylist is available for the given date and time
-const isAvailableOnDateTime = (
-  stylist: Stylist,
-  date: string,
-  time: string,
-): boolean => {
+// Check if stylist is available on the given date
+const isAvailableOnDate = (stylist: Stylist, date: string): boolean => {
+  if (!date) return true; // No date specified, so all are considered available
   const dateObj = new Date(date);
   const dayName = dateObj.toLocaleString("en-US", { weekday: "long" });
+  return !!stylist.availability[dayName];
+};
 
-  const availability = stylist.availability[dayName];
-  if (!availability) return false;
-
-  // Parse time to compare
-  const [hours, minutes] = time.split(":").map(Number);
-  const appointmentTime = hours + minutes / 60;
-
-  const [startHours, startMinutes] = availability.start.split(":").map(Number);
-  const startTime = startHours + startMinutes / 60;
-
-  const [endHours, endMinutes] = availability.end.split(":").map(Number);
-  const endTime = endHours + endMinutes / 60;
-
-  // Check if appointment time is within available hours (minimum 1.5 hours for appointment)
-  return appointmentTime >= startTime && appointmentTime + 1.5 <= endTime;
+// Check if stylist is available at the given time
+const isAvailableAtTime = (stylist: Stylist, date: string, time: string): boolean => {
+  if (!date || !time) return true; // No date/time specified, so all are considered available
+  
+  const dateObj = new Date(date);
+  const dayName = dateObj.toLocaleString("en-US", { weekday: "long" });
+  const dayAvailability = stylist.availability[dayName];
+  
+  if (!dayAvailability) return false;
+  
+  // Parse the time (e.g., "10:00" -> 10)
+  const requestedHour = parseInt(time.split(":")[0], 10);
+  
+  // Parse availability hours
+  const startHour = parseInt(dayAvailability.start.split(":")[0], 10);
+  const endHour = parseInt(dayAvailability.end.split(":")[0], 10);
+  
+  return requestedHour >= startHour && requestedHour < endHour;
 };
 
 // Check if stylist offers the requested hairstyle
@@ -84,6 +82,7 @@ const hasHairstyleExpertise = (
   stylist: Stylist,
   hairstyle: string,
 ): boolean => {
+  if (!hairstyle) return true;
   return stylist.specialties.some(
     (s) =>
       s.toLowerCase().includes(hairstyle.toLowerCase()) ||
@@ -91,218 +90,138 @@ const hasHairstyleExpertise = (
   );
 };
 
-// Check if stylist's price is within range (more flexible - allows 15% outside range)
-const isPriceInRange = (
+// Get the service for a specific hairstyle
+const getServiceForHairstyle = (
   stylist: Stylist,
-  minPrice: number,
-  maxPrice: number,
   hairstyle: string,
-): boolean => {
+): { name: string; price: number; duration: string } | null => {
   const service = stylist.services.find(
-    (s) =>
-      s.name.toLowerCase().includes(hairstyle.toLowerCase()) ||
-      hairstyle.toLowerCase().includes(s.name.toLowerCase()),
+    (s) => s.name.toLowerCase() === hairstyle.toLowerCase(),
   );
-
-  const priceRange = maxPrice - minPrice;
-  const flexibleMin = Math.max(0, minPrice - priceRange * 0.15);
-  const flexibleMax = maxPrice + priceRange * 0.15;
-
-  if (!service) {
-    // Estimate based on average service price if specific service not found
-    const avgPrice =
-      stylist.services.reduce((sum, s) => sum + s.price, 0) /
-      stylist.services.length;
-    return avgPrice >= flexibleMin && avgPrice <= flexibleMax;
-  }
-
-  return service.price >= flexibleMin && service.price <= flexibleMax;
+  return service ? { name: service.name, price: service.price, duration: service.duration } : null;
 };
 
-// Get the base price for calculation
-const getStylistPrice = (stylist: Stylist, hairstyle: string): number => {
-  const service = stylist.services.find(
-    (s) =>
-      s.name.toLowerCase().includes(hairstyle.toLowerCase()) ||
-      hairstyle.toLowerCase().includes(s.name.toLowerCase()),
-  );
-
-  if (service) return service.price;
-
-  return (
-    stylist.services.reduce((sum, s) => sum + s.price, 0) /
-    stylist.services.length
-  );
-};
-
-// Main matching algorithm with fallback for better demo experience
+// Main matching algorithm
 export const matchStylists = (
   criteria: MatchCriteria,
   stylists: Stylist[],
-): MatchResult[] => {
-  // First attempt: Strict matching (hairstyle + availability + price)
-  let matches = tryStrictMatching(criteria, stylists);
+): { exactMatches: MatchResult[]; closestMatches: MatchResult[] } => {
+  const allStylists = stylists.map((stylist) => {
+    const distance = calculateDistance(criteria.postcode, stylist.postalCode);
+    const expertiseMatch = hasHairstyleExpertise(stylist, criteria.hairstyle);
+    const availabilityMatch = isAvailableOnDate(stylist, criteria.date);
+    const timeMatch = isAvailableAtTime(stylist, criteria.date, criteria.time);
+    const matchedService = getServiceForHairstyle(stylist, criteria.hairstyle);
+    const price = matchedService?.price || null;
 
-  // Fallback 1: Lenient matching (availability + flexible price, any hairstyle)
-  if (matches.length === 0) {
-    matches = tryLenientMatching(criteria, stylists);
-  }
+    // Filter: Price Range logic (Platform Commission Rule: uses exact stylist price)
+    let priceInRange = true;
+    if (criteria.minPrice !== undefined && criteria.maxPrice !== undefined) {
+      if (price !== null) {
+        priceInRange = price >= criteria.minPrice && price <= criteria.maxPrice;
+      } else {
+        // If price is missing, we can't confirm it's in range
+        priceInRange = false;
+      }
+    } else {
+      // If no price range set, we still require a valid price to book
+      if (price === null) priceInRange = false;
+    }
 
-  // Fallback 2: Very lenient (any active stylist with flexible price)
-  if (matches.length === 0) {
-    matches = tryVeryLenientMatching(criteria, stylists);
-  }
+    // Scores
+    // Distance Score: Prioritized in matching logic
+    let distanceScore = 0;
+    if (distance <= 1) distanceScore = 100;
+    else if (distance <= 3) distanceScore = 80;
+    else if (distance <= 5) distanceScore = 60;
+    else if (distance <= 10) distanceScore = 40;
+    else distanceScore = 20;
 
-  // Sort by match score (highest first)
-  return matches.sort((a, b) => b.matchScore - a.matchScore);
-};
+    const ratingScore = (stylist.rating / 5) * 100;
 
-// Strict matching - requires all three filters
-const tryStrictMatching = (
-  criteria: MatchCriteria,
-  stylists: Stylist[],
-): MatchResult[] => {
-  const matches: MatchResult[] = [];
+    // Price Score: Higher score for being closer to budget midpoint or lower price
+    let priceScore = 0;
+    if (price !== null) {
+      if (criteria.minPrice !== undefined && criteria.maxPrice !== undefined) {
+        const midpoint = (criteria.minPrice + criteria.maxPrice) / 2;
+        priceScore = Math.max(0, 100 - (Math.abs(price - midpoint) / 50) * 100);
+      } else {
+        // If no price range, score based on being affordable
+        priceScore = Math.max(0, 100 - (price / 300) * 100);
+      }
+    }
 
-  for (const stylist of stylists) {
-    const hasExpertise = hasHairstyleExpertise(stylist, criteria.hairstyle);
-    const isAvailable = isAvailableOnDateTime(
-      stylist,
-      criteria.date,
-      criteria.time,
-    );
-    const isPriceMatch = isPriceInRange(
-      stylist,
-      criteria.minPrice,
-      criteria.maxPrice,
-      criteria.hairstyle,
-    );
+    // Weights - Adapted to user prioritization:
+    // 1. Hairstyle & 2. Availability (Handled via filtering for exact matches)
+    // 3. Distance > 4. Rating > 5. Price
+    const weights = {
+      expertise: 0.4,
+      availability: 0.25,
+      distance: 0.2,
+      rating: 0.1,
+      price: 0.05,
+    };
 
-    if (!hasExpertise || !isAvailable || !isPriceMatch) continue;
+    let matchScore = 0;
+    if (expertiseMatch) matchScore += weights.expertise;
+    if (availabilityMatch && timeMatch) matchScore += weights.availability;
+    matchScore += (distanceScore / 100) * weights.distance;
+    matchScore += (ratingScore / 100) * weights.rating;
+    matchScore += (priceScore / 100) * weights.price;
 
-    matches.push(createMatchResult(stylist, criteria));
-  }
+    matchScore = Math.min(100, Math.round(matchScore * 100));
 
-  return matches;
-};
+    return {
+      stylist: {
+        ...stylist,
+        matchScore: Math.round(matchScore),
+        distanceFromCustomer: distance,
+      },
+      matchScore: Math.round(matchScore),
+      matchDetails: {
+        expertiseMatch,
+        availabilityMatch,
+        timeMatch,
+        ratingScore: Math.round(ratingScore),
+        distanceScore: Math.round(distanceScore),
+        priceMatch: price !== null,
+        priceInRange,
+      },
+      matchedService: matchedService || undefined,
+    };
+  });
 
-// Lenient matching - requires availability + flexible price, any hairstyle
-const tryLenientMatching = (
-  criteria: MatchCriteria,
-  stylists: Stylist[],
-): MatchResult[] => {
-  const matches: MatchResult[] = [];
-
-  for (const stylist of stylists) {
-    if (stylist.status !== "active") continue;
-
-    const isAvailable = isAvailableOnDateTime(
-      stylist,
-      criteria.date,
-      criteria.time,
-    );
-    const isPriceMatch = isPriceInRange(
-      stylist,
-      criteria.minPrice,
-      criteria.maxPrice,
-      criteria.hairstyle,
-    );
-
-    if (!isAvailable || !isPriceMatch) continue;
-
-    matches.push(createMatchResult(stylist, criteria, true));
-  }
-
-  return matches;
-};
-
-// Very lenient matching - any active stylist with flexible price
-const tryVeryLenientMatching = (
-  criteria: MatchCriteria,
-  stylists: Stylist[],
-): MatchResult[] => {
-  const matches: MatchResult[] = [];
-  const priceRange = criteria.maxPrice - criteria.minPrice;
-  const flexibleMin = Math.max(0, criteria.minPrice - priceRange * 0.25);
-  const flexibleMax = criteria.maxPrice + priceRange * 0.25;
-
-  for (const stylist of stylists) {
-    if (stylist.status !== "active") continue;
-
-    // Check if average price is within flexible range
-    const avgPrice =
-      stylist.services.reduce((sum, s) => sum + s.price, 0) /
-      stylist.services.length;
-    if (avgPrice < flexibleMin || avgPrice > flexibleMax) continue;
-
-    matches.push(createMatchResult(stylist, criteria, true));
-  }
-
-  return matches;
-};
-
-// Helper function to create match result
-const createMatchResult = (
-  stylist: Stylist,
-  criteria: MatchCriteria,
-  isLenient: boolean = false,
-): MatchResult => {
-  const ratingScore = (stylist.rating / 5) * 100;
-  const distance = calculateDistance(
-    criteria.customerPostalCode,
-    stylist.postalCode,
-  );
-  const maxDistance = 5;
-  const distanceScore = Math.max(0, (1 - distance / maxDistance) * 100);
-  const responseSpeedScore = getResponseSpeedScore(stylist.responseSpeed);
-  const popularityScore = Math.min(
-    100,
-    (stylist.reviewCount / 300) * 100 + (stylist.featured ? 20 : 0),
+  const exactMatches = allStylists.filter(
+    (m) =>
+      m.matchDetails.expertiseMatch &&
+      m.matchDetails.availabilityMatch &&
+      m.matchDetails.timeMatch &&
+      m.matchDetails.priceInRange,
   );
 
-  const stylistPrice = getStylistPrice(stylist, criteria.hairstyle);
-  const midPrice = (criteria.minPrice + criteria.maxPrice) / 2;
-  const priceMatch =
-    100 - Math.min(100, (Math.abs(stylistPrice - midPrice) / midPrice) * 50);
+  const closestMatches = allStylists.filter((m) => !exactMatches.includes(m));
 
-  // Reduce price weight for lenient matches
-  const priceWeight = isLenient ? 0.1 : 0.2;
-
-  const matchScore =
-    ratingScore * 0.25 +
-    distanceScore * 0.2 +
-    priceMatch * priceWeight +
-    responseSpeedScore * 0.15 +
-    popularityScore * 0.2;
+  const sortMatches = (a: MatchResult, b: MatchResult) =>
+    b.matchScore - a.matchScore;
 
   return {
-    stylist: {
-      ...stylist,
-      matchScore: Math.round(matchScore),
-      distanceFromCustomer: distance,
-    },
-    matchScore: Math.round(matchScore),
-    matchDetails: {
-      expertiseMatch: hasHairstyleExpertise(stylist, criteria.hairstyle),
-      availabilityMatch: isAvailableOnDateTime(
-        stylist,
-        criteria.date,
-        criteria.time,
-      ),
-      ratingScore: Math.round(ratingScore),
-      distanceScore: Math.round(distanceScore),
-      priceMatch: true,
-      responseSpeedScore: responseSpeedScore,
-      popularityScore: Math.round(popularityScore),
-    },
+    exactMatches: exactMatches.sort(sortMatches),
+    closestMatches: closestMatches.sort(sortMatches),
   };
 };
 
-// Get single best match
+// Get single best match (can be useful for other features)
 export const getBestMatch = (
   criteria: MatchCriteria,
   stylists: Stylist[],
 ): MatchResult | null => {
-  const matches = matchStylists(criteria, stylists);
-  return matches.length > 0 ? matches[0] : null;
+  const { exactMatches, closestMatches } = matchStylists(criteria, stylists);
+  if (exactMatches.length > 0) {
+    return exactMatches[0];
+  }
+  if (closestMatches.length > 0) {
+    return closestMatches[0];
+  }
+  return null;
 };
+

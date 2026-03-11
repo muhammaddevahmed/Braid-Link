@@ -55,6 +55,7 @@ import AdminPayments from "@/pages/admin/AdminPayments";
 import AdminWithdrawals from "@/pages/admin/AdminWithdrawals";
 import AdminDisputes from "@/pages/admin/AdminDisputes";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminProfile from "@/pages/admin/AdminProfile";
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,7 @@ const AppRoutes = () => (
       <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
       <Route path="/admin/disputes" element={<AdminDisputes />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route path="/admin/profile" element={<AdminProfile />} />
     </Route>
 
     <Route path="*" element={<NotFound />} />

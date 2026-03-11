@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useBooking } from "@/contexts/BookingContext";
+import { useBooking } from "@/contexts/useBookingHook";
 import { motion, AnimatePresence } from "framer-motion";
 import { hairstyleCategories, stylists } from "@/data/demo-data";
-import { matchStylists, MatchCriteria } from "@/lib/matchingEngine";
+import { matchStylists, MatchCriteria, MatchResult } from "@/lib/matchingEngine";
 import StylistMatchCard from "@/components/smart-match/StylistMatchCard";
 import MatchingLoader from "@/components/smart-match/MatchingLoader";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ const InstantMatchResultPage = () => {
   const { user, isAuthenticated } = useAuth();
   const { getRejectedInstantMatchForCustomer, clearRejectedInstantMatch } = useBooking();
   const [step, setStep] = useState<"loading" | "results" | "empty">("loading");
-  const [matchResult, setMatchResult] = useState<any>(null);
+  const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [rejectedStylistIds, setRejectedStylistIds] = useState<Set<string>>(new Set());
   const [rejectionReason, setRejectionReason] = useState("");
   const allHairstyles = hairstyleCategories.flatMap((cat) => cat.hairstyles);
@@ -35,36 +35,36 @@ const InstantMatchResultPage = () => {
     }
 
     // Start loading and search
-    performSearch(rejectedMatch);
-  }, [isAuthenticated, user?.id]);
+    const performSearch = async (rejectedMatch: { rejectedStylistIds: string[]; searchCriteria: { hairstyle: string; date: string; time: string; minPrice: number; maxPrice: number }; bookingId: string }) => {
+      setRejectedStylistIds(new Set(rejectedMatch.rejectedStylistIds));
+      setRejectionReason(`Previous stylist unavailable. Let's find you another match!`);
 
-  const performSearch = async (rejectedMatch: any) => {
-    setRejectedStylistIds(new Set(rejectedMatch.rejectedStylistIds));
-    setRejectionReason(`Previous stylist unavailable. Let's find you another match!`);
+      // Show loading animation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Show loading animation
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+      const criteria: MatchCriteria = {
+        hairstyle: rejectedMatch.searchCriteria.hairstyle,
+        date: rejectedMatch.searchCriteria.date,
+        time: rejectedMatch.searchCriteria.time,
+        minPrice: rejectedMatch.searchCriteria.minPrice,
+        maxPrice: rejectedMatch.searchCriteria.maxPrice,
+        customerPostalCode: user?.postalCode || "",
+      };
 
-    const criteria: MatchCriteria = {
-      hairstyle: rejectedMatch.searchCriteria.hairstyle,
-      date: rejectedMatch.searchCriteria.date,
-      time: rejectedMatch.searchCriteria.time,
-      minPrice: rejectedMatch.searchCriteria.minPrice,
-      maxPrice: rejectedMatch.searchCriteria.maxPrice,
-      customerPostalCode: user?.postalCode || "",
+      const results = matchStylists(criteria, stylists);
+      const filteredResults = results.filter(r => !rejectedMatch.rejectedStylistIds.includes(r.stylist.id));
+
+      if (filteredResults.length === 0) {
+        setStep("empty");
+        return;
+      }
+
+      setMatchResult(filteredResults[0]);
+      setStep("results");
     };
 
-    const results = matchStylists(criteria, stylists);
-    const filteredResults = results.filter(r => !rejectedMatch.rejectedStylistIds.includes(r.stylist.id));
-
-    if (filteredResults.length === 0) {
-      setStep("empty");
-      return;
-    }
-
-    setMatchResult(filteredResults[0]);
-    setStep("results");
-  };
+    performSearch(rejectedMatch);
+  }, [isAuthenticated, user?.id, user?.role, user?.postalCode, getRejectedInstantMatchForCustomer, navigate]);
 
   const handleFindAnother = async () => {
     if (!matchResult) return;

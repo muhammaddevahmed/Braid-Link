@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, HelpCircle, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { faqData as initialFaqs } from "@/data/demo-data";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +16,8 @@ const AdminFAQs = () => {
   const [editForm, setEditForm] = useState({ question: "", answer: "" });
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState({ question: "", answer: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   useEffect(() => {
     const storedFaqs = localStorage.getItem("braidbook_faqs");
@@ -46,13 +48,16 @@ const AdminFAQs = () => {
     saveFaqs([newFaq, ...faqs]);
     setAddForm({ question: "", answer: "" });
     setIsAdding(false);
-    toast.success("FAQ added successfully");
+    toast.success("FAQ added successfully", {
+      icon: "🎉",
+      description: "Your new FAQ is now live."
+    });
   };
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this FAQ?")) {
       saveFaqs(faqs.filter(f => f.id !== id));
-      toast.success("FAQ deleted");
+      toast.success("FAQ deleted successfully");
     }
   };
 
@@ -65,101 +70,298 @@ const AdminFAQs = () => {
     if (!isEditing) return;
     saveFaqs(faqs.map(f => f.id === isEditing ? { ...f, ...editForm } : f));
     setIsEditing(null);
-    toast.success("FAQ updated");
+    toast.success("FAQ updated successfully");
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(null);
+    setEditForm({ question: "", answer: "" });
+  };
+
+  const filteredFaqs = faqs.filter(faq => 
+    faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.5 } }),
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="font-serif text-2xl font-bold">FAQ Management</h2>
-        <button onClick={() => setIsAdding(true)} className="btn-cta text-sm flex items-center gap-1">
-          <Plus className="w-4 h-4" /> Add FAQ
-        </button>
-      </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+              <HelpCircle className="w-3.5 h-3.5" />
+              FAQ Management
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-bold text-primary">Frequently Asked Questions</h2>
+          <p className="text-detail mt-1 font-brand">Manage questions and answers for customers and stylists</p>
+        </div>
 
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsAdding(true)}
+          className="btn-cta text-sm px-6 py-3 rounded-xl flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> Add New FAQ
+        </motion.button>
+      </motion.div>
+
+      
+
+    
+
+      {/* Add FAQ Form */}
       <AnimatePresence>
         {isAdding && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-card rounded-xl p-6 border-2 border-primary/20 mb-6 overflow-hidden"
+            className="overflow-hidden"
           >
-            <h3 className="font-semibold mb-4 text-lg">Add New FAQ</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-1 block">Question</label>
-                <input
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 outline-none"
-                  value={addForm.question}
-                  onChange={e => setAddForm({ ...addForm, question: e.target.value })}
-                  placeholder="e.g. How do I book?"
-                />
+            <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6 border-2 border-primary/30 shadow-lg mb-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-semibold text-primary">Add New FAQ</h3>
+                  <p className="text-xs text-detail">Create a new question and answer pair</p>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Answer</label>
-                <textarea
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background h-24 resize-none focus:ring-2 focus:ring-primary/20 outline-none"
-                  value={addForm.answer}
-                  onChange={e => setAddForm({ ...addForm, answer: e.target.value })}
-                  placeholder="Enter the answer here..."
-                />
-              </div>
-              <div className="flex gap-2">
-                <button onClick={handleAdd} className="btn-primary text-sm">Save FAQ</button>
-                <button onClick={() => setIsAdding(false)} className="btn-outline text-sm">Cancel</button>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                    <HelpCircle className="w-4 h-4" /> Question
+                  </label>
+                  <input
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    value={addForm.question}
+                    onChange={e => setAddForm({ ...addForm, question: e.target.value })}
+                    placeholder="e.g. How do I book an appointment?"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-primary flex items-center gap-1.5">
+                    <Edit2 className="w-4 h-4" /> Answer
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    value={addForm.answer}
+                    onChange={e => setAddForm({ ...addForm, answer: e.target.value })}
+                    placeholder="Enter a detailed answer here..."
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleAdd}
+                    className="btn-primary px-6 py-3 rounded-xl text-sm flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" /> Save FAQ
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsAdding(false)}
+                    className="btn-outline px-6 py-3 rounded-xl text-sm flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" /> Cancel
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="space-y-4">
-        {faqs.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground bg-card rounded-xl border border-border">
-            No FAQs found. Add one to get started.
+      {/* FAQs List */}
+      {filteredFaqs.length === 0 ? (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-16 bg-card rounded-2xl border border-border/50"
+        >
+          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <HelpCircle className="w-8 h-8 text-primary" />
           </div>
-        )}
-        {faqs.map(faq => (
-          <div key={faq.id} className="bg-card rounded-xl p-5 border border-border hover:shadow-sm transition-all">
-            {isEditing === faq.id ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium mb-1 block text-muted-foreground">Question</label>
-                  <input
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background font-medium focus:ring-2 focus:ring-primary/20 outline-none"
-                    value={editForm.question}
-                    onChange={e => setEditForm({ ...editForm, question: e.target.value })}
-                  />
+          <h3 className="font-serif text-xl font-bold text-primary mb-2">No FAQs found</h3>
+          <p className="text-detail mb-6 max-w-sm mx-auto">
+            {searchTerm 
+              ? "No FAQs match your search criteria. Try different keywords."
+              : "You haven't added any FAQs yet. Click the 'Add New FAQ' button to get started."}
+          </p>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="text-primary font-semibold hover:underline"
+            >
+              Clear search
+            </button>
+          )}
+        </motion.div>
+      ) : (
+        <div className="space-y-3">
+          <AnimatePresence>
+            {filteredFaqs.map((faq, idx) => (
+              <motion.div
+                key={faq.id}
+                custom={idx}
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, y: -20 }}
+                layout
+                className="group"
+              >
+                <div className={`bg-card rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+                  isEditing === faq.id 
+                    ? "border-primary shadow-xl" 
+                    : "border-border/50 hover:border-primary/30 hover:shadow-lg"
+                }`}>
+                  {isEditing === faq.id ? (
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Edit2 className="w-5 h-5 text-primary" />
+                        </div>
+                        <h3 className="font-serif text-lg font-semibold text-primary">Edit FAQ</h3>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-primary">Question</label>
+                          <input
+                            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            value={editForm.question}
+                            onChange={e => setEditForm({ ...editForm, question: e.target.value })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-primary">Answer</label>
+                          <textarea
+                            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            value={editForm.answer}
+                            onChange={e => setEditForm({ ...editForm, answer: e.target.value })}
+                          />
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            onClick={saveEdit}
+                            className="btn-primary text-sm px-6 py-2.5 rounded-xl flex items-center gap-2"
+                          >
+                            <Save className="w-4 h-4" /> Save Changes
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="btn-outline text-sm px-6 py-2.5 rounded-xl flex items-center gap-2"
+                          >
+                            <X className="w-4 h-4" /> Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* FAQ Header - Clickable */}
+                      <div 
+                        className="p-6 cursor-pointer"
+                        onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <HelpCircle className="w-4 h-4 text-primary" />
+                              </div>
+                              <h3 className="font-serif font-semibold text-lg text-primary">{faq.question}</h3>
+                            </div>
+                            
+                            {/* Preview */}
+                            {expandedFaq !== faq.id && (
+                              <p className="text-sm text-detail ml-11 line-clamp-2">{faq.answer}</p>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEdit(faq);
+                              }}
+                              className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                              title="Edit FAQ"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(faq.id);
+                              }}
+                              className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                              title="Delete FAQ"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                            <motion.div
+                              animate={{ rotate: expandedFaq === faq.id ? 180 : 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <ChevronDown className="w-5 h-5 text-detail" />
+                            </motion.div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expanded Answer */}
+                      <AnimatePresence>
+                        {expandedFaq === faq.id && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-6 pb-6">
+                              <div className="border-t border-border pt-4">
+                                <div className="bg-primary/5 rounded-xl p-4 ml-11">
+                                  <p className="text-sm text-detail leading-relaxed">{faq.answer}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs font-medium mb-1 block text-muted-foreground">Answer</label>
-                  <textarea
-                    className="w-full px-3 py-2 rounded-lg border border-input bg-background h-24 resize-none focus:ring-2 focus:ring-primary/20 outline-none"
-                    value={editForm.answer}
-                    onChange={e => setEditForm({ ...editForm, answer: e.target.value })}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={saveEdit} className="btn-primary text-xs px-3 py-1.5 flex items-center gap-1"><Save className="w-3 h-3" /> Save Changes</button>
-                  <button onClick={() => setIsEditing(null)} className="btn-outline text-xs px-3 py-1.5 flex items-center gap-1"><X className="w-3 h-3" /> Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1">
-                  <h3 className="font-medium text-primary mb-2 text-lg">{faq.question}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button onClick={() => startEdit(faq)} className="p-2 hover:bg-muted rounded-lg text-primary transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>
-                  <button onClick={() => handleDelete(faq.id)} className="p-2 hover:bg-destructive/10 rounded-lg text-destructive transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+     
     </div>
   );
 };

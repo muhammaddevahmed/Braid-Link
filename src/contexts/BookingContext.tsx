@@ -27,7 +27,7 @@ interface BookingContextType {
   clearRejectedInstantMatch: (bookingId: string) => void;
 }
 
-const BookingContext = createContext<BookingContextType | undefined>(undefined);
+export const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
   const [bookings, setBookings] = useState<Booking[]>(() => {
@@ -96,7 +96,13 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
               {
                 bookingId,
                 customerId: booking.customerId,
-                searchCriteria: criteria,
+                searchCriteria: {
+                  hairstyle: criteria.hairstyle,
+                  date: booking.date,
+                  time: booking.time,
+                  minPrice: criteria.minPrice,
+                  maxPrice: criteria.maxPrice,
+                },
                 rejectedStylistIds: [booking.stylistId],
               }
             ]);
@@ -129,12 +135,4 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </BookingContext.Provider>
   );
-};
-
-export const useBooking = () => {
-  const context = useContext(BookingContext);
-  if (!context) {
-    throw new Error("useBooking must be used within a BookingProvider");
-  }
-  return context;
 };

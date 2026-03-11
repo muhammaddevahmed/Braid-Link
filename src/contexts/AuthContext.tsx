@@ -15,6 +15,8 @@ interface AuthContextType {
     phone: string;
     role: "customer" | "stylist";
     profileImage?: string;
+    city?: string;
+    country: "UK" | "USA";
   }) => boolean;
   isAuthenticated: boolean;
 }
@@ -54,6 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     phone: string;
     role: "customer" | "stylist";
     profileImage?: string;
+    city?: string;
+    country: "UK" | "USA";
   }): boolean => {
     if (userList.some((u) => u.email === data.email)) {
       // User already exists
@@ -66,6 +70,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: data.email,
       role: data.role,
       phone: data.phone,
+      city: data.city,
+      country: data.country,
       avatar:
         data.profileImage ||
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face",
