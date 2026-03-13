@@ -426,28 +426,11 @@ const StylistBookings = () => {
                                       <ClockIcon className="w-4 h-4" />
                                       Awaiting Payment
                                     </span>
-                                    <motion.button 
-                                      whileHover={{ scale: 1.02 }}
-                                      whileTap={{ scale: 0.98 }}
-                                      className="border border-accent text-accent px-4 py-3 rounded-xl text-sm font-medium hover:bg-accent/10 transition-all flex items-center gap-2"
-                                    >
-                                      <Send className="w-4 h-4" />
-                                      Send Reminder
-                                    </motion.button>
+                                    
                                   </div>
                                 )}
                                 
-                                {tab === "upcoming" && (
-                                  <motion.button 
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => handleMarkComplete(b.id)}
-                                    className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold text-sm px-6 py-3 rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg transition-all group"
-                                  >
-                                    <CheckCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                    Mark as Completed
-                                  </motion.button>
-                                )}
+                                
                                 
                                 {tab === "completed" && (
                                   <Link 

@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { subscriptionPlans } from "@/data/demo-data";
 import { toast } from "sonner";
 
-const steps = ["Personal Details", "Services", "Availability", "Review"];
+const steps = ["Personal Details", "Availability", "Review"];
 
 const BecomeStylistPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -27,7 +27,7 @@ const BecomeStylistPage = () => {
     location: "", 
     postalCode: "",
     country: "UK",
-    services: [{ name: "", price: "", duration: "" }],
+
     availability: {} as Record<string, { start: string; end: string }>,
   });
   const navigate = useNavigate();
@@ -71,14 +71,6 @@ const BecomeStylistPage = () => {
     }
     
     if (stepIndex === 1) {
-      form.services.forEach((service, index) => {
-        if (!service.name.trim()) newErrors[`service_name_${index}`] = "Service name required";
-        if (!service.price) newErrors[`service_price_${index}`] = "Price required";
-        if (!service.duration.trim()) newErrors[`service_duration_${index}`] = "Duration required";
-      });
-    }
-    
-    if (stepIndex === 2) {
       if (Object.keys(form.availability).length === 0) {
         newErrors.availability = "Please set at least one available day";
       }
@@ -125,19 +117,7 @@ const BecomeStylistPage = () => {
     }
   };
 
-  const addService = () => {
-    setForm({ 
-      ...form, 
-      services: [...form.services, { name: "", price: "", duration: "" }] 
-    });
-  };
 
-  const removeService = (index: number) => {
-    if (form.services.length > 1) {
-      const updated = form.services.filter((_, i) => i !== index);
-      setForm({ ...form, services: updated });
-    }
-  };
 
   if (!isAuthenticated) {
     return (
@@ -527,96 +507,10 @@ const BecomeStylistPage = () => {
                 </div>
               )}
 
-              {/* Step 1: Services - Premium redesign */}
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
-                      <Scissors className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Your Services</h2>
-                      <p className="text-sm text-muted-foreground">Add the braiding services you offer</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {form.services.map((svc, i) => (
-                      <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="relative p-5 bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl border border-accent/20 hover:border-accent/30 transition-all"
-                      >
-                        {form.services.length > 1 && (
-                          <button
-                            onClick={() => removeService(i)}
-                            className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-xs font-medium text-primary">Service Name</label>
-                            <input 
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_name_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
-                              value={svc.name} 
-                              onChange={(e) => { 
-                                const s = [...form.services]; 
-                                s[i].name = e.target.value; 
-                                setForm({ ...form, services: s }); 
-                              }} 
-                              placeholder="e.g. Box Braids" 
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <label className="text-xs font-medium text-primary">Price ($)</label>
-                            <input 
-                              type="number"
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_price_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
-                              value={svc.price} 
-                              onChange={(e) => { 
-                                const s = [...form.services]; 
-                                s[i].price = e.target.value; 
-                                setForm({ ...form, services: s }); 
-                              }} 
-                              placeholder="150" 
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <label className="text-xs font-medium text-primary">Duration</label>
-                            <input 
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_duration_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
-                              value={svc.duration} 
-                              onChange={(e) => { 
-                                const s = [...form.services]; 
-                                s[i].duration = e.target.value; 
-                                setForm({ ...form, services: s }); 
-                              }} 
-                              placeholder="e.g. 4-5 hours" 
-                            />
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                    
-                    <button 
-                      onClick={addService} 
-                      className="text-accent hover:text-accent/80 text-sm font-semibold flex items-center gap-1.5 mt-4 transition-colors group"
-                    >
-                      <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" /> Add another service
-                    </button>
-                  </div>
-                </div>
-              )}
 
-              {/* Step 2: Availability - Premium redesign */}
-              {step === 2 && (
+
+              {/* Step 1: Availability - Premium redesign */}
+              {step === 1 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
@@ -710,8 +604,8 @@ const BecomeStylistPage = () => {
                 </div>
               )}
 
-              {/* Step 3: Review - Premium redesign */}
-              {step === 3 && (
+              {/* Step 2: Review - Premium redesign */}
+              {step === 2 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
@@ -755,23 +649,7 @@ const BecomeStylistPage = () => {
                       </div>
                     </div>
                     
-                    <h3 className="font-serif font-semibold text-primary mb-4 flex items-center gap-2">
-                      <Scissors className="w-4 h-4 text-accent" />
-                      Services
-                    </h3>
-                    <div className="space-y-2 mb-6">
-                      {form.services.map((svc, i) => (
-                        <div key={i} className="flex items-center justify-between text-sm p-3 bg-background rounded-lg border border-border/50">
-                          <span className="font-medium text-primary">{svc.name || "—"}</span>
-                          <div className="flex items-center gap-4">
-                            <span className="text-accent font-semibold">${svc.price || "0"}</span>
-                            <span className="text-muted-foreground flex items-center gap-1">
-                              <Clock className="w-3 h-3" /> {svc.duration || "—"}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+
                     
                     <h3 className="font-serif font-semibold text-primary mb-4 flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-accent" />

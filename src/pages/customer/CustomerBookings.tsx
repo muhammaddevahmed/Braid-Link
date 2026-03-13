@@ -16,6 +16,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { PaymentDialog } from "@/components/PaymentDialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Star as StarIcon } from "lucide-react";
 
 const CustomerBookings = () => {
   const { user } = useAuth();
@@ -23,6 +25,8 @@ const CustomerBookings = () => {
   const [tab, setTab] = useState("upcoming");
   const [paymentBooking, setPaymentBooking] = useState<Booking | null>(null);
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
+  const [bookingToReview, setBookingToReview] = useState<string | null>(null);
+  const [reviewData, setReviewData] = useState<{ rating: number; comment: string }>({ rating: 5, comment: "" });
 
   if (!user) {
     return (
@@ -51,6 +55,26 @@ const CustomerBookings = () => {
   const handleCancelBooking = (bookingId: string) => {
     updateBookingStatus(bookingId, "cancelled");
     setExpandedBooking(null);
+  };
+
+  const handleMarkComplete = (bookingId: string) => {
+    updateBookingStatus(bookingId, "completed");
+    setBookingToReview(bookingId);
+    toast.success("Booking marked as completed! Please leave a review.");
+  };
+
+  const handleSubmitReview = (bookingId: string) => {
+    if (reviewData.comment.trim().length < 10) {
+      toast.error("Review must be at least 10 characters.");
+      return;
+    }
+    // Mock: save review to localStorage
+    const reviews = JSON.parse(localStorage.getItem("customerReviews") || "[]");
+    reviews.push({ bookingId, rating: reviewData.rating, comment: reviewData.comment, date: new Date().toISOString() });
+    localStorage.setItem("customerReviews", JSON.stringify(reviews));
+    setBookingToReview(null);
+    setReviewData({ rating: 5, comment: "" });
+    toast.success("Review submitted! Thank you.");
   };
 
   const getStatusPill = (status: string) => {
@@ -389,15 +413,73 @@ const CustomerBookings = () => {
                             transition={{ delay: 0.3 }}
                             className="flex flex-wrap gap-3 justify-end"
                           >
-                            {tab === "pending-approval" && (
-                              <div className="flex items-center gap-2 text-sm bg-amber-50 px-4 py-2 rounded-xl border border-amber-200">
-                                <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
-                                <span className="text-amber-700">Awaiting stylist approval</span>
-                              </div>
+                            {bookingToReview === b.id && (
+                              <motion.div 
+                                layout
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="w-full p-6 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-2xl space-y-4 mt-4"
+                              >
+                                <h4 className="font-semibold text-lg flex items-center gap-2 text-green-800">
+                                  <CheckCircle className="w-5 h-5" />
+                                  Leave your review
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                  {[1,2,3,4,5].map((r) => (
+                                    <button
+                                      key={r}
+                                      type="button"
+                                      className={cn(
+                                        "p-1 rounded-lg transition-all",
+                                        r <= reviewData.rating
+                                          ? "text-amber-400 bg-amber-100"
+                                          : "text-gray-300 hover:text-amber-400 hover:bg-amber-100"
+                                      )}
+                                      onClick={() => setReviewData((prev) => ({ ...prev, rating: r }))}
+                                    >
+                                      <StarIcon className="w-8 h-8 fill-current" />
+                                    </button>
+                                  ))}
+                                </div>
+                                <textarea
+                                  value={reviewData.comment}
+                                  onChange={(e) => setReviewData((prev) => ({ ...prev, comment: e.target.value }))}
+                                  placeholder="Tell us about your experience (min 10 characters)..."
+                                  className="w-full p-4 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent resize-vertical min-h-[80px] text-sm"
+                                  rows={3}
+                                />
+                                <div className="flex gap-3">
+                                  <button
+                                    onClick={() => setBookingToReview(null)}
+                                    className="px-6 py-3 border border-muted-foreground text-muted-foreground rounded-xl hover:bg-muted text-sm font-medium transition-colors"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    onClick={() => handleSubmitReview(b.id)}
+                                    disabled={reviewData.comment.trim().length < 10}
+                                    className="btn-cta"
+                                  >
+                                    Submit Review
+                                  </button>
+                                </div>
+                              </motion.div>
                             )}
-                            
-                            {tab === "approved" && (
-                              <>
+                          </motion.div>
+
+                          {/* Tab-specific notices and actions */}
+                          {tab === "pending-approval" && (
+                            <div className="flex items-center gap-2 text-sm bg-amber-50 px-4 py-2 rounded-xl border border-amber-200 mb-4">
+                              <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
+                              <span className="text-amber-700">Awaiting stylist approval</span>
+                            </div>
+                          )}
+
+                          {/* Action Buttons by Tab */}
+                          {tab === "approved" && (
+                            <>
+                              <div className="flex flex-wrap gap-3 mb-4">
                                 <motion.button
                                   whileHover={{ scale: 1.02 }}
                                   whileTap={{ scale: 0.98 }}
@@ -416,76 +498,75 @@ const CustomerBookings = () => {
                                   <XCircle className="w-4 h-4" />
                                   Cancel
                                 </motion.button>
-                              </>
-                            )}
-                            
-                            {tab === "upcoming" && (
-                              <>
-                                <motion.button
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  className="border-2 border-accent/30 text-accent px-6 py-3 rounded-xl text-sm font-medium hover:bg-accent/5 transition-all flex items-center gap-2 group"
-                                >
-                                  <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-                                  Reschedule
-                                </motion.button>
-                                <motion.button
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  onClick={() => handleCancelBooking(b.id)}
-                                  className="border-2 border-rose-200 text-rose-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-rose-50 transition-all flex items-center gap-2"
-                                >
-                                  <XCircle className="w-4 h-4" />
-                                  Cancel
-                                </motion.button>
-                              </>
-                            )}
-                            
-                            {tab === "completed" && (
-                              <>
-                                <motion.button
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
-                                >
-                                  <Star className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                  Leave Review
-                                </motion.button>
-                                <motion.button
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  className="border-2 border-border text-muted-foreground px-6 py-3 rounded-xl text-sm font-medium hover:bg-muted transition-all flex items-center gap-2"
-                                >
-                                  <Download className="w-4 h-4" />
-                                  Receipt
-                                </motion.button>
-                              </>
-                            )}
-                            
-                            {tab === "cancelled" && (
+                              </div>
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="flex items-center gap-2 text-xs text-muted-foreground bg-accent/5 p-3 rounded-xl border border-accent/10"
+                              >
+                                <Shield className="w-4 h-4 text-accent" />
+                                <span>Your payment is secure. You'll be charged only after stylist confirmation.</span>
+                                <BadgeCheck className="w-4 h-4 text-accent ml-auto" />
+                              </motion.div>
+                            </>
+                          )}
+                          
+                          {tab === "upcoming" && (
+                            <div className="flex flex-wrap gap-3 mb-4">
                               <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMarkComplete(b.id);
+                                }}
+                                className="btn-cta flex items-center gap-2 group"
+                              >
+                                <CheckCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                Mark Completed
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => handleCancelBooking(b.id)}
+                                className="border-2 border-rose-200 text-rose-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-rose-50 transition-all flex items-center gap-2"
+                              >
+                                <XCircle className="w-4 h-4" />
+                                Cancel
+                              </motion.button>
+                            </div>
+                          )}
+                          
+                          {tab === "completed" && (
+                            <div className="flex flex-wrap gap-3 mb-4">
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMarkComplete(b.id);
+                                }}
+                                className="btn-cta flex items-center gap-2 group"
+                              >
+                                <CheckCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                Review Stylist
+                              </motion.button>
+                              
+                            </div>
+                          )}
+                          
+                          {tab === "cancelled" && (
+                            <div className="flex justify-end mb-4">
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-8 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
                               >
                                 <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                                 Book Again
                               </motion.button>
-                            )}
-                          </motion.div>
-
-                          {/* Security Note */}
-                          {tab === "approved" && (
-                            <motion.div 
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.4 }}
-                              className="flex items-center gap-2 text-xs text-muted-foreground bg-accent/5 p-3 rounded-xl border border-accent/10"
-                            >
-                              <Shield className="w-4 h-4 text-accent" />
-                              <span>Your payment is secure. You'll be charged only after stylist confirmation.</span>
-                              <BadgeCheck className="w-4 h-4 text-accent ml-auto" />
-                            </motion.div>
+                            </div>
                           )}
                         </div>
                       </motion.div>
