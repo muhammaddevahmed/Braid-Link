@@ -4,7 +4,10 @@ import {
   MessageSquare, Shield, Clock, Mail, 
   ChevronDown, ChevronRight, AlertCircle, 
   CheckCircle, Archive, Trash2, Star,
-  Bell, User, Calendar, Tag, Filter
+  Bell, User, Calendar, Tag, Filter,
+  Inbox, Sparkles, Zap, BadgeCheck,
+  Reply, Eye, EyeOff, Bookmark,
+  Download, Share2, Flag
 } from "lucide-react";
 
 interface Message {
@@ -49,6 +52,7 @@ const CustomerMessages = () => {
   ]);
 
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>("all");
 
   const getMessageIcon = (type: string) => {
     switch(type) {
@@ -62,11 +66,21 @@ const CustomerMessages = () => {
 
   const getMessageColor = (type: string) => {
     switch(type) {
-      case "dispute": return "text-orange-600 bg-orange-100";
-      case "verification": return "text-green-600 bg-green-100";
-      case "booking": return "text-blue-600 bg-blue-100";
-      case "payment": return "text-purple-600 bg-purple-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "dispute": return "text-amber-600 bg-amber-100 border-amber-200";
+      case "verification": return "text-emerald-600 bg-emerald-100 border-emerald-200";
+      case "booking": return "text-blue-600 bg-blue-100 border-blue-200";
+      case "payment": return "text-purple-600 bg-purple-100 border-purple-200";
+      default: return "text-gray-600 bg-gray-100 border-gray-200";
+    }
+  };
+
+  const getMessageGradient = (type: string) => {
+    switch(type) {
+      case "dispute": return "from-amber-500/10 to-amber-500/5";
+      case "verification": return "from-emerald-500/10 to-emerald-500/5";
+      case "booking": return "from-blue-500/10 to-blue-500/5";
+      case "payment": return "from-purple-500/10 to-purple-500/5";
+      default: return "from-gray-500/10 to-gray-500/5";
     }
   };
 
@@ -86,7 +100,9 @@ const CustomerMessages = () => {
     }
   };
 
-  const filteredMessages = messages;
+  const filteredMessages = filter === "all" 
+    ? messages 
+    : messages.filter(m => m.type === filter);
 
   const unreadCount = messages.filter(m => !m.read).length;
 
@@ -115,53 +131,85 @@ const CustomerMessages = () => {
     }
   };
 
+  const messageTypes = [
+    { value: "all", label: "All Messages", icon: Inbox },
+    { value: "dispute", label: "Disputes", icon: AlertCircle },
+    { value: "verification", label: "Verification", icon: CheckCircle },
+    { value: "booking", label: "Bookings", icon: Calendar },
+    { value: "payment", label: "Payments", icon: Mail },
+  ];
+
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-accent/10 text-accent text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-              <Mail className="w-3.5 h-3.5" />
-              Inbox
-            </span>
+          <div className="flex items-center gap-2 mb-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+            >
+              <Inbox className="w-3.5 h-3.5" />
+              Message Center
+            </motion.div>
           </div>
-          <h2 className="font-serif text-3xl font-bold text-primary">Messages</h2>
-          <p className="text-detail mt-1 font-brand">
-            {unreadCount > 0 
-              ? `You have ${unreadCount} unread message${unreadCount > 1 ? 's' : ''}`
-              : 'No unread messages'
-            }
-          </p>
+          
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">Messages</h2>
+          
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Bell className="w-4 h-4 text-accent" />
+            <p className="text-sm">
+              {unreadCount > 0 
+                ? <span>You have <span className="font-semibold text-primary">{unreadCount}</span> unread message{unreadCount > 1 ? 's' : ''}</span>
+                : 'No unread messages'
+              }
+            </p>
+          </div>
         </div>
+
+       
       </motion.div>
-
-
 
       {/* Messages List */}
       {filteredMessages.length === 0 ? (
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-card rounded-2xl p-12 border border-border/50 text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-br from-card to-secondary/5 rounded-3xl p-12 border border-border/50 shadow-xl text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-            <MessageSquare className="w-8 h-8 text-accent" />
+          <div className="relative mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto">
+              <MessageSquare className="w-10 h-10 text-accent" />
+            </div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="absolute -top-2 -right-2 w-8 h-8 bg-accent rounded-xl flex items-center justify-center shadow-lg"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+            </motion.div>
           </div>
-          <h3 className="font-serif text-xl font-bold text-primary mb-2">No messages found</h3>
-          <p className="text-detail mb-6 max-w-sm mx-auto">
+          
+          <h3 className="font-serif text-2xl font-bold text-primary mb-3">No messages found</h3>
+          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
             Your inbox is empty. When you receive messages, they'll appear here.
           </p>
         </motion.div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filteredMessages.map((msg, idx) => {
             const Icon = getMessageIcon(msg.type);
             const colorClass = getMessageColor(msg.type);
+            const gradientClass = getMessageGradient(msg.type);
             const isSelected = selectedMessage === msg.id;
 
             return (
@@ -171,66 +219,86 @@ const CustomerMessages = () => {
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
-                className={`group rounded-2xl border-2 transition-all duration-300 overflow-hidden cursor-pointer ${
+                className={`group rounded-2xl border-2 transition-all duration-500 overflow-hidden cursor-pointer ${
                   isSelected 
-                    ? "border-accent shadow-xl" 
+                    ? "border-accent shadow-2xl" 
                     : msg.read 
-                      ? "border-border/50 hover:border-accent/30 hover:shadow-lg" 
-                      : "border-accent/30 bg-accent/5"
+                      ? "border-border/50 hover:border-accent/30 hover:shadow-xl" 
+                      : "border-accent/30 bg-gradient-to-r from-accent/5 to-transparent"
                 }`}
                 onClick={() => {
                   setSelectedMessage(isSelected ? null : msg.id);
                   if (!msg.read) markAsRead(msg.id);
                 }}
               >
-                {/* Message Header */}
-                <div className="p-5">
+                {/* Message Header - Premium */}
+                <div className={`p-6 ${isSelected ? 'bg-gradient-to-br ' + gradientClass : ''}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0`}>
+                      <div className={`w-14 h-14 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-serif font-semibold text-primary">{msg.from}</h3>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-serif font-semibold text-primary text-lg">{msg.from}</h3>
                           {!msg.read && (
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                              <span className="text-xs text-accent font-medium">New</span>
+                            </span>
                           )}
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            msg.type === "dispute" ? "bg-orange-100 text-orange-700" :
-                            msg.type === "verification" ? "bg-green-100 text-green-700" :
-                            msg.type === "booking" ? "bg-blue-100 text-blue-700" :
-                            "bg-gray-100 text-gray-700"
-                          }`}>
+                          <span className={`
+                            text-xs px-3 py-1 rounded-full border flex items-center gap-1
+                            ${msg.type === "dispute" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                              msg.type === "verification" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                              msg.type === "booking" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                              "bg-gray-50 text-gray-700 border-gray-200"}
+                          `}>
+                            <Icon className="w-3 h-3" />
                             {msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
                           </span>
                         </div>
-                        <p className="text-sm font-medium text-primary mb-1">{msg.subject}</p>
-                        <div className="flex items-center gap-3 text-xs text-detail">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
+                        
+                        <p className="text-base font-medium text-primary mb-2">{msg.subject}</p>
+                        
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1.5 bg-accent/5 px-2 py-1 rounded-full">
+                            <Calendar className="w-3.5 h-3.5 text-accent" />
                             {formatDate(msg.date)}
                           </span>
                           {msg.type === "dispute" && (
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1.5 bg-amber-50 px-2 py-1 rounded-full text-amber-700">
                               <AlertCircle className="w-3.5 h-3.5" />
                               Action Required
+                            </span>
+                          )}
+                          {msg.type === "verification" && msg.read && (
+                            <span className="flex items-center gap-1.5 bg-emerald-50 px-2 py-1 rounded-full text-emerald-700">
+                              <BadgeCheck className="w-3.5 h-3.5" />
+                              Verified
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {!msg.read && (
-                        <span className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full">
+                        <span className="bg-accent text-primary text-xs px-3 py-1.5 rounded-full font-medium shadow-sm">
                           New
                         </span>
                       )}
                       <motion.div
                         animate={{ rotate: isSelected ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
-                        className="text-detail"
+                        className={`
+                          w-8 h-8 rounded-full flex items-center justify-center
+                          ${isSelected 
+                            ? 'bg-accent text-primary' 
+                            : 'bg-accent/10 text-accent group-hover:bg-accent/20'
+                          }
+                        `}
                       >
                         <ChevronDown className="w-5 h-5" />
                       </motion.div>
@@ -238,7 +306,7 @@ const CustomerMessages = () => {
                   </div>
                 </div>
 
-                {/* Expanded Message Content */}
+                {/* Expanded Message Content - Premium */}
                 <AnimatePresence>
                   {isSelected && (
                     <motion.div
@@ -248,68 +316,35 @@ const CustomerMessages = () => {
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5">
-                        <div className="border-t border-border pt-4">
-                          <div className="bg-muted/30 rounded-xl p-4 mb-4">
-                            <p className="text-sm text-detail leading-relaxed whitespace-pre-line">
+                      <div className="px-6 pb-6">
+                        <div className="border-t border-border/50 pt-5">
+                          {/* Message Content */}
+                          <div className={`bg-gradient-to-br ${gradientClass} rounded-xl p-5 mb-5 border border-accent/10`}>
+                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                               {msg.message}
                             </p>
                           </div>
 
-                          {/* Action Buttons */}
+                          {/* Action Buttons - Premium */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <button 
-                                className="p-2 rounded-lg hover:bg-accent/10 text-accent transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Reply functionality
-                                }}
-                              >
-                                <MessageSquare className="w-4 h-4" />
-                              </button>
-                              <button 
-                                className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Archive functionality
-                                }}
-                              >
-                                <Archive className="w-4 h-4" />
-                              </button>
-                              <button 
-                                className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                              
+                              
+                              <motion.button 
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="w-10 h-10 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all flex items-center justify-center"
                                 onClick={(e) => deleteMessage(msg.id, e)}
                               >
                                 <Trash2 className="w-4 h-4" />
-                              </button>
+                              </motion.button>
                             </div>
 
-                            {msg.type === "dispute" && (
-                              <button 
-                                className="btn-cta text-xs px-4 py-2 rounded-lg flex items-center gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // View dispute details
-                                }}
-                              >
-                                View Dispute Details
-                                <ChevronRight className="w-3 h-3" />
-                              </button>
-                            )}
+                            
 
-                            {msg.type === "booking" && (
-                              <button 
-                                className="btn-primary text-xs px-4 py-2 rounded-lg flex items-center gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // View booking details
-                                }}
-                              >
-                                View Booking
-                                <ChevronRight className="w-3 h-3" />
-                              </button>
-                            )}
+                         
+
+                          
                           </div>
                         </div>
                       </div>
@@ -322,24 +357,7 @@ const CustomerMessages = () => {
         </div>
       )}
 
-      {/* Footer Stats */}
-      {filteredMessages.length > 0 && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex items-center justify-between text-xs text-detail pt-2"
-        >
-          <div className="flex items-center gap-2">
-            <Mail className="w-3.5 h-3.5 text-accent" />
-            <span>{filteredMessages.length} message{filteredMessages.length !== 1 ? 's' : ''}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Bell className="w-3.5 h-3.5 text-accent" />
-            <span>{unreadCount} unread</span>
-          </div>
-        </motion.div>
-      )}
+     
     </div>
   );
 };

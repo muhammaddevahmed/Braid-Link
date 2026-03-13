@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useNavigate } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Sparkles, Calendar, Clock, DollarSign, MapPin, 
@@ -31,6 +32,7 @@ const MatchModal = ({
   preSelectedTime = "",
   onStylistSelected
 }: MatchModalProps) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<"form" | "loading" | "results">("form");
   const [hairstyle, setHairstyle] = useState(preSelectedHairstyle);
   const [date, setDate] = useState(preSelectedDate);
@@ -199,11 +201,11 @@ const MatchModal = ({
     } else {
       // Navigate to booking page with all details
       const hairstyleId = allHairstyles.find(h => h.name === hairstyle)?.id || '';
-      window.location.href = `/booking?stylist=${selectedStylist.id}&style=${hairstyleId}&date=${date}&time=${time}&postal=${postalCode}&isInstantMatch=true`;
+      navigate(`/booking?stylist=${selectedStylist.id}&style=${hairstyleId}&date=${date}&time=${time}&postal=${postalCode}&isInstantMatch=true`);
     }
   };
 
-  // Book with adjusted time for closest match
+      // Book with adjusted time for closest match
   const handleBookWithAdjustedTime = (result: MatchResult, adjustedDate: string, adjustedTime: string) => {
     const selectedStylist = result.stylist;
     const service = result.matchedService || selectedStylist.services[0];
@@ -213,7 +215,7 @@ const MatchModal = ({
       onClose();
     } else {
       const hairstyleId = allHairstyles.find(h => h.name === hairstyle)?.id || '';
-      window.location.href = `/booking?stylist=${selectedStylist.id}&style=${hairstyleId}&date=${adjustedDate}&time=${adjustedTime}&postal=${postalCode}&isInstantMatch=true`;
+      navigate(`/booking?stylist=${selectedStylist.id}&style=${hairstyleId}&date=${adjustedDate}&time=${adjustedTime}&postal=${postalCode}&isInstantMatch=true`);
     }
   };
 
@@ -739,4 +741,3 @@ const MatchModal = ({
 };
 
 export default MatchModal;
-

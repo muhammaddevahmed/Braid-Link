@@ -132,4 +132,3 @@ const StylistMatchCard = ({
 };
  
 export default StylistMatchCard;
-

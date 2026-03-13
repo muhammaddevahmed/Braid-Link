@@ -5,9 +5,10 @@ import {
   Calendar, DollarSign, Star, TrendingUp, 
   Clock, Users, Award, Sparkles, ChevronRight,
   MessageCircle, ThumbsUp, Briefcase, Shield,
-  CheckCircle, AlertCircle, Zap, Heart, MapPin
+  CheckCircle, AlertCircle, Zap, Heart, MapPin,
+  BadgeCheck, Gift, Target, Coffee, Sun,
+  Bell, Settings, UserCheck, BarChart
 } from "lucide-react";
-
 import { useAuth } from "@/contexts/AuthContext";
 
 const StylistDashboard = () => {
@@ -46,58 +47,97 @@ const StylistDashboard = () => {
     }
   };
 
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Welcome Section */}
+    <div className="space-y-10">
+      {/* Welcome Section - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-2 mb-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+            >
               <Sparkles className="w-3.5 h-3.5" />
               Stylist Dashboard
-            </span>
+            </motion.div>
+            
             {s.status === 'active' && (
-              <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-                <CheckCircle className="w-3.5 h-3.5" />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, type: "spring" }}
+                className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 text-emerald-600 text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-emerald-200"
+              >
+                <BadgeCheck className="w-3.5 h-3.5" />
                 Verified Professional
-              </span>
+              </motion.div>
             )}
-             {user?.country && (
-              <span className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+            
+            {user?.country && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="bg-gradient-to-r from-blue-500/10 to-blue-500/5 text-blue-600 text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-blue-200"
+              >
                 <MapPin className="w-3.5 h-3.5" />
                 {user.country}
-              </span>
+              </motion.div>
             )}
           </div>
-          <h2 className="font-serif text-3xl font-bold text-primary">Welcome back, {user?.name}!</h2>
-          <p className="text-detail mt-1 font-brand">Here's what's happening with your business today</p>
+          
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">
+            {getGreeting()}, {user?.name?.split(' ')[0]}!
+          </h2>
+          
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <BarChart className="w-4 h-4 text-accent" />
+            <p className="text-sm">Here's what's happening with your business today</p>
+          </div>
         </div>
         
-        {/* Quick Actions */}
-        <div className="flex gap-2">
-          <Link 
-            to="/stylist/availability" 
-            className="btn-outline text-sm px-4 py-2.5 rounded-xl flex items-center gap-2"
-          >
-            <Calendar className="w-4 h-4" />
-            Availability
-          </Link>
-          <Link 
-            to="/stylist/bookings" 
-            className="btn-primary text-sm px-4 py-2.5 rounded-xl flex items-center gap-2"
-          >
-            <Briefcase className="w-4 h-4" />
-            Manage Bookings
-          </Link>
+        {/* Quick Actions - Premium */}
+        <div className="flex gap-3">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link 
+              to="/stylist/availability" 
+              className="border-2 border-accent/30 text-accent hover:bg-accent/5 font-semibold text-sm px-5 py-3 rounded-xl flex items-center gap-2 transition-all"
+            >
+              <Calendar className="w-4 h-4" />
+              Availability
+            </Link>
+          </motion.div>
+          
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link 
+              to="/stylist/bookings" 
+              className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold text-sm px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg hover:shadow-xl transition-all group"
+            >
+              <Briefcase className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              Manage Bookings
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Stats Grid - Premium redesign */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
         {[
           { 
             label: "Upcoming", 
@@ -105,8 +145,8 @@ const StylistDashboard = () => {
             icon: Calendar, 
             trend: "+2 from last week",
             color: "from-blue-500/20 to-blue-500/5",
-            iconColor: "text-blue-600",
-            bgColor: "bg-blue-100"
+            iconColor: "text-blue-500",
+            badge: "appointments"
           },
           { 
             label: "Pending Approval", 
@@ -114,8 +154,8 @@ const StylistDashboard = () => {
             icon: Clock, 
             trend: "Awaiting response",
             color: "from-yellow-500/20 to-yellow-500/5",
-            iconColor: "text-yellow-600",
-            bgColor: "bg-yellow-100"
+            iconColor: "text-yellow-500",
+            badge: "requests"
           },
           { 
             label: "Total Earnings", 
@@ -123,8 +163,8 @@ const StylistDashboard = () => {
             icon: DollarSign, 
             trend: "+$450 this month",
             color: "from-green-500/20 to-green-500/5",
-            iconColor: "text-green-600",
-            bgColor: "bg-green-100"
+            iconColor: "text-green-500",
+            badge: "lifetime"
           },
           { 
             label: "Rating", 
@@ -132,8 +172,8 @@ const StylistDashboard = () => {
             icon: Star, 
             trend: `${myReviews.length} reviews`,
             color: "from-purple-500/20 to-purple-500/5",
-            iconColor: "text-purple-600",
-            bgColor: "bg-purple-100"
+            iconColor: "text-purple-500",
+            badge: "excellent"
           },
         ].map((stat, i) => (
           <motion.div
@@ -142,47 +182,54 @@ const StylistDashboard = () => {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            whileHover={{ y: -4 }}
-            className="bg-card rounded-2xl p-5 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl"
+            whileHover={{ y: -6 }}
+            className="bg-card rounded-xl p-5 border border-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-xl group"
           >
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
-              <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
+              </div>
+              <TrendingUp className="w-4 h-4 text-accent/50 group-hover:text-accent transition-colors" />
             </div>
             <p className="text-3xl font-bold text-primary mb-1">{stat.value}</p>
-            <p className="text-sm text-detail flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5 text-primary" />
-              {stat.label}
-            </p>
-            <p className="text-xs text-detail mt-2 opacity-70">{stat.trend}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+                {stat.badge}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">{stat.trend}</p>
           </motion.div>
         ))}
       </div>
 
-    
-
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upcoming Appointments - Takes 2 columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Upcoming Appointments - Premium redesign */}
         <motion.div 
           className="lg:col-span-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="bg-card rounded-2xl p-6 border border-border/50 hover:shadow-xl transition-all duration-300">
+          <div className="bg-card rounded-2xl p-6 md:p-8 border border-border/50 hover:shadow-xl transition-all duration-300 h-full">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-semibold text-lg text-primary">Upcoming Appointments</h3>
-                  <p className="text-xs text-detail">Your scheduled services</p>
+                  <h3 className="font-serif font-semibold text-xl text-primary">Upcoming Appointments</h3>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                    <Zap className="w-3 h-3 text-accent" />
+                    Your scheduled services
+                  </p>
                 </div>
               </div>
+              
               <Link 
                 to="/stylist/bookings" 
-                className="text-primary hover:text-primary/80 text-sm font-semibold flex items-center gap-1 group"
+                className="text-accent hover:text-accent/80 text-sm font-semibold flex items-center gap-1 group bg-accent/5 px-3 py-2 rounded-lg hover:bg-accent/10 transition-all"
               >
                 View All
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -199,20 +246,23 @@ const StylistDashboard = () => {
                     transition={{ delay: i * 0.1 }}
                     className="group"
                   >
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:shadow-md">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Users className="w-5 h-5 text-primary" />
+                    <div className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-r from-accent/5 to-accent/0 border border-accent/10 hover:border-accent/30 transition-all duration-300 hover:shadow-lg">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                          <Users className="w-5 h-5 text-accent" />
                         </div>
                         <div>
-                          <h4 className="font-serif font-semibold text-primary">{b.service}</h4>
-                          <p className="text-sm text-detail">with {b.customerName}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <h4 className="font-serif font-semibold text-primary text-lg">{b.service}</h4>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <UserCheck className="w-3.5 h-3.5 text-accent" />
+                            with <span className="font-medium text-primary">{b.customerName}</span>
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-accent/10 text-accent px-3 py-1.5 rounded-full flex items-center gap-1.5">
                               <Calendar className="w-3 h-3" />
                               {formatDate(b.date)}
                             </span>
-                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="text-xs bg-accent/10 text-accent px-3 py-1.5 rounded-full flex items-center gap-1.5">
                               <Clock className="w-3 h-3" />
                               {b.time}
                             </span>
@@ -220,82 +270,107 @@ const StylistDashboard = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-xl font-bold text-primary">${b.price}</p>
-                        <p className="text-xs text-detail">+ fees</p>
+                        <p className="text-2xl font-bold text-primary">${b.price}</p>
+                        <p className="text-xs text-muted-foreground mt-1">+ fees</p>
+                        <span className="inline-block mt-2 text-[10px] bg-green-500/10 text-green-600 px-2 py-0.5 rounded-full">
+                          Confirmed
+                        </span>
                       </div>
                     </div>
                   </motion.div>
                 ))
               ) : (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                    <Calendar className="w-8 h-8 text-primary" />
+                <div className="text-center py-12 bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl border border-accent/10">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto mb-4">
+                    <Calendar className="w-8 h-8 text-accent" />
                   </div>
-                  <h4 className="font-serif font-semibold text-primary mb-1">No upcoming appointments</h4>
-                  <p className="text-sm text-detail mb-4">Your schedule is clear for now</p>
+                  <h4 className="font-serif font-semibold text-primary text-lg mb-2">No upcoming appointments</h4>
+                  <p className="text-sm text-muted-foreground mb-4">Your schedule is clear for now</p>
+                  <Link 
+                    to="/stylist/availability" 
+                    className="text-accent font-semibold text-sm hover:text-accent/80 transition-colors"
+                  >
+                    Update your availability →
+                  </Link>
                 </div>
               )}
             </div>
 
             {upcoming.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-border flex justify-between items-center">
-                <p className="text-xs text-detail">
-                  <span className="font-semibold text-primary">{upcoming.length}</span> total upcoming appointments
+              <div className="mt-6 pt-5 border-t border-border/50 flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-primary text-lg">{upcoming.length}</span> total upcoming appointments
                 </p>
                 <Link 
                   to="/stylist/availability" 
-                  className="text-xs text-primary hover:text-primary/80 font-semibold flex items-center gap-1"
+                  className="text-sm text-accent hover:text-accent/80 font-semibold flex items-center gap-1 group"
                 >
-                  Update availability <ChevronRight className="w-3 h-3" />
+                  Update availability <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             )}
           </div>
         </motion.div>
 
-       
+        {/* Right Column - Reviews & Stats */}
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+        
+
+         
+        </motion.div>
       </div>
 
-      {/* Quick Tips */}
+      {/* Quick Tips - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/20"
+        className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-2xl p-6 md:p-8 border border-accent/20 shadow-lg"
       >
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-            <Award className="w-6 h-6 text-white" />
+        <div className="flex items-start gap-5">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center flex-shrink-0 shadow-lg">
+            <Award className="w-7 h-7 text-primary" />
           </div>
           <div className="flex-1">
-            <h4 className="font-serif font-semibold text-primary mb-2">Tips to Grow Your Business</h4>
+            <h4 className="font-serif font-semibold text-xl text-primary mb-3">Tips to Grow Your Business</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                "Keep your availability up to date to get more bookings",
-                "Respond to booking requests quickly (within 2 hours)",
-                "Encourage clients to leave reviews after appointments"
+                { icon: Calendar, text: "Keep your availability up to date to get more bookings" },
+                { icon: Clock, text: "Respond to booking requests quickly (within 2 hours)" },
+                { icon: Star, text: "Encourage clients to leave reviews after appointments" }
               ].map((tip, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-detail">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  {tip}
-                </div>
+                <motion.div 
+                  key={i} 
+                  whileHover={{ y: -2 }}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-background/50 border border-accent/10 hover:border-accent/30 transition-all"
+                >
+                  <tip.icon className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-muted-foreground">{tip.text}</span>
+                </motion.div>
               ))}
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Trust Badge */}
+      {/* Trust Badge - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="flex items-center justify-center gap-2 text-xs text-detail"
+        className="flex items-center justify-center mt-8"
       >
-        <Shield className="w-3 h-3 text-primary" />
-        <span>Your dashboard is private and secure</span>
-        <Heart className="w-3 h-3 text-primary ml-2" />
-        <span>{totalClients} happy clients</span>
+        <div className="inline-flex items-center gap-3 text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-5 py-2.5 rounded-full border border-border/50 shadow-sm">
+          <Shield className="w-3.5 h-3.5 text-accent" />
+          <span>Your dashboard is private and secure</span>
+
+          <BadgeCheck className="w-3.5 h-3.5 text-accent" />
+        </div>
       </motion.div>
     </div>
   );

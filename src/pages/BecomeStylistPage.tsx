@@ -4,7 +4,8 @@ import {
   Check, ChevronRight, ChevronLeft, LogIn, Shield, X, 
   CreditCard, Clock, User, Mail, Phone, MapPin, Award,
   Scissors, Calendar, Star, Sparkles, AlertCircle, Info,
-  Briefcase, Hash, FileText, Plus, Trash2
+  Briefcase, Hash, FileText, Plus, Trash2, CheckCircle,
+  Globe, Clock3, BadgeCheck, Layers
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -145,15 +146,15 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring" }}
-            className="bg-card rounded-3xl p-8 border border-border/50 shadow-2xl"
+            transition={{ type: "spring", duration: 0.6 }}
+            className="bg-card rounded-3xl p-8 md:p-10 border border-border/50 shadow-2xl"
           >
-            <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto mb-6">
               <LogIn className="w-10 h-10 text-accent" />
             </div>
             <h2 className="font-serif text-2xl font-bold mb-3 text-primary">Authentication Required</h2>
-            <p className="text-detail mb-8">Please log in as a stylist to apply for a stylist account.</p>
-            <Link to="/login" className="btn-cta w-full block text-center py-4 rounded-xl text-base font-semibold">
+            <p className="text-muted-foreground mb-8">Please log in as a stylist to apply for a stylist account.</p>
+            <Link to="/login" className="bg-accent text-primary font-semibold w-full block text-center py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 text-base">
               Log In / Sign Up
             </Link>
           </motion.div>
@@ -169,19 +170,20 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-card rounded-3xl p-8 border border-border/50 shadow-2xl"
+            transition={{ type: "spring", duration: 0.6 }}
+            className="bg-card rounded-3xl p-8 md:p-10 border border-border/50 shadow-2xl"
           >
-            <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-destructive/10 to-destructive/5 flex items-center justify-center mx-auto mb-6">
               <X className="w-10 h-10 text-destructive" />
             </div>
             <h2 className="font-serif text-2xl font-bold mb-3 text-primary">Stylist Account Required</h2>
-            <p className="text-detail mb-8">You are currently logged in as a Customer. To become a stylist, you must create a separate Stylist account.</p>
+            <p className="text-muted-foreground mb-8">You are currently logged in as a Customer. To become a stylist, you must create a separate Stylist account.</p>
             <button 
               onClick={() => { 
                 localStorage.removeItem("braidbook_user"); 
                 window.location.href = "/signup"; 
               }} 
-              className="btn-cta w-full block text-center py-4 rounded-xl text-base font-semibold"
+              className="bg-accent text-primary font-semibold w-full block text-center py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 text-base"
             >
               Create Stylist Account
             </button>
@@ -198,24 +200,24 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring" }}
+            transition={{ type: "spring", duration: 0.6 }}
           >
             <div className="relative mb-8">
-              <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto">
                 <Clock className="w-12 h-12 text-accent" />
               </div>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="absolute -top-2 -right-2 w-8 h-8 bg-accent rounded-full flex items-center justify-center"
+                transition={{ delay: 0.3, type: "spring" }}
+                className="absolute -top-2 -right-2 w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-xl"
               >
-                <Sparkles className="w-4 h-4 text-primary" />
+                <Sparkles className="w-5 h-5 text-primary" />
               </motion.div>
             </div>
             <h1 className="font-serif text-3xl font-bold mb-3 text-primary">Application Pending</h1>
-            <p className="text-detail mb-8 font-brand">Your application is under review. This usually takes up to 48 hours. We'll notify you by email once it's approved.</p>
-            <Link to="/" className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-xl">
+            <p className="text-muted-foreground mb-8 text-lg">Your application is under review. This usually takes up to 48 hours. We'll notify you by email once it's approved.</p>
+            <Link to="/" className="bg-accent text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25">
               Back to Home
             </Link>
           </motion.div>
@@ -231,19 +233,19 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring" }}
+            transition={{ type: "spring", duration: 0.6 }}
           >
             <div className="relative mb-8">
-              <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                <Check className="w-12 h-12 text-green-600" />
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-green-500/10 to-green-500/5 flex items-center justify-center mx-auto">
+                <CheckCircle className="w-12 h-12 text-green-500" />
               </div>
             </div>
             <h1 className="font-serif text-3xl font-bold mb-3 text-primary">Application Approved!</h1>
-            <p className="text-detail mb-8">Congratulations! Your stylist profile is approved. Please log out and log back in to access your stylist dashboard.</p>
+            <p className="text-muted-foreground mb-8 text-lg">Congratulations! Your stylist profile is approved. Please log out and log back in to access your stylist dashboard.</p>
             <button onClick={() => {
               window.location.href = "/stylist/select-plan";
-            }} className="btn-cta inline-flex items-center gap-2 px-8 py-4 rounded-xl">
-              Select Plan & Start <ChevronRight className="w-4 h-4" />
+            }} className="bg-accent text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 group">
+              Select Plan & Start <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </motion.div>
         </div>
@@ -258,15 +260,16 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.6 }}
           >
             <div className="relative mb-8">
-              <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                <Shield className="w-12 h-12 text-green-600" />
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-green-500/10 to-green-500/5 flex items-center justify-center mx-auto">
+                <Shield className="w-12 h-12 text-green-500" />
               </div>
             </div>
             <h1 className="font-serif text-3xl font-bold mb-3 text-primary">Account Active</h1>
-            <p className="text-detail mb-8">Your stylist account is fully active and ready to go.</p>
-            <Link to="/stylist/dashboard" className="btn-primary w-full block text-center py-4 rounded-xl text-base">
+            <p className="text-muted-foreground mb-8 text-lg">Your stylist account is fully active and ready to go.</p>
+            <Link to="/stylist/dashboard" className="bg-accent text-primary font-semibold w-full block text-center py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 text-base">
               Go to Dashboard
             </Link>
           </motion.div>
@@ -282,28 +285,28 @@ const BecomeStylistPage = () => {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring" }}
+            transition={{ type: "spring", duration: 0.6 }}
           >
             <div className="relative mb-8">
-              <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                <Check className="w-12 h-12 text-green-600" />
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-green-500/10 to-green-500/5 flex items-center justify-center mx-auto">
+                <Check className="w-12 h-12 text-green-500" />
               </div>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="absolute -top-2 -right-2 w-8 h-8 bg-accent rounded-full flex items-center justify-center"
+                transition={{ delay: 0.3, type: "spring" }}
+                className="absolute -top-2 -right-2 w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-xl"
               >
-                <Sparkles className="w-4 h-4 text-primary" />
+                <Sparkles className="w-5 h-5 text-primary" />
               </motion.div>
             </div>
             <h1 className="font-serif text-3xl font-bold mb-3 text-primary">Application Submitted!</h1>
-            <p className="text-detail mb-8 font-brand">Thank you for applying. We'll review your application within 48 hours and notify you by email.</p>
+            <p className="text-muted-foreground mb-8 text-lg">Thank you for applying. We'll review your application within 48 hours and notify you by email.</p>
             <button 
               onClick={() => navigate("/")} 
-              className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-xl"
+              className="bg-accent text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 group"
             >
-              Back to Home
+              Back to Home <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </motion.div>
         </div>
@@ -312,61 +315,71 @@ const BecomeStylistPage = () => {
   }
 
   return (
-    <div className="py-12 bg-gradient-to-b from-background to-secondary/10 min-h-screen">
-      <div className="container mx-auto px-4 max-w-3xl">
-        {/* Header */}
+    <div className="py-16 md:py-20 bg-gradient-to-b from-background to-secondary/10 min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+        {/* Header - Premium redesign */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 backdrop-blur-sm text-accent text-xs font-medium px-5 py-2.5 rounded-full mb-4 border border-accent/30">
+          <div className="inline-flex items-center gap-2 bg-accent/10 backdrop-blur-sm text-accent text-xs font-medium px-5 py-2.5 rounded-full mb-6 border border-accent/20 shadow-lg">
             <Award className="w-4 h-4" />
             <span>Join Our Network</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-accent/50" />
+            <span className="w-1 h-1 rounded-full bg-accent/50" />
             <span>Step {step + 1} of {steps.length}</span>
           </div>
           
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-3">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
             Become a Stylist
           </h1>
-          <p className="text-detail max-w-xl mx-auto font-brand">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Join our network of talented braiding professionals and grow your business
           </p>
         </motion.div>
 
-        {/* Progress Bar */}
-        <div className="relative mb-10">
-          <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+        {/* Progress Bar - Premium redesign */}
+        <div className="relative mb-12">
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
             <motion.div
-              className="h-3 rounded-full bg-gradient-to-r from-accent to-cta"
+              className="h-2 rounded-full bg-gradient-to-r from-accent to-accent/80"
               initial={{ width: 0 }}
               animate={{ width: `${((step + 1) / steps.length) * 100}%` }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
           
-          {/* Step Indicators */}
-          <div className="flex justify-between mt-2 px-2">
+          {/* Step Indicators - Premium */}
+          <div className="flex justify-between mt-4 px-2">
             {steps.map((title, index) => (
               <div key={index} className="text-center">
-                <div className={`text-xs font-medium ${index <= step ? 'text-accent' : 'text-detail'}`}>
+                <div className={`text-xs font-medium transition-colors ${
+                  index <= step ? 'text-accent' : 'text-muted-foreground'
+                }`}>
                   Step {index + 1}
                 </div>
-                <div className="hidden sm:block text-xs text-detail mt-1">
+                <div className={`hidden sm:block text-sm font-medium mt-1 transition-colors ${
+                  index <= step ? 'text-primary' : 'text-muted-foreground'
+                }`}>
                   {title}
                 </div>
+                <div className={`w-2 h-2 rounded-full mt-2 mx-auto transition-all ${
+                  index < step ? 'bg-accent' : 
+                  index === step ? 'bg-accent ring-4 ring-accent/20 animate-pulse' : 
+                  'bg-muted'
+                }`} />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Main Form Card */}
+        {/* Main Form Card - Premium redesign */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-card rounded-3xl p-6 md:p-8 border border-border/50 shadow-2xl"
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="bg-card rounded-3xl p-6 md:p-8 lg:p-10 border border-border/50 shadow-2xl hover:shadow-3xl transition-shadow"
         >
           <AnimatePresence mode="wait">
             <motion.div 
@@ -376,16 +389,16 @@ const BecomeStylistPage = () => {
               exit={{ opacity: 0, x: -30 }} 
               transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
             >
-              {/* Step 0: Personal Details */}
+              {/* Step 0: Personal Details - Premium redesign */}
               {step === 0 && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                      <User className="w-5 h-5 text-accent" />
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                      <User className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl font-semibold text-primary">Personal Details</h2>
-                      <p className="text-sm text-detail">Tell us about yourself</p>
+                      <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Personal Details</h2>
+                      <p className="text-sm text-muted-foreground">Tell us about yourself</p>
                     </div>
                   </div>
                   
@@ -395,12 +408,12 @@ const BecomeStylistPage = () => {
                         <User className="w-4 h-4 text-accent" /> Full Name
                       </label>
                       <input 
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.name ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.name ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                         value={form.name} 
                         onChange={(e) => setForm({ ...form, name: e.target.value })} 
                         placeholder="Enter your full name"
                       />
-                      {errors.name && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
+                      {errors.name && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
                     </div>
                     
                     <div className="space-y-2">
@@ -409,12 +422,12 @@ const BecomeStylistPage = () => {
                       </label>
                       <input 
                         type="email"
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.email ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.email ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                         value={form.email} 
                         onChange={(e) => setForm({ ...form, email: e.target.value })} 
                         placeholder="your@email.com"
                       />
-                      {errors.email && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.email}</p>}
+                      {errors.email && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.email}</p>}
                     </div>
                     
                     <div className="space-y-2">
@@ -422,12 +435,12 @@ const BecomeStylistPage = () => {
                         <Phone className="w-4 h-4 text-accent" /> Phone
                       </label>
                       <input 
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.phone ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.phone ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                         value={form.phone} 
                         onChange={(e) => setForm({ ...form, phone: e.target.value })} 
                         placeholder="(555) 123-4567"
                       />
-                      {errors.phone && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
+                      {errors.phone && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
                     </div>
                     
                     <div className="space-y-2">
@@ -435,9 +448,10 @@ const BecomeStylistPage = () => {
                         <Briefcase className="w-4 h-4 text-accent" /> Experience Level
                       </label>
                       <select 
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.experience ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all appearance-none cursor-pointer`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.experience ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all appearance-none cursor-pointer`}
                         value={form.experience} 
                         onChange={(e) => setForm({ ...form, experience: e.target.value })}
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b87a5d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1rem', backgroundRepeat: 'no-repeat' }}
                       >
                         <option value="">Select experience level</option>
                         <option value="beginner">Beginner (Just Starting)</option>
@@ -446,7 +460,7 @@ const BecomeStylistPage = () => {
                         <option value="5-10">5-10 Years</option>
                         <option value="10+">10+ Years</option>
                       </select>
-                      {errors.experience && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.experience}</p>}
+                      {errors.experience && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.experience}</p>}
                     </div>
                   </div>
 
@@ -455,12 +469,12 @@ const BecomeStylistPage = () => {
                       <FileText className="w-4 h-4 text-accent" /> Bio
                     </label>
                     <textarea 
-                      className={`w-full px-4 py-3 rounded-xl border ${errors.bio ? 'border-destructive' : 'border-border'} bg-background text-sm h-28 resize-none focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                      className={`w-full px-4 py-3.5 rounded-xl border ${errors.bio ? 'border-destructive' : 'border-border'} bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                       value={form.bio} 
                       onChange={(e) => setForm({ ...form, bio: e.target.value })} 
                       placeholder="Tell potential clients about yourself, your experience, and your specialties..."
                     />
-                    {errors.bio && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.bio}</p>}
+                    {errors.bio && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.bio}</p>}
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -469,59 +483,60 @@ const BecomeStylistPage = () => {
                         <MapPin className="w-4 h-4 text-accent" /> Location
                       </label>
                       <input 
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.location ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.location ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                         value={form.location} 
                         onChange={(e) => setForm({ ...form, location: e.target.value })} 
                         placeholder="City, State"
                       />
-                      {errors.location && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.location}</p>}
+                      {errors.location && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.location}</p>}
                     </div>
                     
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-accent" /> Country
+                        <Globe className="w-4 h-4 text-accent" /> Country
                       </label>
                       <select 
-                        className={`w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all appearance-none cursor-pointer"
                         value={form.country} 
                         onChange={(e) => setForm({ ...form, country: e.target.value, postalCode: '' })}
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b87a5d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1rem', backgroundRepeat: 'no-repeat' }}
                       >
                         <option value="UK">United Kingdom</option>
                         <option value="US">United States</option>
                       </select>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 sm:col-span-2">
                       <label className="text-sm font-medium text-primary flex items-center gap-1.5">
                         <Hash className="w-4 h-4 text-accent" /> Postal Code
                       </label>
                       <input 
-                        className={`w-full px-4 py-3 rounded-xl border ${errors.postalCode ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+                        className={`w-full px-4 py-3.5 rounded-xl border ${errors.postalCode ? 'border-destructive' : 'border-border'} bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50`}
                         value={form.postalCode} 
                         onChange={(e) => setForm({ ...form, postalCode: e.target.value })} 
                         placeholder={form.country === 'US' ? 'Enter 5-digit zip code' : 'Enter UK postcode'}
                       />
-                      <p className="text-xs text-detail mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {form.country === 'US'
                           ? "US zip codes should be 5 digits (e.g., 90210)."
                           : "UK postcodes are alphanumeric (e.g., SW1A 0AA)."}
                       </p>
-                      {errors.postalCode && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.postalCode}</p>}
+                      {errors.postalCode && <p className="text-xs text-destructive flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" /> {errors.postalCode}</p>}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 1: Services */}
+              {/* Step 1: Services - Premium redesign */}
               {step === 1 && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Scissors className="w-5 h-5 text-accent" />
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                      <Scissors className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl font-semibold text-primary">Your Services</h2>
-                      <p className="text-sm text-detail">Add the braiding services you offer</p>
+                      <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Your Services</h2>
+                      <p className="text-sm text-muted-foreground">Add the braiding services you offer</p>
                     </div>
                   </div>
                   
@@ -532,14 +547,14 @@ const BecomeStylistPage = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="relative p-5 bg-accent/5 rounded-xl border border-accent/20"
+                        className="relative p-5 bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl border border-accent/20 hover:border-accent/30 transition-all"
                       >
                         {form.services.length > 1 && (
                           <button
                             onClick={() => removeService(i)}
-                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-white flex items-center justify-center hover:scale-110 transition-transform"
+                            className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                         
@@ -547,7 +562,7 @@ const BecomeStylistPage = () => {
                           <div className="space-y-2">
                             <label className="text-xs font-medium text-primary">Service Name</label>
                             <input 
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_name_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent`}
+                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_name_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
                               value={svc.name} 
                               onChange={(e) => { 
                                 const s = [...form.services]; 
@@ -562,7 +577,7 @@ const BecomeStylistPage = () => {
                             <label className="text-xs font-medium text-primary">Price ($)</label>
                             <input 
                               type="number"
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_price_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent`}
+                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_price_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
                               value={svc.price} 
                               onChange={(e) => { 
                                 const s = [...form.services]; 
@@ -576,7 +591,7 @@ const BecomeStylistPage = () => {
                           <div className="space-y-2">
                             <label className="text-xs font-medium text-primary">Duration</label>
                             <input 
-                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_duration_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent`}
+                              className={`w-full px-3 py-2.5 rounded-lg border ${errors[`service_duration_${i}`] ? 'border-destructive' : 'border-border'} bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all`}
                               value={svc.duration} 
                               onChange={(e) => { 
                                 const s = [...form.services]; 
@@ -592,35 +607,35 @@ const BecomeStylistPage = () => {
                     
                     <button 
                       onClick={addService} 
-                      className="text-accent hover:text-accent/80 text-sm font-semibold flex items-center gap-1.5 mt-2"
+                      className="text-accent hover:text-accent/80 text-sm font-semibold flex items-center gap-1.5 mt-4 transition-colors group"
                     >
-                      <Plus className="w-4 h-4" /> Add another service
+                      <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" /> Add another service
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Step 2: Availability */}
+              {/* Step 2: Availability - Premium redesign */}
               {step === 2 && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-accent" />
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl font-semibold text-primary">Availability Schedule</h2>
-                      <p className="text-sm text-detail">Set your weekly working hours</p>
+                      <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Availability Schedule</h2>
+                      <p className="text-sm text-muted-foreground">Set your weekly working hours</p>
                     </div>
                   </div>
                   
                   {errors.availability && (
-                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4" />
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-sm text-destructive flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       {errors.availability}
                     </div>
                   )}
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {days.map((day) => {
                       const isActive = !!form.availability[day];
                       return (
@@ -628,9 +643,13 @@ const BecomeStylistPage = () => {
                           key={day} 
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl border border-border hover:border-accent/30 transition-colors"
+                          className={`flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl border transition-all ${
+                            isActive 
+                              ? 'border-accent/30 bg-accent/5' 
+                              : 'border-border hover:border-accent/20 hover:bg-accent/2'
+                          }`}
                         >
-                          <label className="flex items-center gap-3 sm:w-36">
+                          <label className="flex items-center gap-3 sm:w-40">
                             <input 
                               type="checkbox" 
                               checked={isActive} 
@@ -640,7 +659,7 @@ const BecomeStylistPage = () => {
                                 else a[day] = { start: "09:00", end: "17:00" };
                                 setForm({ ...form, availability: a });
                               }} 
-                              className="w-4 h-4 rounded border-border text-accent focus:ring-accent"
+                              className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20 focus:ring-2"
                             />
                             <span className="text-sm font-medium text-primary">{day}</span>
                           </label>
@@ -664,9 +683,9 @@ const BecomeStylistPage = () => {
                                     } 
                                   } 
                                 })} 
-                                className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-accent"
+                                className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                               />
-                              <span className="text-sm text-detail">to</span>
+                              <span className="text-sm text-muted-foreground">to</span>
                               <input 
                                 type="time" 
                                 value={form.availability[day]?.end || "17:00"} 
@@ -680,7 +699,7 @@ const BecomeStylistPage = () => {
                                     } 
                                   } 
                                 })} 
-                                className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-accent"
+                                className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                               />
                             </motion.div>
                           )}
@@ -691,47 +710,47 @@ const BecomeStylistPage = () => {
                 </div>
               )}
 
-              {/* Step 3: Review */}
+              {/* Step 3: Review - Premium redesign */}
               {step === 3 && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Award className="w-5 h-5 text-accent" />
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                      <Award className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl font-semibold text-primary">Review & Submit</h2>
-                      <p className="text-sm text-detail">Please review your application details</p>
+                      <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Review & Submit</h2>
+                      <p className="text-sm text-muted-foreground">Please review your application details</p>
                     </div>
                   </div>
                   
-                  <div className="bg-accent/5 rounded-xl p-6 border border-accent/20">
+                  <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-6 border border-accent/20">
                     <h3 className="font-serif font-semibold text-primary mb-4 flex items-center gap-2">
                       <User className="w-4 h-4 text-accent" />
                       Personal Information
                     </h3>
                     <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-                      <div>
-                        <p className="text-detail text-xs">Name</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Name</p>
                         <p className="font-medium text-primary">{form.name || "—"}</p>
                       </div>
-                      <div>
-                        <p className="text-detail text-xs">Email</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Email</p>
                         <p className="font-medium text-primary">{form.email || "—"}</p>
                       </div>
-                      <div>
-                        <p className="text-detail text-xs">Phone</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Phone</p>
                         <p className="font-medium text-primary">{form.phone || "—"}</p>
                       </div>
-                      <div>
-                        <p className="text-detail text-xs">Experience</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Experience</p>
                         <p className="font-medium text-primary">{form.experience || "—"} years</p>
                       </div>
-                      <div>
-                        <p className="text-detail text-xs">Location</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Location</p>
                         <p className="font-medium text-primary">{form.location || "—"}</p>
                       </div>
-                      <div>
-                        <p className="text-detail text-xs">Postal Code</p>
+                      <div className="p-3 bg-background rounded-lg">
+                        <p className="text-muted-foreground text-xs mb-1">Postal Code</p>
                         <p className="font-medium text-primary">{form.postalCode || "—"}</p>
                       </div>
                     </div>
@@ -742,11 +761,13 @@ const BecomeStylistPage = () => {
                     </h3>
                     <div className="space-y-2 mb-6">
                       {form.services.map((svc, i) => (
-                        <div key={i} className="flex items-center justify-between text-sm p-2 bg-background rounded-lg">
+                        <div key={i} className="flex items-center justify-between text-sm p-3 bg-background rounded-lg border border-border/50">
                           <span className="font-medium text-primary">{svc.name || "—"}</span>
                           <div className="flex items-center gap-4">
-                            <span className="text-detail">${svc.price || "0"}</span>
-                            <span className="text-detail">{svc.duration || "—"}</span>
+                            <span className="text-accent font-semibold">${svc.price || "0"}</span>
+                            <span className="text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-3 h-3" /> {svc.duration || "—"}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -758,20 +779,20 @@ const BecomeStylistPage = () => {
                     </h3>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       {Object.entries(form.availability).map(([day, times]) => (
-                        <div key={day} className="flex items-center gap-2 p-2 bg-background rounded-lg">
-                          <span className="font-medium text-primary w-20">{day.slice(0,3)}</span>
-                          <span className="text-detail">{times.start} - {times.end}</span>
+                        <div key={day} className="flex items-center gap-2 p-3 bg-background rounded-lg border border-border/50">
+                          <span className="font-medium text-primary w-16">{day.slice(0,3)}</span>
+                          <span className="text-muted-foreground">{times.start} - {times.end}</span>
                         </div>
                       ))}
                       {Object.keys(form.availability).length === 0 && (
-                        <p className="text-detail">No availability set</p>
+                        <p className="text-muted-foreground col-span-2 text-center py-4">No availability set</p>
                       )}
                     </div>
                   </div>
                   
-                  <div className="bg-accent/10 rounded-xl p-4 flex items-start gap-3">
+                  <div className="bg-accent/10 rounded-xl p-5 flex items-start gap-3 border border-accent/20">
                     <Info className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-detail">
+                    <p className="text-sm text-muted-foreground">
                       By submitting this application, you agree to our Terms of Service and Privacy Policy. 
                       Your application will be reviewed within 48 hours.
                     </p>
@@ -781,15 +802,15 @@ const BecomeStylistPage = () => {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-border">
+          {/* Navigation Buttons - Premium redesign */}
+          <div className="flex justify-between mt-8 pt-6 border-t border-border/50">
             <motion.button 
               whileHover={{ x: -5 }}
               onClick={() => setStep(Math.max(0, step - 1))} 
               disabled={step === 0} 
-              className="flex items-center gap-2 text-sm font-medium text-detail hover:text-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors group"
             >
-              <ChevronLeft className="w-4 h-4" /> Back
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back
             </motion.button>
             
             {step < steps.length - 1 ? (
@@ -797,9 +818,9 @@ const BecomeStylistPage = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleNext}
-                className="bg-accent text-primary font-semibold rounded-xl px-8 py-3 transition-all flex items-center gap-2 text-sm hover:shadow-lg hover:shadow-accent/20"
+                className="bg-accent text-primary font-semibold rounded-xl px-8 py-3.5 transition-all flex items-center gap-2 text-sm hover:shadow-lg hover:shadow-accent/25 group"
               >
-                Continue <ChevronRight className="w-4 h-4" />
+                Continue <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </motion.button>
             ) : (
               <motion.button 
@@ -807,24 +828,24 @@ const BecomeStylistPage = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit} 
                 disabled={isSubmitting} 
-                className="btn-cta text-sm disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-xl flex items-center gap-2"
+                className="bg-accent text-primary font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl flex items-center gap-2 hover:shadow-lg hover:shadow-accent/25 group"
               >
                 {isSubmitting ? (
                   <>Submitting...</>
                 ) : (
-                  <>Submit Application <ChevronRight className="w-4 h-4" /></>
+                  <>Submit Application <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
                 )}
               </motion.button>
             )}
           </div>
         </motion.div>
         
-        {/* Trust Message */}
+        {/* Trust Message - Premium redesign */}
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-center text-xs text-detail mt-6 flex items-center justify-center gap-2"
+          className="text-center text-xs text-muted-foreground mt-8 flex items-center justify-center gap-2"
         >
           <Shield className="w-3 h-3 text-accent" />
           Your information is secure and will only be used for your stylist application.

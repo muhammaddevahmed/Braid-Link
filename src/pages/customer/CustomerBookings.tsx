@@ -8,7 +8,10 @@ import {
   Star, CreditCard, XCircle, Clock, Calendar, 
   MapPin, CheckCircle, AlertCircle, Sparkles, 
   ChevronRight, DollarSign, Scissors, User,
-  Download, RefreshCw, Shield, Award
+  Download, RefreshCw, Shield, Award,
+  BadgeCheck, Zap, Gift, TrendingUp,
+  Wallet, FileText, MessageCircle, Headphones,
+  Bell, BellRing, CheckCheck, X
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PaymentDialog } from "@/components/PaymentDialog";
@@ -24,15 +27,15 @@ const CustomerBookings = () => {
   if (!user) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-10 w-64" />
         <div className="flex gap-2 flex-wrap">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-10 w-28 rounded-xl" />
+            <Skeleton key={i} className="h-12 w-32 rounded-xl" />
           ))}
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-40 w-full rounded-2xl" />
           ))}
         </div>
       </div>
@@ -54,46 +57,58 @@ const CustomerBookings = () => {
     switch (status) {
       case "pending-approval": 
         return { 
-          bg: "bg-yellow-100", 
-          text: "text-yellow-800", 
+          bg: "bg-amber-50", 
+          text: "text-amber-700", 
           icon: Clock,
-          label: "Awaiting Approval" 
+          label: "Awaiting Approval",
+          border: "border-amber-200",
+          gradient: "from-amber-500/10 to-amber-500/5"
         };
       case "approved": 
         return { 
-          bg: "bg-blue-100", 
-          text: "text-blue-800", 
+          bg: "bg-blue-50", 
+          text: "text-blue-700", 
           icon: CheckCircle,
-          label: "Approved" 
+          label: "Approved",
+          border: "border-blue-200",
+          gradient: "from-blue-500/10 to-blue-500/5"
         };
       case "upcoming": 
         return { 
-          bg: "bg-green-100", 
-          text: "text-green-800", 
+          bg: "bg-green-50", 
+          text: "text-green-700", 
           icon: Calendar,
-          label: "Upcoming" 
+          label: "Upcoming",
+          border: "border-green-200",
+          gradient: "from-green-500/10 to-green-500/5"
         };
       case "completed": 
         return { 
-          bg: "bg-purple-100", 
-          text: "text-purple-800", 
+          bg: "bg-purple-50", 
+          text: "text-purple-700", 
           icon: Star,
-          label: "Completed" 
+          label: "Completed",
+          border: "border-purple-200",
+          gradient: "from-purple-500/10 to-purple-500/5"
         };
       case "rejected":
       case "cancelled": 
         return { 
-          bg: "bg-red-100", 
-          text: "text-red-800", 
+          bg: "bg-rose-50", 
+          text: "text-rose-700", 
           icon: AlertCircle,
-          label: "Cancelled" 
+          label: "Cancelled",
+          border: "border-rose-200",
+          gradient: "from-rose-500/10 to-rose-500/5"
         };
       default: 
         return { 
-          bg: "bg-gray-100", 
-          text: "text-gray-800", 
+          bg: "bg-gray-50", 
+          text: "text-gray-700", 
           icon: AlertCircle,
-          label: status 
+          label: status,
+          border: "border-gray-200",
+          gradient: "from-gray-500/10 to-gray-500/5"
         };
     }
   };
@@ -117,6 +132,12 @@ const CustomerBookings = () => {
 
   const counts = getBookingCounts();
 
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }),
+  };
+
   return (
     <div className="space-y-8">
       <PaymentDialog
@@ -128,50 +149,77 @@ const CustomerBookings = () => {
         }}
       />
 
-      {/* Header with Stats */}
+      {/* Header with Stats - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <h2 className="font-serif text-3xl font-bold text-primary">My Bookings</h2>
-          <p className="text-detail mt-1 font-brand">Manage your appointments and payments</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20">
+              <Calendar className="w-3.5 h-3.5" />
+              Booking Management
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary">My Bookings</h2>
+          <p className="text-muted-foreground mt-1 flex items-center gap-1">
+            <Zap className="w-4 h-4 text-accent" />
+            Manage your appointments and payments
+          </p>
         </div>
         
        
       </motion.div>
 
-      {/* Tabs with Icons */}
+      {/* Tabs with Icons - Premium redesign */}
       <motion.div 
-        className="flex gap-2 flex-wrap border-b border-border pb-2"
+        className="flex gap-2 flex-wrap border-b border-border/50 pb-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
-        {statusTabs.map((t) => {
+        {statusTabs.map((t, index) => {
           const status = getStatusPill(t);
           const StatusIcon = status.icon;
+          const isActive = tab === t;
+          
           return (
-            <button 
+            <motion.button 
               key={t} 
               onClick={() => setTab(t)} 
+              custom={index}
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
               className={cn(
-                "px-5 py-2.5 rounded-t-xl text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                tab === t 
-                  ? "bg-primary text-primary-foreground shadow-md border-b-2 border-accent" 
-                  : "bg-transparent hover:bg-muted/50 text-detail border-b-2 border-transparent"
+                "px-5 py-3 rounded-t-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 relative group",
+                isActive 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-primary hover:bg-muted/30"
               )}
             >
-              <StatusIcon className="w-4 h-4" />
+              <StatusIcon className={cn("w-4 h-4 transition-transform", isActive ? "text-accent" : "group-hover:text-accent group-hover:scale-110")} />
               <span className="capitalize">{t.replace('-', ' ')}</span>
               <span className={cn(
-                "ml-1 text-xs px-1.5 py-0.5 rounded-full",
-                tab === t ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-detail"
+                "ml-1 text-xs px-2 py-0.5 rounded-full transition-all",
+                isActive 
+                  ? "bg-accent/20 text-accent border border-accent/30" 
+                  : "bg-muted text-muted-foreground group-hover:bg-accent/10 group-hover:text-accent"
               )}>
                 {counts[t]}
               </span>
-            </button>
+              
+              {/* Active indicator line */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeTabLine"
+                  className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-accent/0 via-accent to-accent/0"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </motion.button>
           );
         })}
       </motion.div>
@@ -195,37 +243,45 @@ const CustomerBookings = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: idx * 0.05 }}
                   className={cn(
-                    "bg-card rounded-2xl border transition-all duration-300 overflow-hidden",
-                    isExpanded ? "border-accent shadow-xl" : "border-border/50 hover:border-accent/30 hover:shadow-lg"
+                    "bg-card rounded-2xl border-2 transition-all duration-500 overflow-hidden group",
+                    isExpanded 
+                      ? "border-accent shadow-2xl" 
+                      : "border-border/50 hover:border-accent/30 hover:shadow-xl"
                   )}
                 >
-                  {/* Main Booking Row */}
-                  <div className="p-5 cursor-pointer" onClick={() => setExpandedBooking(isExpanded ? null : b.id)}>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  {/* Main Booking Row - Premium redesign */}
+                  <div 
+                    className="p-6 cursor-pointer relative" 
+                    onClick={() => setExpandedBooking(isExpanded ? null : b.id)}
+                  >
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           <img 
                             src={stylist?.photo} 
                             alt={stylist?.name} 
-                            className="w-14 h-14 rounded-xl object-cover ring-2 ring-accent/20"
+                            className="w-16 h-16 rounded-xl object-cover ring-2 ring-accent/20 group-hover:ring-accent/40 transition-all"
                           />
                           {stylist?.featured && (
-                            <div className="absolute -top-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full flex items-center justify-center shadow-lg">
                               <Award className="w-3 h-3 text-primary" />
                             </div>
                           )}
                         </div>
                         <div>
-                          <h3 className="font-serif font-semibold text-primary text-lg">{b.service}</h3>
-                          <p className="text-sm text-detail flex items-center gap-1 mt-1">
-                            <User className="w-3.5 h-3.5" /> with {b.stylistName}
+                          <h3 className="font-serif font-semibold text-primary text-lg md:text-xl">{b.service}</h3>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <User className="w-3.5 h-3.5" /> with <span className="font-medium text-primary">{b.stylistName}</span>
                           </p>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-detail">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5" /> {formatDate(b.date)}
+                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1.5 bg-accent/5 px-2 py-1 rounded-full">
+                              <Calendar className="w-3.5 h-3.5 text-accent" /> {formatDate(b.date)}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5" /> {b.time}
+                            <span className="flex items-center gap-1.5 bg-accent/5 px-2 py-1 rounded-full">
+                              <Clock className="w-3.5 h-3.5 text-accent" /> {b.time}
                             </span>
                           </div>
                         </div>
@@ -233,19 +289,24 @@ const CustomerBookings = () => {
 
                       <div className="flex items-center gap-4 sm:flex-row-reverse">
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-primary">${b.price}</p>
+                          <p className="text-3xl font-bold text-primary">${b.price}</p>
                           <div className={cn(
-                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold",
-                            status.bg, status.text
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border mt-1",
+                            status.bg, status.text, status.border
                           )}>
                             <StatusIcon className="w-3.5 h-3.5" />
                             {status.label}
                           </div>
                         </div>
                         <motion.div
-                          animate={{ rotate: isExpanded ? 180 : 0 }}
+                          animate={{ rotate: isExpanded ? 90 : 0 }}
                           transition={{ duration: 0.3 }}
-                          className="text-detail"
+                          className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                            isExpanded 
+                              ? "bg-accent text-primary" 
+                              : "bg-accent/10 text-accent group-hover:bg-accent/20"
+                          )}
                         >
                           <ChevronRight className="w-5 h-5" />
                         </motion.div>
@@ -253,7 +314,7 @@ const CustomerBookings = () => {
                     </div>
                   </div>
 
-                  {/* Expanded Details */}
+                  {/* Expanded Details - Premium redesign */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
@@ -261,131 +322,170 @@ const CustomerBookings = () => {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="border-t border-border"
+                        className="border-t border-border/50"
                       >
-                        <div className="p-5 bg-muted/20 space-y-4">
-                          {/* Service Details */}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="p-6 bg-gradient-to-br from-muted/20 to-transparent space-y-5">
+                          {/* Service Details Grid */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {[
-                              { icon: Scissors, label: "Service", value: b.service },
-                              { icon: Calendar, label: "Date", value: formatDate(b.date) },
-                              { icon: Clock, label: "Time", value: b.time },
-                              { icon: DollarSign, label: "Price", value: `$${b.price}` },
+                              { icon: Scissors, label: "Service", value: b.service, color: "from-purple-500/10 to-purple-500/5" },
+                              { icon: Calendar, label: "Date", value: formatDate(b.date), color: "from-blue-500/10 to-blue-500/5" },
+                              { icon: Clock, label: "Time", value: b.time, color: "from-green-500/10 to-green-500/5" },
+                              { icon: DollarSign, label: "Price", value: `$${b.price}`, color: "from-amber-500/10 to-amber-500/5" },
                             ].map((item, i) => (
-                              <div key={i} className="bg-card rounded-xl p-3 border border-border/50">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <item.icon className="w-3.5 h-3.5 text-accent" />
-                                  <span className="text-xs text-detail">{item.label}</span>
+                              <motion.div 
+                                key={i} 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.05 }}
+                                className={`bg-gradient-to-br ${item.color} rounded-xl p-4 border border-accent/10 hover:shadow-md transition-all`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                                    <item.icon className="w-3.5 h-3.5 text-accent" />
+                                  </div>
+                                  <span className="text-xs text-muted-foreground">{item.label}</span>
                                 </div>
                                 <p className="text-sm font-semibold text-primary">{item.value}</p>
-                              </div>
+                              </motion.div>
                             ))}
                           </div>
 
-                          {/* Stylist Info */}
+                          {/* Stylist Info - Premium */}
                           {stylist && (
-                            <div className="bg-card rounded-xl p-4 border border-border/50">
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.2 }}
+                              className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-5 border border-accent/20"
+                            >
                               <h4 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
-                                <User className="w-4 h-4 text-accent" />
+                                <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                                  <User className="w-3.5 h-3.5 text-accent" />
+                                </div>
                                 About {stylist.name}
+                                {stylist.rating >= 4.8 && (
+                                  <BadgeCheck className="w-4 h-4 text-accent ml-2" />
+                                )}
                               </h4>
-                              <p className="text-sm text-detail mb-3">{stylist.bio}</p>
+                              <p className="text-sm text-muted-foreground mb-3">{stylist.bio}</p>
                               <div className="flex items-center gap-4 text-xs">
-                                <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1.5 bg-accent/10 px-2 py-1 rounded-full">
                                   <Star className="w-3.5 h-3.5 fill-accent text-accent" />
                                   {stylist.rating} ({stylist.reviewCount} reviews)
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-3.5 h-3.5" />
+                                <span className="flex items-center gap-1.5 bg-accent/10 px-2 py-1 rounded-full">
+                                  <MapPin className="w-3.5 h-3.5 text-accent" />
                                   {stylist.location}
                                 </span>
                               </div>
-                            </div>
+                            </motion.div>
                           )}
 
-                          {/* Action Buttons */}
-                          <div className="flex flex-wrap gap-3 justify-end">
+                          {/* Action Buttons - Premium */}
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="flex flex-wrap gap-3 justify-end"
+                          >
                             {tab === "pending-approval" && (
-                              <div className="flex items-center gap-2 text-sm text-detail bg-yellow-50 px-4 py-2 rounded-xl border border-yellow-200">
-                                <Clock className="w-4 h-4 text-yellow-600" />
-                                Awaiting stylist approval
+                              <div className="flex items-center gap-2 text-sm bg-amber-50 px-4 py-2 rounded-xl border border-amber-200">
+                                <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
+                                <span className="text-amber-700">Awaiting stylist approval</span>
                               </div>
                             )}
                             
                             {tab === "approved" && (
                               <>
-                                <button
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                   onClick={() => setPaymentBooking(b)}
-                                  className="btn-cta text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 group"
+                                  className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
                                 >
                                   <CreditCard className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                   Pay Now
-                                </button>
-                                <button
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                   onClick={() => handleCancelBooking(b.id)}
-                                  className="border border-destructive text-destructive px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-destructive hover:text-destructive-foreground transition-all flex items-center gap-2"
+                                  className="border-2 border-rose-200 text-rose-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-rose-50 transition-all flex items-center gap-2"
                                 >
                                   <XCircle className="w-4 h-4" />
                                   Cancel
-                                </button>
+                                </motion.button>
                               </>
                             )}
                             
                             {tab === "upcoming" && (
                               <>
-                                <Link
-                                  to={`/reschedule?booking=${b.id}`}
-                                  className="border border-accent text-accent px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-accent/10 transition-all flex items-center gap-2"
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="border-2 border-accent/30 text-accent px-6 py-3 rounded-xl text-sm font-medium hover:bg-accent/5 transition-all flex items-center gap-2 group"
                                 >
-                                  <RefreshCw className="w-4 h-4" />
+                                  <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                                   Reschedule
-                                </Link>
-                                <button
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                   onClick={() => handleCancelBooking(b.id)}
-                                  className="border border-destructive text-destructive px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-destructive hover:text-destructive-foreground transition-all flex items-center gap-2"
+                                  className="border-2 border-rose-200 text-rose-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-rose-50 transition-all flex items-center gap-2"
                                 >
                                   <XCircle className="w-4 h-4" />
                                   Cancel
-                                </button>
+                                </motion.button>
                               </>
                             )}
                             
                             {tab === "completed" && (
                               <>
-                                <Link
-                                  to={`/review-stylist?stylist=${b.stylistId}&service=${encodeURIComponent(b.service)}&booking=${b.id}`}
-                                  className="btn-primary text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 group"
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
                                 >
                                   <Star className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                   Leave Review
-                                </Link>
-                                <button
-                                  onClick={() => {/* Download receipt */}}
-                                  className="border border-border text-detail px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-all flex items-center gap-2"
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="border-2 border-border text-muted-foreground px-6 py-3 rounded-xl text-sm font-medium hover:bg-muted transition-all flex items-center gap-2"
                                 >
                                   <Download className="w-4 h-4" />
                                   Receipt
-                                </button>
+                                </motion.button>
                               </>
                             )}
                             
                             {tab === "cancelled" && (
-                              <button
-                                onClick={() => {/* Rebook */}}
-                                className="btn-cta text-sm px-6 py-2.5 rounded-xl flex items-center gap-2"
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all"
                               >
-                                <RefreshCw className="w-4 h-4" />
+                                <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                                 Book Again
-                              </button>
+                              </motion.button>
                             )}
-                          </div>
+                          </motion.div>
 
                           {/* Security Note */}
                           {tab === "approved" && (
-                            <div className="flex items-center gap-2 text-xs text-detail bg-accent/5 p-3 rounded-xl border border-accent/10">
-                              <Shield className="w-3.5 h-3.5 text-accent" />
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.4 }}
+                              className="flex items-center gap-2 text-xs text-muted-foreground bg-accent/5 p-3 rounded-xl border border-accent/10"
+                            >
+                              <Shield className="w-4 h-4 text-accent" />
                               <span>Your payment is secure. You'll be charged only after stylist confirmation.</span>
-                            </div>
+                              <BadgeCheck className="w-4 h-4 text-accent ml-auto" />
+                            </motion.div>
                           )}
                         </div>
                       </motion.div>
@@ -396,33 +496,42 @@ const CustomerBookings = () => {
             })
           ) : (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16 bg-card rounded-2xl border border-border/50"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-20 bg-gradient-to-br from-card to-secondary/5 rounded-3xl border border-border/50 shadow-xl"
             >
-              <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                {tab === "completed" && <Star className="w-8 h-8 text-accent" />}
-                {tab === "cancelled" && <XCircle className="w-8 h-8 text-accent" />}
-                {tab === "pending-approval" && <Clock className="w-8 h-8 text-accent" />}
-                {tab === "approved" && <CheckCircle className="w-8 h-8 text-accent" />}
-                {tab === "upcoming" && <Calendar className="w-8 h-8 text-accent" />}
+              <div className="relative mb-6">
+                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto">
+                  {tab === "completed" && <Star className="w-10 h-10 text-accent" />}
+                  {tab === "cancelled" && <X className="w-10 h-10 text-accent" />}
+                  {tab === "pending-approval" && <Clock className="w-10 h-10 text-accent" />}
+                  {tab === "approved" && <CheckCircle className="w-10 h-10 text-accent" />}
+                  {tab === "upcoming" && <Calendar className="w-10 h-10 text-accent" />}
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-accent" />
+                </div>
               </div>
-              <h3 className="font-serif text-xl font-bold text-primary mb-2">
+              
+              <h3 className="font-serif text-2xl font-bold text-primary mb-3">
                 No {tab.replace('-', ' ')} bookings
               </h3>
-              <p className="text-detail mb-6 max-w-sm mx-auto">
+              
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 {tab === "upcoming" && "You don't have any upcoming appointments. Book a stylist to get started!"}
                 {tab === "completed" && "No completed bookings yet. Your past appointments will appear here."}
                 {tab === "cancelled" && "No cancelled bookings. When you cancel an appointment, it will appear here."}
                 {tab === "pending-approval" && "No pending approvals. Bookings waiting for stylist confirmation will show here."}
                 {tab === "approved" && "No approved bookings. Approved bookings awaiting payment will appear here."}
               </p>
+              
               {tab === "upcoming" && (
                 <Link 
                   to="/find-stylist" 
-                  className="btn-cta inline-flex items-center gap-2 px-6 py-3 rounded-xl"
+                  className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all group"
                 >
-                  Find a Stylist <ChevronRight className="w-4 h-4" />
+                  Find a Stylist 
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               )}
             </motion.div>

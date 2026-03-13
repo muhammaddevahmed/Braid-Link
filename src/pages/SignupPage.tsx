@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, Eye, EyeOff, User, Phone, User as UserIcon,
   Sparkles, Shield, CheckCircle, AlertCircle, Camera, ArrowRight,
-  Crown, Scissors, Calendar, Star, MapPin, Hash
+  Crown, Scissors, Calendar, Star, MapPin, Hash,
+  BadgeCheck, Zap, Heart, Globe, Clock, Award
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -174,59 +175,68 @@ const SignupPage = () => {
     return "bg-green-500";
   };
 
+  const getPasswordStrengthText = () => {
+    if (passwordStrength < 50) return "Weak password";
+    if (passwordStrength < 75) return "Medium password";
+    return "Strong password";
+  };
+
   return (
-    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-b from-background to-secondary/10">
-      {/* Animated Background */}
+    <div className="relative min-h-screen flex items-center justify-center py-16 px-4 bg-gradient-to-b from-background to-secondary/10">
+      {/* Animated Background - Refined */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-accent/5 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-accent/5 rounded-full blur-[120px] animate-pulse delay-1000" />
-        <div className="absolute inset-0 opacity-5" 
-             style={{ backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
+        <div className="absolute top-20 left-20 w-96 h-96 bg-accent/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[140px] animate-pulse delay-1000" />
+        <div className="absolute inset-0 opacity-[0.03]" 
+             style={{ backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
       </div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.6 }}
         className="w-full max-w-md relative z-10"
       >
-        {/* Header */}
+        {/* Header - Premium redesign */}
         <div className="text-center mb-8">
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 bg-accent/10 backdrop-blur-sm text-accent text-xs font-medium px-5 py-2.5 rounded-full mb-4 border border-accent/30"
+            transition={{ delay: 0.1, type: "spring" }}
+            className="inline-flex items-center gap-2 bg-accent/10 backdrop-blur-sm text-accent text-xs font-medium px-5 py-2.5 rounded-full mb-4 border border-accent/20 shadow-lg"
           >
             <Sparkles className="w-4 h-4" />
             <span>Join BraidLink Today</span>
           </motion.div>
           
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">Create Account</h1>
-          <p className="text-detail font-brand">Start your journey with us</p>
+          <p className="text-muted-foreground">Start your journey with us</p>
         </div>
 
-        {/* Main Card */}
+        {/* Main Card - Premium redesign */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-card rounded-2xl p-6 md:p-8 shadow-2xl border border-border/50"
+          className="bg-card rounded-3xl p-6 md:p-8 shadow-2xl border border-border/50"
         >
-          {/* Role Selection Cards */}
+          {/* Role Selection Cards - Premium redesign */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mb-6"
+            className="mb-8"
           >
-            <label className="text-sm font-medium mb-3 flex text-primary items-center gap-2">
-              <User className="w-4 h-4 text-accent" />
+            <label className="text-sm font-medium mb-4 flex text-primary items-center gap-2">
+              <div className="w-5 h-5 rounded-lg bg-accent/10 flex items-center justify-center">
+                <User className="w-3 h-3 text-accent" />
+              </div>
               I want to join as
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {[
-                { value: "customer", label: "Customer", icon: Star, desc: "Book appointments" },
-                { value: "stylist", label: "Hair Stylist", icon: Scissors, desc: "Offer services" }
+                { value: "customer", label: "Customer", icon: Star, desc: "Book appointments", badge: "Find stylists" },
+                { value: "stylist", label: "Hair Stylist", icon: Scissors, desc: "Offer services", badge: "Grow business" }
               ].map((role, i) => (
                 <motion.button
                   key={role.value}
@@ -236,25 +246,32 @@ const SignupPage = () => {
                   animate="visible"
                   type="button"
                   onClick={() => setForm({ ...form, role: role.value as "customer" | "stylist" })}
-                  className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                  className={`relative p-5 rounded-xl border-2 transition-all duration-300 ${
                     form.role === role.value 
-                      ? "border-accent bg-accent/5 shadow-lg scale-105" 
-                      : "border-border hover:border-accent/30 hover:bg-accent/5"
+                      ? "border-accent bg-accent/5 shadow-xl scale-[1.02]" 
+                      : "border-border hover:border-accent/30 hover:bg-accent/5 hover:shadow-lg"
                   }`}
                 >
                   <div className="flex flex-col items-center text-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                      form.role === role.value ? "bg-accent" : "bg-accent/10"
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-3 transition-all ${
+                      form.role === role.value 
+                        ? "bg-accent shadow-lg" 
+                        : "bg-gradient-to-br from-accent/10 to-accent/5"
                     }`}>
-                      <role.icon className={`w-5 h-5 ${
+                      <role.icon className={`w-6 h-6 ${
                         form.role === role.value ? "text-primary" : "text-accent"
                       }`} />
                     </div>
                     <span className="text-sm font-semibold text-primary">{role.label}</span>
-                    <span className="text-xs text-detail mt-1">{role.desc}</span>
+                    <span className="text-xs text-muted-foreground mt-1">{role.desc}</span>
+                    <span className="text-[10px] text-accent mt-2 bg-accent/10 px-2 py-1 rounded-full">
+                      {role.badge}
+                    </span>
                   </div>
                   {form.role === role.value && (
-                    <CheckCircle className="absolute -top-2 -right-2 w-5 h-5 text-accent bg-card rounded-full" />
+                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-accent flex items-center justify-center shadow-lg">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                    </div>
                   )}
                 </motion.button>
               ))}
@@ -262,7 +279,7 @@ const SignupPage = () => {
           </motion.div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Error Message */}
+            {/* Error Message - Premium */}
             <AnimatePresence>
               {error && (
                 <motion.div 
@@ -280,35 +297,42 @@ const SignupPage = () => {
             {/* Full Name */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                <User className="w-4 h-4 text-accent" /> Full Name
+                <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                  <User className="w-3 h-3 text-accent" />
+                </div>
+                Full Name
               </label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/70 group-focus-within:text-accent transition-colors" />
                 <input 
                   type="text" 
                   value={form.name} 
                   onChange={(e) => setForm({ ...form, name: e.target.value })} 
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50" 
                   placeholder="Enter your full name" 
                   required 
                 />
               </div>
             </div>
 
-            {/* Profile Image - For both customers and stylists */}
+            {/* Profile Image - Premium redesign */}
             {(form.role === "customer" || form.role === "stylist") && (
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
                 className="space-y-2"
               >
                 <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                  <Camera className="w-4 h-4 text-accent" /> {form.role === "stylist" ? "Professional Photo" : "Profile Image"}
+                  <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                    <Camera className="w-3 h-3 text-accent" />
+                  </div>
+                  {form.role === "stylist" ? "Professional Photo" : "Profile Image"}
                 </label>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="relative">
-                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center overflow-hidden border-2 border-border group-hover:border-accent transition-colors">
+                    <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center overflow-hidden border-2 border-border group-hover:border-accent transition-colors shadow-md">
                       {form.profileImage ? (
                         <img 
                           src={URL.createObjectURL(form.profileImage)} 
@@ -316,43 +340,51 @@ const SignupPage = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <UserIcon className="w-8 h-8 text-accent/50" />
+                        <UserIcon className="w-10 h-10 text-accent/30" />
                       )}
                     </div>
                     <label 
                       htmlFor="profile-image-upload" 
-                      className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-accent flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg"
+                      className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-accent flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg hover:shadow-accent/25"
                     >
                       <Camera className="w-4 h-4 text-primary" />
                     </label>
                     <input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-detail">
+                    <p className="text-xs text-muted-foreground">
                       Upload {form.role === "stylist" ? "a professional photo" : "a profile picture"} {form.role === "stylist" ? "(required)" : "(optional)"}
                     </p>
-                    <p className="text-xs text-detail mt-1">PNG or JPG, max 2MB</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <BadgeCheck className="w-3 h-3 text-accent" />
+                      <p className="text-xs text-muted-foreground">PNG or JPG, max 2MB</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* City & Country - Separate Fields for Customers Only */}
+            {/* City & Country - Premium redesign */}
             {form.role === "customer" && (
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
+                transition={{ duration: 0.3 }}
                 className="space-y-4"
               >
                 {/* Country Dropdown */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-accent" /> Country
+                    <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                      <Globe className="w-3 h-3 text-accent" />
+                    </div>
+                    Country
                   </label>
                   <select 
                     value={form.country} 
                     onChange={(e) => setForm({ ...form, country: e.target.value as "UK" | "USA", postalCode: "" })} 
-                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b87a5d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1rem', backgroundRepeat: 'no-repeat' }}
                     required
                   >
                     <option value="UK">United Kingdom</option>
@@ -363,17 +395,20 @@ const SignupPage = () => {
                 {/* Postal Code */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                    <Hash className="w-4 h-4 text-accent" /> Postal Code
+                    <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                      <Hash className="w-3 h-3 text-accent" />
+                    </div>
+                    Postal Code
                   </label>
                   <input 
                     type="text" 
                     value={form.postalCode} 
                     onChange={(e) => setForm({ ...form, postalCode: e.target.value })} 
-                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50" 
                     placeholder={form.country === "USA" ? "Enter 5-digit zip code (e.g., 90210)" : "Enter UK postcode (e.g., SW1A 0AA)"} 
                     required 
                   />
-                  <p className="text-xs text-detail">
+                  <p className="text-xs text-muted-foreground">
                     {form.country === "USA" 
                       ? "US zip codes should be 5 digits (e.g., 90210)." 
                       : "UK postcodes are alphanumeric (e.g., SW1A 0AA)."}
@@ -383,13 +418,16 @@ const SignupPage = () => {
                 {/* City */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-accent" /> City
+                    <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                      <MapPin className="w-3 h-3 text-accent" />
+                    </div>
+                    City
                   </label>
                   <input 
                     type="text" 
                     value={form.city} 
                     onChange={(e) => setForm({ ...form, city: e.target.value })} 
-                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50" 
                     placeholder="Enter your city" 
                     required 
                   />
@@ -400,15 +438,18 @@ const SignupPage = () => {
             {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                <Mail className="w-4 h-4 text-accent" /> Email Address
+                <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                  <Mail className="w-3 h-3 text-accent" />
+                </div>
+                Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/70 group-focus-within:text-accent transition-colors" />
                 <input 
                   type="email" 
                   value={form.email} 
                   onChange={(e) => setForm({ ...form, email: e.target.value })} 
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50" 
                   placeholder="your@email.com" 
                   required 
                 />
@@ -418,150 +459,211 @@ const SignupPage = () => {
             {/* Phone */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                <Phone className="w-4 h-4 text-accent" /> Phone Number
+                <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                  <Phone className="w-3 h-3 text-accent" />
+                </div>
+                Phone Number
               </label>
               <div className="relative group">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/70 group-focus-within:text-accent transition-colors" />
                 <input 
                   type="tel" 
                   value={form.phone} 
                   onChange={(e) => setForm({ ...form, phone: e.target.value })} 
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50" 
                   placeholder="(555) 123-4567" 
                   required 
                 />
               </div>
             </div>
 
-            {/* Password */}
+            {/* Password - Premium redesign */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-accent" /> Password
+                <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                  <Lock className="w-3 h-3 text-accent" />
+                </div>
+                Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/70 group-focus-within:text-accent transition-colors" />
                 <input 
                   type={showPassword ? "text" : "password"} 
                   value={form.password} 
                   onChange={handlePasswordChange} 
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" 
                   placeholder="••••••••" 
                   required 
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-detail hover:text-accent transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               
-              {/* Password Strength Indicator */}
+              {/* Password Strength Indicator - Premium */}
               {form.password && (
-                <div className="mt-2 space-y-1">
-                  <div className="flex gap-1 h-1">
-                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 25 ? getPasswordStrengthColor() : 'bg-muted'}`} />
-                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 50 ? getPasswordStrengthColor() : 'bg-muted'}`} />
-                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 75 ? getPasswordStrengthColor() : 'bg-muted'}`} />
-                    <div className={`flex-1 rounded-full transition-all ${passwordStrength >= 100 ? getPasswordStrengthColor() : 'bg-muted'}`} />
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-3 space-y-2"
+                >
+                  <div className="flex gap-1 h-1.5">
+                    {[1, 2, 3, 4].map((segment) => (
+                      <div 
+                        key={segment} 
+                        className={`flex-1 rounded-full transition-all duration-300 ${
+                          passwordStrength >= segment * 25 
+                            ? getPasswordStrengthColor() 
+                            : 'bg-muted'
+                        }`} 
+                      />
+                    ))}
                   </div>
-                  <p className="text-xs text-detail">
-                    {passwordStrength < 50 && "Weak password"}
-                    {passwordStrength >= 50 && passwordStrength < 75 && "Medium password"}
-                    {passwordStrength >= 75 && "Strong password"}
-                  </p>
-                </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {getPasswordStrengthText()}
+                    </p>
+                    {passwordStrength >= 75 && (
+                      <BadgeCheck className="w-4 h-4 text-green-500" />
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <div className={`w-1.5 h-1.5 rounded-full ${form.password.length >= 8 ? 'bg-green-500' : 'bg-muted'}`} />
+                      8+ chars
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[a-z]/.test(form.password) ? 'bg-green-500' : 'bg-muted'}`} />
+                      lowercase
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[A-Z]/.test(form.password) ? 'bg-green-500' : 'bg-muted'}`} />
+                      uppercase
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[0-9]/.test(form.password) ? 'bg-green-500' : 'bg-muted'}`} />
+                      number
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[@$!%*?&]/.test(form.password) ? 'bg-green-500' : 'bg-muted'}`} />
+                      special
+                    </span>
+                  </div>
+                </motion.div>
               )}
             </div>
 
             {/* Confirm Password */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-accent" /> Confirm Password
+                <div className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center">
+                  <Lock className="w-3 h-3 text-accent" />
+                </div>
+                Confirm Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent group-focus-within:scale-110 transition-transform" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/70 group-focus-within:text-accent transition-colors" />
                 <input 
                   type={showConfirmPassword ? "text" : "password"} 
                   value={form.confirmPassword} 
                   onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} 
-                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" 
+                  className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" 
                   placeholder="••••••••" 
                   required 
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-detail hover:text-accent transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {form.confirmPassword && form.password !== form.confirmPassword && (
-                <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-xs text-destructive flex items-center gap-1 mt-1"
+                >
                   <AlertCircle className="w-3 h-3" /> Passwords don't match
-                </p>
+                </motion.p>
+              )}
+              {form.confirmPassword && form.password === form.confirmPassword && form.password && (
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-xs text-green-500 flex items-center gap-1 mt-1"
+                >
+                  <CheckCircle className="w-3 h-3" /> Passwords match
+                </motion.p>
               )}
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button - Premium */}
             <motion.button 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit" 
               disabled={isLoading}
-              className="btn-cta w-full text-sm py-4 rounded-xl flex items-center justify-center gap-2 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-accent text-primary font-semibold text-sm py-4 rounded-xl flex items-center justify-center gap-2 mt-6 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25 group"
             >
               {isLoading ? (
-                <>Creating Account...</>
+                <>
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  Creating Account...
+                </>
               ) : (
                 <>
-                  Create Account <ArrowRight className="w-4 h-4" />
+                  Create Account <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </motion.button>
 
-            {/* Terms */}
-            <p className="text-xs text-center text-detail mt-4">
+            {/* Terms - Premium */}
+            <p className="text-xs text-center text-muted-foreground mt-4">
               By creating an account, you agree to our{" "}
-              <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link>{" "}
+              <Link to="/terms" className="text-accent hover:underline font-medium">Terms of Service</Link>{" "}
               and{" "}
-              <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>
+              <Link to="/privacy-policy" className="text-accent hover:underline font-medium">Privacy Policy</Link>
             </p>
           </form>
 
-          {/* Divider */}
+          {/* Divider - Premium */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
+              <div className="w-full border-t border-border/50"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-4 text-detail">Already have an account?</span>
+              <span className="bg-card px-4 text-muted-foreground">Already have an account?</span>
             </div>
           </div>
 
-          {/* Login Link */}
+          {/* Login Link - Premium */}
           <div className="text-center">
             <Link 
               to="/login" 
-              className="text-accent font-semibold text-sm hover:underline inline-flex items-center gap-1"
+              className="text-accent font-semibold text-sm hover:text-accent/80 inline-flex items-center gap-1 group"
             >
-              Sign In <ArrowRight className="w-3 h-3" />
+              Sign In <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>
 
-        {/* Trust Badge */}
+        {/* Trust Badge - Premium redesign */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           className="mt-6 text-center"
         >
-          <div className="inline-flex items-center gap-2 text-xs text-detail bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+          <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50 shadow-sm">
             <Shield className="w-3 h-3 text-accent" />
             <span>Your information is secure and encrypted</span>
+            <Zap className="w-3 h-3 text-accent" />
           </div>
         </motion.div>
       </motion.div>

@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { users as initialUsers, User } from "@/data/demo-data";
 
-// The AuthUser can be a subset of the User, but for now it's the same
-// We are renaming it to avoid confusion in this file.
+// The AuthUser type now includes location and bio
 type AuthUser = User;
 
 interface AuthContextType {
@@ -18,6 +17,8 @@ interface AuthContextType {
     city?: string;
     country: "UK" | "USA";
   }) => boolean;
+  updatePassword: (currentPassword: string, newPassword: string) => boolean;
+  updateProfile: (profileData: Partial<Pick<AuthUser, 'name' | 'phone' | 'postalCode' | 'location'>>) => boolean;
   isAuthenticated: boolean;
 }
 
@@ -48,6 +49,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("braidbook_user");
+  };
+
+  const updatePassword = (currentPassword: string, newPassword: string): boolean => {
+    if (!user) return false;
+
+    // Mock validation - always allow for demo
+    // In real app, verify currentPassword against stored hash
+    
+    const updatedUser = { ...user, password: newPassword }; // Mock
+    setUser(updatedUser);
+    localStorage.setItem("braidbook_user", JSON.stringify(updatedUser));
+
+    // Update userList if needed
+    setUserList(userList.map(u => u.id === user.id ? updatedUser : u));
+
+    return true;
+  };
+
+  const updateProfile = (profileData: Partial<Pick<AuthUser, 'name' | 'phone' | 'postalCode' | 'location'>>): boolean => {
+    if (!user) return false;
+
+    const updatedUser = { ...user, ...profileData };
+    setUser(updatedUser);
+    localStorage.setItem("braidbook_user", JSON.stringify(updatedUser));
+    setUserList(userList.map(u => u.id === user.id ? updatedUser : u));
+    return true;
   };
 
   const signup = (data: {
@@ -88,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, signup, isAuthenticated: !!user }}
+      value={{ user, login, logout, signup, updatePassword, updateProfile, isAuthenticated: !!user }}
     >
       {children}
     </AuthContext.Provider>

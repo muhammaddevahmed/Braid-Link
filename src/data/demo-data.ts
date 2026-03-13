@@ -105,6 +105,7 @@ export interface User {
   postalCode?: string;
   country?: "UK" | "USA";
   city?: string;
+  location?: string;
 }
 
 export const hairstyles: Hairstyle[] = [
@@ -128,6 +129,38 @@ export const hairstyles: Hairstyle[] = [
     duration: "5-7 hours",
     image:
       "https://images.unsplash.com/photo-1595959183082-7b570b7e1e21?w=400&h=400&fit=crop",
+    category: "Braids",
+  },
+  {
+    id: "h13",
+    name: "Tribraids",
+    description:
+      "Three-strand braids with unique triangular parting pattern for modern look.",
+    avgPrice: 160,
+    duration: "4-5 hours",
+    image:
+      "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=400&h=400&fit=crop",
+    category: "Braids",
+  },
+  {
+    id: "h14",
+    name: "Side Part Braids",
+    description: "Elegant braids with deep side part for sophisticated style.",
+    avgPrice: 140,
+    duration: "3-4 hours",
+    image:
+      "https://images.unsplash.com/photo-1595959183082-7b570b7e1e21?w=400&h=400&fit=crop",
+    category: "Braids",
+  },
+  {
+    id: "h15",
+    name: "Jumbo Braids",
+    description:
+      "Large, quick braids for bold and dramatic protective styling.",
+    avgPrice: 120,
+    duration: "3-4 hours",
+    image:
+      "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=400&h=400&fit=crop",
     category: "Braids",
   },
   {
@@ -292,6 +325,30 @@ export const hairstyleCategories: HairstyleCategory[] = [
         image:
           "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=400&h=400&fit=crop",
       },
+      {
+        id: "h13",
+        name: "Tribraids",
+        description:
+          "Three-strand braids with unique triangular parting pattern for modern look.",
+        image:
+          "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=400&h=400&fit=crop",
+      },
+      {
+        id: "h14",
+        name: "Side Part Braids",
+        description:
+          "Elegant braids with deep side part for sophisticated style.",
+        image:
+          "https://images.unsplash.com/photo-1595959183082-7b570b7e1e21?w=400&h=400&fit=crop",
+      },
+      {
+        id: "h15",
+        name: "Jumbo Braids",
+        description:
+          "Large, quick braids for bold and dramatic protective styling.",
+        image:
+          "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=400&h=400&fit=crop",
+      },
     ],
   },
   {
@@ -362,6 +419,64 @@ export const hairstyleCategories: HairstyleCategory[] = [
 ];
 
 export const stylists: Stylist[] = [
+  {
+    id: "s7",
+    name: "Keisha Thompson",
+    photo:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+    bio: "Creative stylist specializing in modern twists and protective styles. Fast service with premium results.",
+    experience: 4,
+    rating: 4.7,
+    reviewCount: 67,
+    location: "Manchester, UK",
+    postalCode: "M1 1AA",
+    services: [
+      {
+        id: "sv18",
+        name: "Passion Twists",
+        price: 155,
+        duration: "4 hours",
+        description: "Trendy bohemian passion twists",
+        image: "",
+      },
+      {
+        id: "sv19",
+        name: "Box Braids",
+        price: 130,
+        duration: "5 hours",
+        description: "Medium box braids with clean parts",
+        image: "",
+      },
+      {
+        id: "sv20",
+        name: "Crochet Braids",
+        price: 100,
+        duration: "2.5 hours",
+        description: "Quick crochet installations",
+        image: "",
+      },
+    ],
+    specialties: ["Passion Twists", "Box Braids", "Crochet Braids"],
+    portfolio: [
+      "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop",
+    ],
+    availability: {
+      Monday: { start: "09:00", end: "17:00" },
+      Tuesday: { start: "09:00", end: "17:00" },
+      Wednesday: { start: "09:00", end: "17:00" },
+      Thursday: { start: "09:00", end: "17:00" },
+      Friday: { start: "10:00", end: "18:00" },
+    },
+    joinDate: "2024-02-15",
+    status: "active",
+    totalEarnings: 28500,
+    monthlyEarnings: 2500,
+    featured: false,
+    subscriptionPlan: "growth",
+    responseSpeed: "fast",
+  },
   {
     id: "s1",
     name: "Angela Johnson",
@@ -1033,6 +1148,7 @@ export const users: User[] = [
     postalCode: "SW1A 0AA",
     city: "London",
     country: "UK",
+    location: "London,UK",
   },
   {
     id: "c2",
@@ -1047,6 +1163,7 @@ export const users: User[] = [
     postalCode: "G2 1AC",
     city: "Glasgow",
     country: "UK",
+    location: "Glasgow,UK",
   },
   {
     id: "c3",
@@ -1061,6 +1178,7 @@ export const users: User[] = [
     postalCode: "90001",
     city: "Los Angeles",
     country: "USA",
+    location: "Los Angeles,USA",
   },
   {
     id: "c4",
@@ -1075,6 +1193,7 @@ export const users: User[] = [
     postalCode: "77001",
     city: "Houston",
     country: "USA",
+    location: "Houston,USA",
   },
   {
     id: "s1",

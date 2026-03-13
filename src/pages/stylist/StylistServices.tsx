@@ -4,7 +4,9 @@ import { hairstyleCategories, hairstyles } from "@/data/demo-data";
 import { 
   Plus, Trash2, CheckCircle2, AlertCircle, Edit2, 
   DollarSign, Clock, Tag, Save, X, Sparkles,
-  FolderOpen, Scissors, Loader2, Info, ChevronDown
+  FolderOpen, Scissors, Loader2, Info, ChevronDown,
+  BadgeCheck, Zap, TrendingUp, Package,
+  Layers, Calendar, Star, Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -137,45 +139,74 @@ const StylistServices = () => {
   const averagePrice = services.length > 0 ? Math.round(totalValue / services.length) : 0;
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-10">
+      {/* Header - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-2 mb-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+            >
               <Scissors className="w-3.5 h-3.5" />
               Service Menu
-            </span>
+            </motion.div>
           </div>
-          <h2 className="font-serif text-3xl font-bold text-primary">My Services</h2>
-          <p className="text-detail mt-1 font-brand">
-            {services.length > 0
-              ? `${services.length} service${services.length !== 1 ? "s" : ""} offered`
-              : "No services added yet"}
-          </p>
+          
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">My Services</h2>
+          
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Package className="w-4 h-4 text-accent" />
+            <p className="text-sm">
+              {services.length > 0
+                ? `${services.length} service${services.length !== 1 ? "s" : ""} offered`
+                : "No services added yet"}
+            </p>
+          </div>
         </div>
 
-        
+        {/* Quick Stats */}
+        {services.length > 0 && (
+          <div className="flex items-center gap-3 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-border/50">
+            <div className="flex items-center gap-2 text-sm">
+              <TrendingUp className="w-4 h-4 text-accent" />
+              <span className="text-muted-foreground">Avg:</span>
+              <span className="font-semibold text-primary">${averagePrice}</span>
+            </div>
+            <div className="w-px h-4 bg-border" />
+            <div className="flex items-center gap-2 text-sm">
+              <DollarSign className="w-4 h-4 text-accent" />
+              <span className="text-muted-foreground">Total:</span>
+              <span className="font-semibold text-primary">${totalValue}</span>
+            </div>
+          </div>
+        )}
       </motion.div>
 
-      {/* Status Messages */}
+      {/* Status Messages - Premium */}
       <AnimatePresence>
         {saveStatus === "success" && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-green-100 border-2 border-green-500 rounded-xl p-4 flex items-center gap-3 shadow-lg"
+            className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border-2 border-emerald-500/30 rounded-xl p-5 flex items-center gap-4 shadow-lg"
           >
-            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-green-800">Success!</p>
-              <p className="text-xs text-green-700">Services saved successfully</p>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
+            <div>
+              <p className="text-sm font-semibold text-emerald-800">Success!</p>
+              <p className="text-xs text-emerald-700">Services saved successfully</p>
+            </div>
+            <BadgeCheck className="w-5 h-5 text-emerald-500 ml-auto" />
           </motion.div>
         )}
         
@@ -184,20 +215,22 @@ const StylistServices = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-red-100 border-2 border-red-500 rounded-xl p-4 flex items-center gap-3 shadow-lg"
+            className="bg-gradient-to-r from-rose-500/10 to-rose-500/5 border-2 border-rose-500/30 rounded-xl p-5 flex items-center gap-4 shadow-lg"
           >
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 text-rose-600" />
+            </div>
             <div>
-              <p className="text-sm font-semibold text-red-800">Error</p>
-              <p className="text-xs text-red-700">Please fill all fields before saving</p>
+              <p className="text-sm font-semibold text-rose-800">Error</p>
+              <p className="text-xs text-rose-700">Please fill all fields before saving</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Services Grid */}
+      {/* Services Grid - Premium redesign */}
       {services.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {services.map((svc, idx) => {
             const selectedCategory = getSelectedCategory(svc.categoryId);
             const selectedHairstyle = getSelectedHairstyle(svc.categoryId, svc.hairstyleId);
@@ -216,52 +249,63 @@ const StylistServices = () => {
                 className="group"
               >
                 <div className={cn(
-                  "bg-card rounded-2xl border-2 transition-all duration-300 overflow-hidden",
-                  isExpanded ? "border-primary shadow-xl" : "border-border/50 hover:border-primary/30 hover:shadow-lg"
+                  "bg-card rounded-2xl border-2 transition-all duration-500 overflow-hidden",
+                  isExpanded ? "border-accent shadow-2xl" : "border-border/50 hover:border-accent/30 hover:shadow-xl"
                 )}>
-                  {/* Service Header */}
+                  {/* Service Header - Premium */}
                   <div 
-                    className="p-5 cursor-pointer"
+                    className="p-6 cursor-pointer relative"
                     onClick={() => setExpandedService(isExpanded ? null : svc.id)}
                   >
-                    <div className="flex items-start justify-between mb-3">
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    
+                    <div className="flex items-start justify-between mb-3 relative z-10">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs font-semibold bg-primary/10 text-primary px-2 py-1 rounded-full">
+                          <span className="text-xs font-semibold bg-gradient-to-r from-accent/10 to-accent/5 text-accent px-3 py-1.5 rounded-full border border-accent/20">
                             {selectedCategory?.name}
                           </span>
                           {svc.notes && (
-                            <span className="text-xs bg-muted text-detail px-2 py-1 rounded-full">
+                            <span className="text-xs bg-muted text-muted-foreground px-3 py-1.5 rounded-full flex items-center gap-1">
+                              <Info className="w-3 h-3" />
                               Has notes
                             </span>
                           )}
                         </div>
-                        <h3 className="font-serif font-bold text-xl text-primary">
+                        <h3 className="font-serif font-bold text-xl md:text-2xl text-primary group-hover:text-accent transition-colors">
                           {selectedHairstyle?.name}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-primary">${svc.price}</p>
+                          <p className="text-2xl md:text-3xl font-bold text-primary">${svc.price}</p>
                         </div>
                         <motion.div
                           animate={{ rotate: isExpanded ? 180 : 0 }}
                           transition={{ duration: 0.3 }}
+                          className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+                            isExpanded 
+                              ? "bg-accent text-primary" 
+                              : "bg-accent/10 text-accent group-hover:bg-accent/20"
+                          )}
                         >
-                          <ChevronDown className="w-5 h-5 text-detail" />
+                          <ChevronDown className="w-5 h-5" />
                         </motion.div>
                       </div>
                     </div>
 
-                    {/* Quick Info */}
-                    <div className="flex items-center gap-3 text-sm text-detail">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" /> {svc.duration}
+                    {/* Quick Info - Premium */}
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="flex items-center gap-1.5 bg-accent/5 px-3 py-1.5 rounded-full">
+                        <Clock className="w-3.5 h-3.5 text-accent" /> 
+                        <span className="text-muted-foreground">{svc.duration}</span>
                       </span>
                     </div>
                   </div>
 
-                  {/* Expanded Content */}
+                  {/* Expanded Content - Premium */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
@@ -271,97 +315,124 @@ const StylistServices = () => {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5">
-                          <div className="border-t border-border pt-4 space-y-4">
-                            {/* Service Details */}
-                            <div className="bg-primary/5 rounded-xl p-4">
-                              <h4 className="text-xs font-semibold text-primary mb-3 flex items-center gap-1">
-                                <Info className="w-3 h-3" /> Service Details
+                        <div className="px-6 pb-6">
+                          <div className="border-t border-border/50 pt-5 space-y-4">
+                            {/* Service Details - Premium */}
+                            <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-5 border border-accent/10">
+                              <h4 className="text-xs font-semibold text-primary mb-4 flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                                  <Info className="w-3.5 h-3.5 text-accent" />
+                                </div>
+                                Service Details
                               </h4>
                               <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-detail">Duration</span>
+                                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5 text-accent" /> Duration
+                                  </span>
                                   <span className="text-sm font-semibold text-primary">{svc.duration}</span>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-detail">Price</span>
+                                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <DollarSign className="w-3.5 h-3.5 text-accent" /> Price
+                                  </span>
                                   {isEditing ? (
                                     <div className="flex gap-2 items-center">
                                       <input
                                         type="number"
-                                        className="w-24 px-3 py-1.5 rounded-lg text-sm border-2 border-primary bg-background text-primary font-semibold"
+                                        className="w-24 px-3 py-1.5 rounded-lg text-sm border-2 border-accent bg-background text-primary font-semibold"
                                         value={editPriceValue}
                                         onChange={(e) => setEditPriceValue(e.target.value)}
                                         min="0"
                                         step="0.01"
                                       />
-                                      <button
+                                      <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => updatePrice(svc.id, Number(editPriceValue))}
-                                        className="px-3 py-1.5 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 transition"
+                                        className="px-3 py-1.5 text-xs font-semibold bg-accent text-primary rounded-lg hover:bg-accent/90 transition"
                                       >
                                         Save
-                                      </button>
-                                      <button
+                                      </motion.button>
+                                      <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => setEditingPrice(null)}
-                                        className="p-1.5 text-xs font-semibold bg-muted text-detail rounded-lg hover:bg-muted/80 transition"
+                                        className="p-1.5 text-xs font-semibold bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition"
                                       >
                                         <X className="w-3 h-3" />
-                                      </button>
+                                      </motion.button>
                                     </div>
                                   ) : (
                                     <div className="flex items-center gap-2">
                                       <span className="text-lg font-bold text-primary">${svc.price}</span>
-                                      <button
+                                      <motion.button
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setEditingPrice(svc.id);
                                           setEditPriceValue(svc.price.toString());
                                         }}
-                                        className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition"
+                                        className="w-7 h-7 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent flex items-center justify-center transition"
                                       >
                                         <Edit2 className="w-3.5 h-3.5" />
-                                      </button>
+                                      </motion.button>
                                     </div>
                                   )}
                                 </div>
                               </div>
                             </div>
 
-                            {/* Notes */}
+                            {/* Notes - Premium */}
                             {svc.notes && (
-                              <div className="bg-primary/5 rounded-xl p-4">
-                                <h4 className="text-xs font-semibold text-primary mb-2">Notes</h4>
-                                <p className="text-sm text-detail">{svc.notes}</p>
+                              <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-5 border border-accent/10">
+                                <h4 className="text-xs font-semibold text-primary mb-3 flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                                    <Tag className="w-3.5 h-3.5 text-accent" />
+                                  </div>
+                                  Notes
+                                </h4>
+                                <p className="text-sm text-muted-foreground bg-background/50 p-3 rounded-lg">{svc.notes}</p>
                               </div>
                             )}
 
-                            {/* Delete Section */}
+                            {/* Delete Section - Premium */}
                             <div className="pt-2">
                               {isDeleting ? (
-                                <div className="space-y-2">
-                                  <p className="text-xs text-destructive font-medium">Are you sure you want to delete this service?</p>
+                                <div className="space-y-3 p-4 bg-rose-50 rounded-xl border border-rose-200">
+                                  <p className="text-xs text-rose-700 font-medium flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4" />
+                                    Are you sure you want to delete this service?
+                                  </p>
                                   <div className="flex gap-2">
-                                    <button
+                                    <motion.button
+                                      whileHover={{ scale: 1.02 }}
+                                      whileTap={{ scale: 0.98 }}
                                       onClick={() => deleteService(svc.id)}
-                                      className="flex-1 py-2 text-xs bg-destructive text-white rounded-lg hover:bg-destructive/90 font-medium transition"
+                                      className="flex-1 py-2.5 text-xs bg-rose-500 text-white rounded-lg hover:bg-rose-600 font-medium transition"
                                     >
                                       Yes, Delete
-                                    </button>
-                                    <button
+                                    </motion.button>
+                                    <motion.button
+                                      whileHover={{ scale: 1.02 }}
+                                      whileTap={{ scale: 0.98 }}
                                       onClick={() => setDeleteConfirm(null)}
-                                      className="flex-1 py-2 text-xs bg-muted text-detail rounded-lg hover:bg-muted/80 font-medium transition"
+                                      className="flex-1 py-2.5 text-xs bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 font-medium transition"
                                     >
                                       Cancel
-                                    </button>
+                                    </motion.button>
                                   </div>
                                 </div>
                               ) : (
-                                <button
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                   onClick={() => setDeleteConfirm(svc.id)}
-                                  className="w-full py-2 text-xs text-destructive hover:bg-destructive/10 rounded-lg font-medium flex items-center justify-center gap-2 transition"
+                                  className="w-full py-3 text-xs text-rose-600 hover:bg-rose-50 rounded-lg font-medium flex items-center justify-center gap-2 transition border border-rose-200"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" /> Delete Service
-                                </button>
+                                </motion.button>
                               )}
                             </div>
                           </div>
@@ -376,31 +447,38 @@ const StylistServices = () => {
         </div>
       )}
 
-      {/* Add New Service Section */}
+      {/* Add New Service Section - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-card rounded-2xl p-6 border-2 border-dashed border-primary/30 hover:border-primary/50 transition-all"
+        className="bg-card rounded-2xl p-6 md:p-8 border-2 border-dashed border-accent/30 hover:border-accent/50 transition-all"
       >
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Plus className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+            <Plus className="w-5 h-5 text-accent" />
           </div>
           <div>
             <h3 className="font-serif text-xl font-bold text-primary">Add New Service</h3>
-            <p className="text-xs text-detail">Select from available hairstyles and set your price</p>
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <Sparkles className="w-3 h-3 text-accent" />
+              Select from available hairstyles and set your price
+            </p>
           </div>
         </div>
 
         <div className="space-y-4">
-          {/* Category Selection */}
+          {/* Category Selection - Premium */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-              <FolderOpen className="w-4 h-4 text-primary" /> Category *
+              <div className="w-5 h-5 rounded-lg bg-accent/10 flex items-center justify-center">
+                <FolderOpen className="w-3.5 h-3.5 text-accent" />
+              </div>
+              Category *
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all appearance-none cursor-pointer"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b87a5d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1rem', backgroundRepeat: 'no-repeat' }}
               value={newServiceForm.categoryId}
               onChange={(e) =>
                 setNewServiceForm({
@@ -419,13 +497,17 @@ const StylistServices = () => {
             </select>
           </div>
 
-          {/* Hairstyle Selection */}
+          {/* Hairstyle Selection - Premium */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-              <Scissors className="w-4 h-4 text-primary" /> Hairstyle *
+              <div className="w-5 h-5 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Scissors className="w-3.5 h-3.5 text-accent" />
+              </div>
+              Hairstyle *
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b87a5d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1rem', backgroundRepeat: 'no-repeat' }}
               disabled={!newServiceForm.categoryId}
               value={newServiceForm.hairstyleId}
               onChange={(e) =>
@@ -447,14 +529,17 @@ const StylistServices = () => {
             </select>
           </div>
 
-          {/* Price Input */}
+          {/* Price Input - Premium */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-primary" /> Price ($) *
+              <div className="w-5 h-5 rounded-lg bg-accent/10 flex items-center justify-center">
+                <DollarSign className="w-3.5 h-3.5 text-accent" />
+              </div>
+              Price ($) *
             </label>
             <input
               type="number"
-              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-muted-foreground/50"
               placeholder="e.g., 120"
               value={newServiceForm.price}
               onChange={(e) => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
@@ -463,32 +548,32 @@ const StylistServices = () => {
             />
           </div>
 
-          {/* Add Button */}
+          {/* Add Button - Premium */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={addService}
-            className="w-full bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm mt-4"
+            className="w-full bg-gradient-to-r from-accent to-accent/90 text-primary font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm mt-4 group"
           >
-            <Plus className="w-5 h-5" /> Add Service
+            <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" /> Add Service
           </motion.button>
         </div>
       </motion.div>
 
-      {/* Save Button */}
+      {/* Save Button - Premium */}
       {services.length > 0 && (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="space-y-3 sticky bottom-4 bg-card/80 backdrop-blur-sm p-4 rounded-2xl border border-border/50 shadow-xl"
+          className="space-y-3 sticky bottom-4 bg-card/80 backdrop-blur-sm p-5 rounded-2xl border border-border/50 shadow-xl"
         >
           <button
             onClick={saveServices}
             disabled={!hasChanges || saveStatus === "saving"}
             className={`w-full py-4 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg ${
               hasChanges && saveStatus !== "saving"
-                ? "bg-primary text-white hover:bg-primary/90 hover:scale-[1.02]"
+                ? "bg-gradient-to-r from-accent to-accent/90 text-primary hover:shadow-xl hover:scale-[1.02]"
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             }`}
           >
@@ -508,47 +593,56 @@ const StylistServices = () => {
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-xs text-detail font-semibold text-center flex items-center justify-center gap-1"
+              className="text-xs text-muted-foreground font-medium text-center flex items-center justify-center gap-1"
             >
-              <AlertCircle className="w-3 h-3 text-primary" />
+              <AlertCircle className="w-3 h-3 text-accent" />
               You have unsaved changes
             </motion.p>
           )}
         </motion.div>
       )}
 
-      {/* Empty State */}
+      {/* Empty State - Premium redesign */}
       {services.length === 0 && (
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-16 bg-card rounded-2xl border-2 border-dashed border-primary/30"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-20 bg-gradient-to-br from-card to-secondary/5 rounded-3xl border-2 border-dashed border-accent/30 shadow-xl"
         >
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <Scissors className="w-8 h-8 text-primary" />
+          <div className="relative mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto">
+              <Scissors className="w-10 h-10 text-accent" />
+            </div>
+            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-accent" />
+            </div>
           </div>
-          <h3 className="font-serif text-xl font-bold text-primary mb-2">No Services Added</h3>
-          <p className="text-detail mb-6 max-w-sm mx-auto">
+          
+          <h3 className="font-serif text-2xl font-bold text-primary mb-3">No Services Added</h3>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Start adding services to your profile so customers can book appointments with you.
           </p>
-          <button
+          
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => document.getElementById('add-service')?.scrollIntoView({ behavior: 'smooth' })}
-            className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl"
+            className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all group"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
             Add Your First Service
-          </button>
+          </motion.button>
         </motion.div>
       )}
 
-      {/* Tip */}
+      {/* Tip - Premium */}
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-xs text-detail italic flex items-center justify-center gap-1"
+        className="text-xs text-muted-foreground italic flex items-center justify-center gap-1"
       >
-        <Sparkles className="w-3 h-3 text-primary" />
+        <Sparkles className="w-3 h-3 text-accent" />
         Tip: Select from categories and hairstyles created by admin. Set your price and save.
       </motion.p>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Save, X, HelpCircle, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, HelpCircle, Search, ChevronDown, ChevronUp, Sparkles, BadgeCheck, Zap, AlertCircle } from "lucide-react";
 import { faqData as initialFaqs } from "@/data/demo-data";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -95,32 +95,35 @@ const AdminFAQs = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+            <span className="bg-accent/10 text-accent text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
               <HelpCircle className="w-3.5 h-3.5" />
               FAQ Management
             </span>
+            <span className="bg-emerald-100 text-emerald-700 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5" />
+              {faqs.length} FAQs
+            </span>
           </div>
           <h2 className="font-serif text-3xl font-bold text-primary">Frequently Asked Questions</h2>
-          <p className="text-detail mt-1 font-brand">Manage questions and answers for customers and stylists</p>
+          <p className="text-muted-foreground mt-1 text-sm">Manage questions and answers for customers and stylists</p>
         </div>
 
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsAdding(true)}
-          className="btn-cta text-sm px-6 py-3 rounded-xl flex items-center gap-2"
+          className="bg-accent text-primary text-sm px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-accent/90 transition-all shadow-md"
         >
           <Plus className="w-4 h-4" /> Add New FAQ
         </motion.button>
       </motion.div>
 
-      
-
-    
+     
 
       {/* Add FAQ Form */}
       <AnimatePresence>
@@ -131,24 +134,25 @@ const AdminFAQs = () => {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6 border-2 border-primary/30 shadow-lg mb-6">
+            <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-6 border-2 border-accent/30 shadow-lg mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-md">
+                  <Plus className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-semibold text-primary">Add New FAQ</h3>
-                  <p className="text-xs text-detail">Create a new question and answer pair</p>
+                  <p className="text-xs text-muted-foreground">Create a new question and answer pair</p>
                 </div>
+                <Sparkles className="w-5 h-5 text-accent ml-auto" />
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                    <HelpCircle className="w-4 h-4" /> Question
+                    <HelpCircle className="w-4 h-4 text-accent" /> Question
                   </label>
                   <input
-                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    className="w-full px-4 py-3.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                     value={addForm.question}
                     onChange={e => setAddForm({ ...addForm, question: e.target.value })}
                     placeholder="e.g. How do I book an appointment?"
@@ -157,10 +161,10 @@ const AdminFAQs = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-primary flex items-center gap-1.5">
-                    <Edit2 className="w-4 h-4" /> Answer
+                    <Edit2 className="w-4 h-4 text-accent" /> Answer
                   </label>
                   <textarea
-                    className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    className="w-full px-4 py-3.5 rounded-lg border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                     value={addForm.answer}
                     onChange={e => setAddForm({ ...addForm, answer: e.target.value })}
                     placeholder="Enter a detailed answer here..."
@@ -172,7 +176,7 @@ const AdminFAQs = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleAdd}
-                    className="btn-primary px-6 py-3 rounded-xl text-sm flex items-center gap-2"
+                    className="bg-accent text-primary px-6 py-3 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-accent/90 transition-all shadow-md"
                   >
                     <Save className="w-4 h-4" /> Save FAQ
                   </motion.button>
@@ -180,7 +184,7 @@ const AdminFAQs = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsAdding(false)}
-                    className="btn-outline px-6 py-3 rounded-xl text-sm flex items-center gap-2"
+                    className="border border-border text-muted-foreground px-6 py-3 rounded-lg text-sm font-medium hover:bg-accent/5 hover:text-accent transition-all flex items-center gap-2"
                   >
                     <X className="w-4 h-4" /> Cancel
                   </motion.button>
@@ -196,13 +200,13 @@ const AdminFAQs = () => {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center py-16 bg-card rounded-2xl border border-border/50"
+          className="text-center py-20 bg-card rounded-xl border border-border shadow-lg"
         >
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <HelpCircle className="w-8 h-8 text-primary" />
+          <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+            <HelpCircle className="w-10 h-10 text-accent" />
           </div>
-          <h3 className="font-serif text-xl font-bold text-primary mb-2">No FAQs found</h3>
-          <p className="text-detail mb-6 max-w-sm mx-auto">
+          <h3 className="font-serif text-2xl font-bold text-primary mb-2">No FAQs found</h3>
+          <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
             {searchTerm 
               ? "No FAQs match your search criteria. Try different keywords."
               : "You haven't added any FAQs yet. Click the 'Add New FAQ' button to get started."}
@@ -210,7 +214,7 @@ const AdminFAQs = () => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="text-primary font-semibold hover:underline"
+              className="text-accent font-semibold hover:underline"
             >
               Clear search
             </button>
@@ -230,34 +234,38 @@ const AdminFAQs = () => {
                 layout
                 className="group"
               >
-                <div className={`bg-card rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+                <div className={`bg-card rounded-xl border-2 transition-all duration-300 overflow-hidden ${
                   isEditing === faq.id 
-                    ? "border-primary shadow-xl" 
-                    : "border-border/50 hover:border-primary/30 hover:shadow-lg"
+                    ? "border-accent shadow-xl" 
+                    : "border-border hover:border-accent/30 hover:shadow-md"
                 }`}>
                   {isEditing === faq.id ? (
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Edit2 className="w-5 h-5 text-primary" />
+                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                          <Edit2 className="w-5 h-5 text-accent" />
                         </div>
                         <h3 className="font-serif text-lg font-semibold text-primary">Edit FAQ</h3>
                       </div>
 
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <label className="text-xs font-medium text-primary">Question</label>
+                          <label className="text-xs font-medium text-primary flex items-center gap-1">
+                            <HelpCircle className="w-3 h-3 text-accent" /> Question
+                          </label>
                           <input
-                            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="w-full px-4 py-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                             value={editForm.question}
                             onChange={e => setEditForm({ ...editForm, question: e.target.value })}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-xs font-medium text-primary">Answer</label>
+                          <label className="text-xs font-medium text-primary flex items-center gap-1">
+                            <Edit2 className="w-3 h-3 text-accent" /> Answer
+                          </label>
                           <textarea
-                            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="w-full px-4 py-3 rounded-lg border border-border bg-background text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                             value={editForm.answer}
                             onChange={e => setEditForm({ ...editForm, answer: e.target.value })}
                           />
@@ -266,13 +274,13 @@ const AdminFAQs = () => {
                         <div className="flex gap-3 pt-2">
                           <button
                             onClick={saveEdit}
-                            className="btn-primary text-sm px-6 py-2.5 rounded-xl flex items-center gap-2"
+                            className="bg-emerald-600 text-white text-sm px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-md"
                           >
                             <Save className="w-4 h-4" /> Save Changes
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="btn-outline text-sm px-6 py-2.5 rounded-xl flex items-center gap-2"
+                            className="border border-rose-200 text-rose-600 text-sm px-6 py-2.5 rounded-lg font-medium hover:bg-rose-50 transition-all flex items-center gap-2"
                           >
                             <X className="w-4 h-4" /> Cancel
                           </button>
@@ -289,15 +297,15 @@ const AdminFAQs = () => {
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <HelpCircle className="w-4 h-4 text-primary" />
+                              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                                <HelpCircle className="w-4 h-4 text-accent" />
                               </div>
                               <h3 className="font-serif font-semibold text-lg text-primary">{faq.question}</h3>
                             </div>
                             
                             {/* Preview */}
                             {expandedFaq !== faq.id && (
-                              <p className="text-sm text-detail ml-11 line-clamp-2">{faq.answer}</p>
+                              <p className="text-sm text-muted-foreground ml-11 line-clamp-2">{faq.answer}</p>
                             )}
                           </div>
 
@@ -307,7 +315,7 @@ const AdminFAQs = () => {
                                 e.stopPropagation();
                                 startEdit(faq);
                               }}
-                              className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                              className="p-2 rounded-lg hover:bg-accent/10 text-accent transition-colors"
                               title="Edit FAQ"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -317,7 +325,7 @@ const AdminFAQs = () => {
                                 e.stopPropagation();
                                 handleDelete(faq.id);
                               }}
-                              className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                              className="p-2 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors"
                               title="Delete FAQ"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -325,8 +333,11 @@ const AdminFAQs = () => {
                             <motion.div
                               animate={{ rotate: expandedFaq === faq.id ? 180 : 0 }}
                               transition={{ duration: 0.3 }}
+                              className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                                expandedFaq === faq.id ? 'bg-accent/10' : ''
+                              }`}
                             >
-                              <ChevronDown className="w-5 h-5 text-detail" />
+                              <ChevronDown className="w-4 h-4 text-accent" />
                             </motion.div>
                           </div>
                         </div>
@@ -344,8 +355,8 @@ const AdminFAQs = () => {
                           >
                             <div className="px-6 pb-6">
                               <div className="border-t border-border pt-4">
-                                <div className="bg-primary/5 rounded-xl p-4 ml-11">
-                                  <p className="text-sm text-detail leading-relaxed">{faq.answer}</p>
+                                <div className="bg-accent/5 rounded-lg p-4 ml-11 border border-accent/10">
+                                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
                                 </div>
                               </div>
                             </div>
@@ -361,7 +372,7 @@ const AdminFAQs = () => {
         </div>
       )}
 
-     
+      
     </div>
   );
 };

@@ -4,7 +4,9 @@ import { stylists } from "@/data/demo-data";
 import { 
   Upload, X, Image as ImageIcon, Sparkles, 
   Camera, Grid3X3, Eye, Heart, Download,
-  ChevronLeft, ChevronRight, Maximize2
+  ChevronLeft, ChevronRight, Maximize2, 
+  BadgeCheck, Zap, Star, Layers,
+  FolderOpen, Clock, ThumbsUp, Share2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -81,61 +83,74 @@ const StylistPortfolio = () => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-10">
+      {/* Header - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-2 mb-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+            >
               <Camera className="w-3.5 h-3.5" />
               Portfolio Gallery
-            </span>
+            </motion.div>
           </div>
-          <h2 className="font-serif text-3xl font-bold text-primary">My Portfolio</h2>
-          <p className="text-detail mt-1 font-brand">
-            Showcase your best work to attract more clients
-          </p>
+          
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">My Portfolio</h2>
+          
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Layers className="w-4 h-4 text-accent" />
+            <p className="text-sm">Showcase your best work to attract more clients</p>
+          </div>
         </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-2 bg-card rounded-xl p-1 border border-border/50">
-          <button
+        {/* View Mode Toggle - Premium */}
+        <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm rounded-xl p-1.5 border border-border/50 shadow-sm">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setViewMode("grid")}
-            className={`p-2 rounded-lg transition-all ${
+            className={`p-2.5 rounded-lg transition-all ${
               viewMode === "grid" 
-                ? "bg-primary text-white" 
-                : "text-detail hover:bg-primary/10"
+                ? "bg-gradient-to-r from-accent to-accent/90 text-primary shadow-md" 
+                : "text-muted-foreground hover:text-accent hover:bg-accent/10"
             }`}
           >
             <Grid3X3 className="w-4 h-4" />
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setViewMode("masonry")}
-            className={`p-2 rounded-lg transition-all ${
+            className={`p-2.5 rounded-lg transition-all ${
               viewMode === "masonry" 
-                ? "bg-primary text-white" 
-                : "text-detail hover:bg-primary/10"
+                ? "bg-gradient-to-r from-accent to-accent/90 text-primary shadow-md" 
+                : "text-muted-foreground hover:text-accent hover:bg-accent/10"
             }`}
           >
             <ImageIcon className="w-4 h-4" />
-          </button>
+          </motion.button>
         </div>
       </motion.div>
 
-      {/* Portfolio Grid */}
+      {/* Portfolio Grid - Premium redesign */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className={`grid ${
           viewMode === "grid" 
-            ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" 
+            ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5" 
             : "grid-cols-2 md:grid-cols-3 gap-6"
-        } gap-4`}
+        }`}
       >
         {portfolio.map((img, i) => (
           <motion.div
@@ -148,7 +163,7 @@ const StylistPortfolio = () => {
               viewMode === "masonry" && i % 3 === 0 ? "row-span-2" : ""
             }`}
           >
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl">
+            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/5 to-accent/0 border-2 border-border/50 hover:border-accent/30 transition-all duration-500 hover:shadow-2xl">
               <img 
                 src={img} 
                 alt={`Work ${i+1}`} 
@@ -158,47 +173,63 @@ const StylistPortfolio = () => {
                 }}
               />
               
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+              {/* Gradient Overlay - Premium */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-500" />
 
-              {/* Action Buttons */}
-              <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => handleViewImage(img)}
-                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all hover:scale-110 shadow-lg"
-                  >
-                    <Eye className="w-4 h-4 text-primary" />
-                  </button>
-                  
-                  <button
-                    onClick={() => handleRemovePhoto(i)}
-                    className="w-10 h-10 rounded-full bg-destructive/90 backdrop-blur-sm flex items-center justify-center hover:bg-destructive transition-all hover:scale-110 shadow-lg"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
+              {/* Top Badges */}
+              <div className="absolute top-3 left-3 z-20">
+                <div className="bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full border border-white/20 shadow-lg">
+                  {i + 1}/{portfolio.length}
                 </div>
               </div>
 
-              {/* Image Counter Badge */}
-              <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
-                {i + 1}/{portfolio.length}
+              {i === 0 && (
+                <div className="absolute top-3 right-3 z-20">
+                  <div className="bg-gradient-to-r from-amber-500 to-amber-400 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-white/20">
+                    <Star className="w-3 h-3 fill-white" />
+                    Featured
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons - Premium */}
+              <div className="absolute inset-x-0 bottom-0 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                <div className="flex items-center justify-center gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleViewImage(img)}
+                    className="w-12 h-12 rounded-xl bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-xl border border-white/20"
+                  >
+                    <Eye className="w-5 h-5 text-primary" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleRemovePhoto(i)}
+                    className="w-12 h-12 rounded-xl bg-destructive/90 backdrop-blur-sm flex items-center justify-center hover:bg-destructive transition-all shadow-xl border border-white/20"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </motion.button>
+                </div>
               </div>
 
-             
+            
             </div>
           </motion.div>
         ))}
 
-        {/* Upload Card */}
+        {/* Upload Card - Premium redesign */}
         <motion.label
           custom={portfolio.length}
           variants={fadeUp}
           className={`
-            relative rounded-2xl border-3 border-dashed transition-all duration-300 cursor-pointer
+            relative rounded-2xl border-3 border-dashed transition-all duration-500 cursor-pointer
+            overflow-hidden group
             ${isUploading 
-              ? "border-primary/50 bg-primary/5" 
-              : "border-border hover:border-primary/50 hover:bg-primary/5"
+              ? "border-accent/50 bg-accent/5" 
+              : "border-border/50 hover:border-accent/30 hover:bg-accent/5"
             }
             ${viewMode === "masonry" ? "aspect-square" : "aspect-square"}
           `}
@@ -211,28 +242,55 @@ const StylistPortfolio = () => {
             disabled={isUploading}
           />
           
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+          {/* Animated background pattern */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent" />
+            <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 2px 2px, rgba(184,122,93,0.1) 1px, transparent 0)`, backgroundSize: '24px 24px' }} />
+          </div>
+          
+         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
             {isUploading ? (
               <>
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+                  </div>
+                </div>
                 <span className="text-sm font-medium text-primary">Uploading...</span>
-                <span className="text-xs text-detail mt-1">Please wait</span>
+                <span className="text-xs text-muted-foreground mt-2">Please wait</span>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <Upload className="w-8 h-8 text-primary" />
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mb-4 border-2 border-accent/20 group-hover:border-accent/40 transition-all"
+                >
+                  <Upload className="w-8 h-8 text-accent" />
+                </motion.div>
+                <span className="text-sm font-semibold text-primary mb-1">Add Photo</span>
+                <span className="text-xs text-muted-foreground mb-2">Click to upload</span>
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground bg-accent/5 px-3 py-1.5 rounded-full">
+                  <BadgeCheck className="w-3 h-3 text-accent" />
+                  <span>PNG, JPG up to 10MB</span>
                 </div>
-                <span className="text-sm font-semibold text-primary">Add Photo</span>
-                <span className="text-xs text-detail mt-1">Click to upload</span>
-                <span className="text-xs text-detail">PNG, JPG up to 10MB</span>
               </>
             )}
           </div>
+
+          {/* Progress indicator */}
+          {isUploading && (
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 1, ease: "easeInOut" }}
+              className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-accent to-accent/80"
+            />
+          )}
         </motion.label>
       </motion.div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal - Premium redesign */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
@@ -240,104 +298,130 @@ const StylistPortfolio = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedImage(null)}
-            className="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-50 flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring" }}
+              transition={{ type: "spring", damping: 25 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-5xl w-full"
+              className="relative max-w-6xl w-full"
             >
               <img 
                 src={selectedImage} 
                 alt="Enlarged view" 
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto rounded-2xl shadow-2xl border-2 border-white/10"
               />
               
-              {/* Close Button */}
-              <button
+              {/* Close Button - Premium */}
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedImage(null)}
-                className="absolute -top-12 right-0 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all"
+                className="absolute -top-14 right-0 w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all border border-white/20"
               >
                 <X className="w-5 h-5 text-white" />
-              </button>
+              </motion.button>
 
-              {/* Navigation */}
+              {/* Navigation - Premium */}
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handlePrevImage}
-                  className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all"
+                  className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all border border-white/20"
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
-                </button>
-                <button 
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleNextImage}
-                  className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all"
+                  className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all border border-white/20"
                 >
                   <ChevronRight className="w-5 h-5 text-white" />
-                </button>
+                </motion.button>
               </div>
 
-              {/* Image Info */}
-              <div className="absolute -bottom-16 left-0 right-0 flex justify-center">
-                <div className="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white text-sm flex items-center gap-4">
-                  <span>1 / {portfolio.length}</span>
+              {/* Image Info - Premium */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="absolute -bottom-20 left-0 right-0 flex justify-center"
+              >
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl px-8 py-4 text-white text-sm flex items-center gap-6 border border-white/20 shadow-xl">
+                  <span className="font-medium">
+                    {portfolio.indexOf(selectedImage) + 1} / {portfolio.length}
+                  </span>
                   <span className="w-1 h-1 rounded-full bg-white/30" />
-                  <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                    <Heart className="w-4 h-4" /> Like
+                  <button className="flex items-center gap-2 hover:text-accent transition-colors group">
+                    <Heart className="w-4 h-4 group-hover:scale-110 transition-transform" /> Like
                   </button>
                   <span className="w-1 h-1 rounded-full bg-white/30" />
-                  <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                    <Download className="w-4 h-4" /> Download
+                  <button className="flex items-center gap-2 hover:text-accent transition-colors group">
+                    <Download className="w-4 h-4 group-hover:scale-110 transition-transform" /> Download
+                  </button>
+                  <span className="w-1 h-1 rounded-full bg-white/30" />
+                  <button className="flex items-center gap-2 hover:text-accent transition-colors group">
+                    <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" /> Share
                   </button>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Portfolio Tips */}
+      {/* Portfolio Tips - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/20"
+        className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-2xl p-6 md:p-8 border border-accent/20 shadow-lg"
       >
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-6 h-6 text-white" />
+        <div className="flex items-start gap-5">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center flex-shrink-0 shadow-lg">
+            <Sparkles className="w-7 h-7 text-primary" />
           </div>
-          <div>
-            <h4 className="font-serif font-semibold text-primary mb-2">Tips for a Great Portfolio</h4>
+          <div className="flex-1">
+            <h4 className="font-serif font-semibold text-xl text-primary mb-4">Tips for a Great Portfolio</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                "Upload high-quality, well-lit photos of your best work",
-                "Include a variety of styles to showcase your range",
-                "Update regularly with your latest creations"
+                { icon: Camera, text: "Upload high-quality, well-lit photos of your best work" },
+                { icon: Layers, text: "Include a variety of styles to showcase your range" },
+                { icon: Clock, text: "Update regularly with your latest creations" }
               ].map((tip, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-detail">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  {tip}
-                </div>
+                <motion.div 
+                  key={i} 
+                  whileHover={{ y: -2 }}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-background/50 border border-accent/10 hover:border-accent/30 transition-all"
+                >
+                  <tip.icon className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-muted-foreground">{tip.text}</span>
+                </motion.div>
               ))}
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Upload Limit Info */}
-      <motion.p 
+      {/* Upload Limit Info - Premium */}
+      <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-xs text-center text-detail flex items-center justify-center gap-1"
+        className="flex items-center justify-center"
       >
-        <Camera className="w-3 h-3 text-primary" />
-        You can upload up to 20 photos. {portfolio.length}/20 used.
-      </motion.p>
+        <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+          <Camera className="w-3.5 h-3.5 text-accent" />
+          <span>You can upload up to 20 photos.</span>
+          <span className="font-semibold text-accent">{portfolio.length}/20</span>
+          <span>used</span>
+          <Zap className="w-3.5 h-3.5 text-accent" />
+        </div>
+      </motion.div>
     </div>
   );
 };

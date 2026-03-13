@@ -104,7 +104,7 @@ const InstantMatchResultPage = () => {
     const hairstyleId = allHairstyles.find(h => h.name === matchResult.stylist.specialties[0])?.id || "";
     const rejectedMatch = getRejectedInstantMatchForCustomer(user?.id || "");
     if (rejectedMatch) {
-      window.location.href = `/booking?stylist=${matchResult.stylist.id}&style=${hairstyleId}&date=${rejectedMatch.searchCriteria.date}&time=${rejectedMatch.searchCriteria.time}&postal=${user?.postalCode}&isInstantMatch=true`;
+      navigate(`/booking?stylist=${matchResult.stylist.id}&style=${hairstyleId}&date=${rejectedMatch.searchCriteria.date}&time=${rejectedMatch.searchCriteria.time}&postal=${user?.postalCode}&isInstantMatch=true`);
     }
   };
 

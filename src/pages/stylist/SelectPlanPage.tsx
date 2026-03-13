@@ -419,12 +419,7 @@ const SelectPlanPage = () => {
                       <span className="font-bold text-3xl text-primary">${currentPrice}</span>
                     </div>
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700">
-                      <p className="flex items-center gap-1">
-                        <Info className="w-3 h-3" />
-                        Your subscription will auto-renew monthly. You can cancel anytime.
-                      </p>
-                    </div>
+                    
                   </div>
                   
                   {/* Pay Button */}

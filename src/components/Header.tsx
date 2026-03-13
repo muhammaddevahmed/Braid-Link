@@ -3,7 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { 
   Menu, X, User, LogOut, ChevronDown, Zap, Sparkles, 
   Home, Scissors, Search, Users, CreditCard, HelpCircle, 
-  Mail, LayoutDashboard, Heart, Shield, Crown
+  Mail, LayoutDashboard, Heart, Shield, Crown, Award,
+  Bell, Settings, Star, Clock
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,64 +83,85 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled 
           ? "bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg" 
           : "bg-background/80 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo Section */}
-        <Link to="/" className="flex items-center gap-2 group mr-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        {/* Logo Section - BIGGER as requested */}
+        <Link to="/" className="flex items-center gap-3 group mr-8">
           <motion.div
-            whileHover={{ rotate: 5, scale: 1.05 }}
+            whileHover={{ rotate: 5, scale: 1.08 }}
             transition={{ type: "spring", stiffness: 400 }}
             className="relative"
           >
-            <img src={logo} alt="BraidLink" className="h-12 w-auto drop-shadow-md" />
+            <img src={logo} alt="BraidLink" className="h-16 w-auto drop-shadow-xl" />
             <motion.div
               animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0, 0.5, 0]
+                scale: [1, 1.3, 1],
+                opacity: [0, 0.6, 0]
               }}
               transition={{ 
-                duration: 2,
+                duration: 2.5,
                 repeat: Infinity,
-                repeatType: "reverse"
+                repeatType: "reverse",
+                ease: "easeInOut"
               }}
-              className="absolute inset-0 bg-accent/20 rounded-full blur-xl -z-10"
+              className="absolute inset-0 bg-accent/30 rounded-full blur-2xl -z-10"
             />
+            
+            {/* Decorative sparkle */}
+            <motion.div
+              animate={{ 
+                rotate: 360,
+                scale: [0.8, 1.2, 0.8]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="absolute -top-2 -right-2"
+            >
+              <Sparkles className="w-4 h-4 text-accent" />
+            </motion.div>
           </motion.div>
+          
           <div className="flex flex-col">
-            <span className="font-brand text-xl text-primary font-bold leading-tight tracking-wide group-hover:text-accent transition-colors">
+            <span className="font-brand text-2xl text-primary font-bold leading-tight tracking-tight group-hover:text-accent transition-colors">
               BraidLink
             </span>
-            <span className="font-tagline text-xs text-detail leading-tight tracking-wider hidden sm:block">
-              Afro Hair Braiding
+            <span className="font-tagline text-xs text-muted-foreground leading-tight tracking-wider hidden sm:block">
+              Premium Afro Hair Braiding
             </span>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
+        {/* Desktop Navigation - Premium redesign */}
+        <nav className="hidden lg:flex items-center gap-0">
           {navLinks.map((link) => {
             const Icon = link.icon;
+            const active = isActive(link.to);
+            
             return (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`relative text-sm font-medium transition-all px-4 py-2.5 rounded-xl flex items-center gap-2 group ${
-                  isActive(link.to)
-                    ? "text-accent bg-accent/10"
-                    : "text-detail hover:text-primary hover:bg-accent/5"
+                className={`relative text-sm font-medium whitespace-nowrap transition-all px-3 py-2.5 rounded-xl flex items-center gap-2 group ${
+                  active
+                    ? "text-accent bg-gradient-to-r from-accent/10 to-accent/5"
+                    : "text-muted-foreground hover:text-primary hover:bg-accent/5"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive(link.to) ? 'text-accent' : 'text-detail group-hover:text-primary'}`} />
+                <Icon className={`w-4 h-4 transition-all ${
+                  active 
+                    ? 'text-accent' 
+                    : 'text-muted-foreground group-hover:text-accent group-hover:scale-110'
+                }`} />
                 {link.label}
-                {isActive(link.to) && (
+                
+                {active && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full"
+                    className="absolute -bottom-1 left-2 right-2 h-0.5 bg-gradient-to-r from-accent/0 via-accent to-accent/0 rounded-full"
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
@@ -148,46 +170,59 @@ const Header = () => {
           })}
         </nav>
 
-        {/* Desktop Right Section */}
-        <div className="hidden lg:flex items-center gap-4">
+        {/* Desktop Right Section - Premium redesign */}
+        <div className="hidden lg:flex items-center gap-3">
           {isAuthenticated ? (
             <div className="relative">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-3 pl-2 pr-4 py-2 rounded-xl hover:bg-accent/5 transition-all border border-transparent hover:border-accent/20"
+                className={`flex items-center gap-3 pl-2 pr-4 py-2 rounded-xl transition-all duration-300 border ${
+                  profileOpen 
+                    ? 'bg-accent/10 border-accent/30 shadow-lg' 
+                    : 'hover:bg-accent/5 border-transparent hover:border-accent/20'
+                }`}
               >
                 <div className="relative">
                   {user?.avatar ? (
                     <img 
                       src={user.avatar} 
                       alt={user.name} 
-                      className="w-9 h-9 rounded-xl object-cover ring-2 ring-accent/30 group-hover:ring-accent/50 transition-all"
+                      className="w-10 h-10 rounded-xl object-cover ring-2 ring-accent/30 group-hover:ring-accent/50 transition-all"
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center ring-2 ring-accent/30">
-                      <span className="text-sm font-bold text-accent">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center ring-2 ring-accent/30 shadow-lg">
+                      <span className="text-sm font-bold text-primary">
                         {getInitials(user?.name || 'User')}
                       </span>
                     </div>
                   )}
+                  
+                  {/* Online status indicator */}
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background"
+                    className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background"
                   />
                 </div>
+                
                 <div className="text-left">
-                  <span className="text-sm font-semibold text-primary block">
+                  <span className="text-sm font-semibold text-primary block leading-tight">
                     {user?.name?.split(" ")[0]}
                   </span>
-                  <span className="text-xs text-detail capitalize flex items-center gap-1">
+                  <span className="text-xs text-muted-foreground capitalize flex items-center gap-1">
                     <Shield className="w-3 h-3 text-accent" />
                     {user?.role}
                   </span>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-detail transition-transform duration-300 ${profileOpen ? 'rotate-180' : ''}`} />
+                
+                <motion.div
+                  animate={{ rotate: profileOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </motion.div>
               </motion.button>
 
               <AnimatePresence>
@@ -197,14 +232,30 @@ const Header = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute right-0 top-full mt-2 w-64 bg-card rounded-2xl border border-border/50 shadow-2xl overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-72 bg-card rounded-2xl border border-border/50 shadow-2xl overflow-hidden"
                   >
-                    {/* Profile Header */}
-                    <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 border-b border-border">
-                      <p className="text-sm font-semibold text-primary">{user?.name}</p>
-                      <p className="text-xs text-detail flex items-center gap-1 mt-1">
-                        <Mail className="w-3 h-3" /> {user?.email}
-                      </p>
+                    {/* Profile Header with Gradient */}
+                    <div className="relative p-5 bg-gradient-to-br from-primary to-primary/95">
+                      <div className="absolute inset-0 opacity-10" 
+                           style={{ backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`, backgroundSize: '16px 16px' }} />
+                      
+                      <div className="relative z-10 flex items-center gap-3">
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt={user.name} className="w-14 h-14 rounded-xl object-cover ring-2 ring-white/30" />
+                        ) : (
+                          <div className="w-14 h-14 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30">
+                            <span className="text-xl font-bold text-white">
+                              {getInitials(user?.name || 'User')}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-base font-semibold text-white">{user?.name}</p>
+                          <p className="text-xs text-white/80 flex items-center gap-1 mt-1">
+                            <Mail className="w-3 h-3" /> {user?.email}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Menu Items */}
@@ -215,22 +266,31 @@ const Header = () => {
                           onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-accent/5 rounded-xl transition-all group"
                         >
-                          <LayoutDashboard className="w-4 h-4 text-accent group-hover:scale-110 transition-transform" />
-                          <span className="text-primary">Dashboard</span>
-                          <span className="ml-auto text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+                          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <LayoutDashboard className="w-4 h-4 text-accent" />
+                          </div>
+                          <span className="text-primary font-medium">Dashboard</span>
+                          <span className="ml-auto text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
                             {user?.role}
                           </span>
                         </Link>
                       )}
 
-                     
+                      
 
+                   
+
+                      <div className="h-px bg-border/50 my-2" />
+
+                      {/* Logout */}
                       <button 
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-destructive/5 rounded-xl transition-all w-full text-left group mt-1 border-t border-border pt-3"
+                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-destructive/5 rounded-xl transition-all w-full text-left group"
                       >
-                        <LogOut className="w-4 h-4 text-destructive group-hover:scale-110 transition-transform" />
-                        <span className="text-destructive">Sign Out</span>
+                        <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <LogOut className="w-4 h-4 text-destructive" />
+                        </div>
+                        <span className="text-destructive font-medium">Sign Out</span>
                       </button>
                     </div>
                   </motion.div>
@@ -241,18 +301,19 @@ const Header = () => {
             <>
               <Link 
                 to="/login" 
-                className="text-sm font-medium text-detail hover:text-primary transition-colors px-4 py-2.5 flex items-center gap-2 group"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors px-4 py-2.5 flex items-center gap-2 group whitespace-nowrap"
               >
-                <User className="w-4 h-4 group-hover:text-accent transition-colors" />
+                <User className="w-4 h-4 group-hover:text-accent transition-colors group-hover:scale-110" />
                 Sign In
               </Link>
+              
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Link 
                   to="/signup" 
-                  className="btn-cta text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 group"
+                  className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold text-base px-8 py-3 rounded-xl flex items-center gap-2 group hover:shadow-lg hover:shadow-accent/25 transition-all duration-300 whitespace-nowrap w-fit"
                 >
                   <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                   Get Started
@@ -262,10 +323,10 @@ const Header = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - Premium */}
         <motion.button 
           whileTap={{ scale: 0.9 }}
-          className="lg:hidden relative w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"
+          className="lg:hidden relative w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center border border-accent/20 hover:border-accent/30 transition-all"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           <AnimatePresence mode="wait">
@@ -294,7 +355,7 @@ const Header = () => {
         </motion.button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Premium redesign */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -304,50 +365,57 @@ const Header = () => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="lg:hidden border-t border-border/50 bg-card/95 backdrop-blur-md overflow-hidden"
           >
-            <div className="p-4 space-y-1">
+            <div className="p-5 space-y-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
+                const active = isActive(link.to);
+                
                 return (
                   <Link 
                     key={link.to} 
                     to={link.to} 
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 py-3 px-4 text-sm font-medium rounded-xl transition-all ${
-                      isActive(link.to)
-                        ? "bg-accent/10 text-accent"
-                        : "text-detail hover:text-primary hover:bg-accent/5"
+                    className={`flex items-center gap-3 py-4 px-4 text-sm font-medium rounded-xl transition-all ${
+                      active
+                        ? "bg-gradient-to-r from-accent/10 to-accent/5 text-accent"
+                        : "text-muted-foreground hover:text-primary hover:bg-accent/5"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive(link.to) ? 'text-accent' : 'text-detail'}`} />
+                    <Icon className={`w-5 h-5 ${active ? 'text-accent' : 'text-muted-foreground'}`} />
                     {link.label}
-                    {isActive(link.to) && (
+                    {active && (
                       <motion.div
                         layoutId="mobileActive"
-                        className="ml-auto w-1.5 h-1.5 rounded-full bg-accent"
+                        className="ml-auto w-2 h-2 rounded-full bg-accent"
                       />
                     )}
                   </Link>
                 );
               })}
 
-              {/* Mobile User Section */}
-              <div className="pt-4 mt-2 border-t border-border space-y-2">
+              {/* Mobile User Section - Premium */}
+              <div className="pt-6 mt-4 border-t border-border space-y-3">
                 {isAuthenticated ? (
                   <>
-                    {/* User Info */}
-                    <div className="flex items-center gap-3 px-4 py-3">
-                      {user?.avatar ? (
-                        <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-accent/30" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center ring-2 ring-accent/30">
-                          <span className="text-sm font-bold text-accent">
-                            {getInitials(user?.name || 'User')}
-                          </span>
+                    {/* User Info Card */}
+                    <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-4 border border-accent/20">
+                      <div className="flex items-center gap-3">
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-xl object-cover ring-2 ring-accent/30" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center ring-2 ring-accent/30">
+                            <span className="text-base font-bold text-primary">
+                              {getInitials(user?.name || 'User')}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-semibold text-primary">{user?.name}</p>
+                          <p className="text-xs text-muted-foreground capitalize flex items-center gap-1 mt-1">
+                            <Shield className="w-3 h-3 text-accent" />
+                            {user?.role}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-sm font-semibold text-primary">{user?.name}</p>
-                        <p className="text-xs text-detail capitalize">{user?.role}</p>
                       </div>
                     </div>
 
@@ -355,20 +423,20 @@ const Header = () => {
                       <Link 
                         to={getDashboardLink()} 
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-3 py-3 px-4 text-sm font-medium hover:bg-accent/5 rounded-xl transition-all"
+                        className="flex items-center gap-3 py-3 px-4 text-sm font-medium hover:bg-accent/5 rounded-xl transition-all group"
                       >
-                        <LayoutDashboard className="w-4 h-4 text-accent" />
+                        <LayoutDashboard className="w-4 h-4 text-accent group-hover:scale-110 transition-transform" />
                         Dashboard
                       </Link>
                     )}
 
-                 
+                    
 
                     <button 
                       onClick={handleLogout}
-                      className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-destructive hover:bg-destructive/5 rounded-xl transition-all w-full text-left"
+                      className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-destructive hover:bg-destructive/5 rounded-xl transition-all w-full text-left group"
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
                       Sign Out
                     </button>
                   </>
@@ -377,17 +445,18 @@ const Header = () => {
                     <Link 
                       to="/login" 
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-detail hover:text-primary hover:bg-accent/5 rounded-xl transition-all"
+                      className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-accent/5 rounded-xl transition-all group"
                     >
-                      <User className="w-4 h-4" />
+                      <User className="w-4 h-4 group-hover:text-accent group-hover:scale-110 transition-transform" />
                       Sign In
                     </Link>
+                    
                     <Link 
                       to="/signup" 
                       onClick={() => setMobileOpen(false)}
-                      className="btn-cta text-sm px-4 py-3 inline-flex items-center justify-center gap-2 w-full mt-2"
+                      className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold text-base px-6 py-4 inline-flex items-center justify-center gap-2 w-full mt-2 rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all group whitespace-nowrap"
                     >
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                       Get Started
                     </Link>
                   </>

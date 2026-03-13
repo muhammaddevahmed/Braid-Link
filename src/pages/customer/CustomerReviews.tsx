@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { reviews } from "@/data/demo-data";
 import { 
   Star, ThumbsUp, MessageCircle, Calendar,
-  User, Award, Trash2,
-  ChevronDown, ChevronRight,
-  Clock, CheckCircle
+  User, Award, Trash2, Sparkles,
+  ChevronDown, ChevronRight, BadgeCheck,
+  Clock, CheckCircle, TrendingUp,
+  Edit, Share2, Flag, Heart,
+  Zap, Camera, Video, Coffee
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -33,11 +35,21 @@ const CustomerReviews = () => {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr + "T00:00:00");
-    return date.toLocaleDateString("en-US", { 
-      month: "short", 
-      day: "numeric", 
-      year: "numeric" 
-    });
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return "Today";
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return "Yesterday";
+    } else {
+      return date.toLocaleDateString("en-US", { 
+        month: "short", 
+        day: "numeric", 
+        year: "numeric" 
+      });
+    }
   };
 
   if (myReviews.length === 0) {
@@ -46,37 +58,60 @@ const CustomerReviews = () => {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         >
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-accent/10 text-accent text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+            <div className="flex items-center gap-2 mb-3">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, type: "spring" }}
+                className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+              >
                 <Star className="w-3.5 h-3.5 fill-accent" />
                 Reviews
-              </span>
+              </motion.div>
             </div>
-            <h2 className="font-serif text-3xl font-bold text-primary">My Reviews</h2>
-            <p className="text-detail mt-1 font-brand">Share your experiences with stylists</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">My Reviews</h2>
+            <p className="text-muted-foreground flex items-center gap-1">
+              <MessageCircle className="w-4 h-4 text-accent" />
+              Share your experiences with stylists
+            </p>
           </div>
         </motion.div>
 
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-16 bg-card rounded-2xl border border-border/50"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center py-20 bg-gradient-to-br from-card to-secondary/5 rounded-3xl border border-border/50 shadow-xl"
         >
-          <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-8 h-8 text-accent" />
+          <div className="relative mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto">
+              <MessageCircle className="w-10 h-10 text-accent" />
+            </div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="absolute -top-2 -right-2 w-8 h-8 bg-accent rounded-xl flex items-center justify-center shadow-lg"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+            </motion.div>
           </div>
-          <h3 className="font-serif text-xl font-bold text-primary mb-2">No reviews yet</h3>
-          <p className="text-detail mb-6 max-w-sm mx-auto">
+          
+          <h3 className="font-serif text-2xl font-bold text-primary mb-3">No reviews yet</h3>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             You haven't written any reviews. After your appointments, come back to share your experience!
           </p>
+          
           <Link 
             to="/find-stylist" 
-            className="btn-cta inline-flex items-center gap-2 px-6 py-3 rounded-xl"
+            className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold inline-flex items-center gap-2 px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all group"
           >
-            Find a Stylist <ChevronRight className="w-4 h-4" />
+            Find a Stylist 
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </div>
@@ -84,23 +119,37 @@ const CustomerReviews = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-10">
+      {/* Header - Premium redesign */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-accent/10 text-accent text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-2 mb-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-1.5 border border-accent/20"
+            >
               <Star className="w-3.5 h-3.5 fill-accent" />
               Your Feedback
-            </span>
+            </motion.div>
           </div>
-          <h2 className="font-serif text-3xl font-bold text-primary">My Reviews</h2>
-          <p className="text-detail mt-1 font-brand">You've written {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}</p>
+          
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">My Reviews</h2>
+          
+          <div className="flex items-center gap-4 text-muted-foreground">
+           
+            <div className="w-px h-4 bg-border" />
+           
+          </div>
         </div>
+
+       
       </motion.div>
 
       {/* Reviews List */}
@@ -120,80 +169,104 @@ const CustomerReviews = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="group"
               >
-                <div className={`bg-card rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+                <div className={`bg-card rounded-2xl border-2 transition-all duration-500 overflow-hidden ${
                   isExpanded 
-                    ? "border-accent shadow-xl" 
-                    : "border-border/50 hover:border-accent/30 hover:shadow-lg"
+                    ? "border-accent shadow-2xl" 
+                    : "border-border/50 hover:border-accent/30 hover:shadow-xl"
                 }`}>
-                  {/* Review Header */}
+                  {/* Review Header - Premium redesign */}
                   <div 
-                    className="p-5 cursor-pointer"
+                    className="p-6 cursor-pointer relative"
                     onClick={() => setExpandedReview(isExpanded ? null : review.id)}
                   >
-                    <div className="flex items-start justify-between">
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    
+                    <div className="flex items-start justify-between relative z-10">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center border border-accent/20">
-                          <User className="w-6 h-6 text-accent" />
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center border-2 border-accent/20 shadow-lg">
+                          <User className="w-7 h-7 text-primary" />
                         </div>
                         
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-serif font-semibold text-primary">{review.service}</h3>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-serif font-semibold text-primary text-lg">{review.service}</h3>
                             {review.rating >= 4 && (
-                              <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <Award className="w-3 h-3" /> Recommended
+                              <span className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 text-emerald-600 text-xs px-3 py-1 rounded-full flex items-center gap-1 border border-emerald-200">
+                                <Award className="w-3 h-3" /> 
+                                Recommended
                               </span>
+                            )}
+                            {review.rating === 5 && (
+                              <BadgeCheck className="w-4 h-4 text-accent" />
                             )}
                           </div>
                           
-                          <p className="text-sm text-detail flex items-center gap-2">
-                            <span className="flex items-center gap-1">
-                              <User className="w-3.5 h-3.5" /> with {review.stylistName}
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
+                            <span className="flex items-center gap-1.5 bg-accent/5 px-2 py-1 rounded-full">
+                              <User className="w-3.5 h-3.5 text-accent" /> 
+                              with <span className="font-medium text-primary">{review.stylistName}</span>
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-detail/30" />
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5" /> {formatDate(review.date)}
+                            <span className="flex items-center gap-1.5 bg-accent/5 px-2 py-1 rounded-full">
+                              <Calendar className="w-3.5 h-3.5 text-accent" /> 
+                              {formatDate(review.date)}
                             </span>
-                          </p>
+                          </div>
 
+                          {/* Star Rating */}
                           <div className="flex items-center gap-1 mt-2">
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-4 h-4 ${
+                                className={`w-4 h-4 transition-all ${
                                   i < review.rating
-                                    ? "fill-accent text-accent"
+                                    ? "fill-accent text-accent scale-110"
                                     : "text-muted"
                                 }`}
                               />
                             ))}
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {review.rating}.0 / 5.0
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                      <div className="flex items-center gap-3">
+                        {/* Action buttons - appear on hover */}
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          
+                          <motion.button 
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="w-9 h-9 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all flex items-center justify-center"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteReview(review.id);
                             }}
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </motion.button>
                         </div>
+                        
                         <motion.div
                           animate={{ rotate: isExpanded ? 180 : 0 }}
                           transition={{ duration: 0.3 }}
+                          className={`
+                            w-9 h-9 rounded-lg flex items-center justify-center
+                            ${isExpanded 
+                              ? 'bg-accent text-primary' 
+                              : 'bg-accent/10 text-accent group-hover:bg-accent/20'
+                            }
+                          `}
                         >
-                          <ChevronDown className="w-5 h-5 text-detail" />
+                          <ChevronDown className="w-5 h-5" />
                         </motion.div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Expanded Review Content */}
+                  {/* Expanded Review Content - Premium */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
@@ -203,13 +276,18 @@ const CustomerReviews = () => {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5">
-                          <div className="border-t border-border pt-4">
-                            <p className="text-sm text-detail leading-relaxed">
-                              {review.comment}
-                            </p>
+                        <div className="px-6 pb-6">
+                          <div className="border-t border-border/50 pt-5">
+                            {/* Review Comment */}
+                            <div className="bg-gradient-to-br from-accent/5 to-accent/0 rounded-xl p-5 mb-5 border border-accent/10">
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {review.comment}
+                              </p>
+                            </div>
 
-                            
+                          
+
+                           
                           </div>
                         </div>
                       </motion.div>
@@ -222,19 +300,7 @@ const CustomerReviews = () => {
         </AnimatePresence>
       </div>
 
-      {/* Footer Stats */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="flex items-center justify-between text-xs text-detail pt-2"
-      >
-       
-        <div className="flex items-center gap-2">
-          <CheckCircle className="w-3.5 h-3.5 text-accent" />
-          <span>{myReviews.length} total reviews</span>
-        </div>
-      </motion.div>
+     
     </div>
   );
 };

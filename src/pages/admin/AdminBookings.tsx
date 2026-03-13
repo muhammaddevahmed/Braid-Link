@@ -4,7 +4,9 @@ import { bookings, stylists } from "@/data/demo-data";
 import { 
   Calendar, Clock, DollarSign, User, Scissors, Search, 
   Filter, ChevronDown, ChevronUp, Trash2, CheckCircle, 
-  XCircle, AlertCircle, TrendingUp, Users, Star, Activity
+  XCircle, AlertCircle, TrendingUp, Users, Star, Activity,
+  Eye, MoreVertical, Download, Sparkles, Zap, BadgeCheck,
+  ArrowUpRight, ArrowDownRight
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,40 +24,45 @@ const AdminBookings = () => {
     switch (status) {
       case "upcoming":
         return { 
-          bg: "bg-blue-100", 
+          bg: "bg-blue-50", 
           text: "text-blue-700", 
           icon: Calendar,
-          label: "Upcoming"
+          label: "Upcoming",
+          border: "border-blue-200"
         };
       case "completed":
         return { 
-          bg: "bg-green-100", 
-          text: "text-green-700", 
+          bg: "bg-emerald-50", 
+          text: "text-emerald-700", 
           icon: CheckCircle,
-          label: "Completed"
+          label: "Completed",
+          border: "border-emerald-200"
         };
       case "pending":
       case "pending-approval":
         return { 
-          bg: "bg-amber-100", 
+          bg: "bg-amber-50", 
           text: "text-amber-700", 
           icon: AlertCircle,
-          label: "Pending"
+          label: "Pending",
+          border: "border-amber-200"
         };
       case "cancelled":
       case "rejected":
         return { 
-          bg: "bg-red-100", 
-          text: "text-red-700", 
+          bg: "bg-rose-50", 
+          text: "text-rose-700", 
           icon: XCircle,
-          label: "Cancelled"
+          label: "Cancelled",
+          border: "border-rose-200"
         };
       default:
         return { 
-          bg: "bg-gray-100", 
+          bg: "bg-gray-50", 
           text: "text-gray-700", 
           icon: AlertCircle,
-          label: status
+          label: status,
+          border: "border-gray-200"
         };
     }
   };
@@ -141,41 +148,75 @@ const AdminBookings = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+            <span className="bg-accent/10 text-accent text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               Booking Management
             </span>
+           
           </div>
           <h2 className="font-serif text-3xl font-bold text-primary">All Bookings</h2>
-          <p className="text-detail mt-1 font-brand">Monitor and manage all platform appointments</p>
+          <p className="text-muted-foreground mt-1 text-sm">Monitor and manage all platform appointments</p>
         </div>
 
-       
+     
       </motion.div>
 
-     
+      {/* Stats Cards */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-6 gap-4"
+      >
+        {[
+          { label: "Total", value: stats.total, icon: Calendar, color: "bg-accent/10 text-accent", iconColor: "text-accent" },
+          { label: "Upcoming", value: stats.upcoming, icon: Calendar, color: "bg-blue-100 text-blue-700", iconColor: "text-blue-600" },
+          { label: "Completed", value: stats.completed, icon: CheckCircle, color: "bg-emerald-100 text-emerald-700", iconColor: "text-emerald-600" },
+          { label: "Pending", value: stats.pending, icon: AlertCircle, color: "bg-amber-100 text-amber-700", iconColor: "text-amber-600" },
+          { label: "Cancelled", value: stats.cancelled, icon: XCircle, color: "bg-rose-100 text-rose-700", iconColor: "text-rose-600" },
+          { label: "Revenue", value: `$${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "bg-purple-100 text-purple-700", iconColor: "text-purple-600" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            custom={i}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="bg-card rounded-lg p-4 border border-border hover:border-accent/30 transition-all duration-300 hover:shadow-md flex items-center gap-3"
+          >
+            <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center`}>
+              <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">{stat.value}</p>
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Search and Filters */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="bg-card rounded-2xl p-5 border border-border/50 shadow-lg"
+        className="bg-card rounded-xl p-5 border border-border shadow-md"
       >
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent" />
             <input
               type="text"
               placeholder="Search by service, customer, or stylist..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              className="w-full pl-11 pr-4 py-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
             />
           </div>
 
@@ -184,7 +225,7 @@ const AdminBookings = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="px-4 py-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
             >
               <option value="all">All Status</option>
               <option value="upcoming">Upcoming</option>
@@ -196,7 +237,7 @@ const AdminBookings = () => {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="px-4 py-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -204,30 +245,37 @@ const AdminBookings = () => {
               <option value="month">This Month</option>
             </select>
 
-          
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "date" | "price")}
+              className="px-4 py-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+            >
+              <option value="date">Latest First</option>
+              <option value="price">Price: High to Low</option>
+            </select>
           </div>
         </div>
 
         {/* Active Filters */}
         {(searchTerm || statusFilter !== "all" || dateFilter !== "all") && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
-            <span className="text-xs text-detail">Active filters:</span>
+            <span className="text-xs text-muted-foreground">Active filters:</span>
             {searchTerm && (
-              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-accent/10 text-accent px-3 py-1 rounded-full flex items-center gap-1">
                 Search: "{searchTerm}"
-                <button onClick={() => setSearchTerm("")} className="hover:text-primary/80">×</button>
+                <button onClick={() => setSearchTerm("")} className="hover:text-accent/80">×</button>
               </span>
             )}
             {statusFilter !== "all" && (
-              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-accent/10 text-accent px-3 py-1 rounded-full flex items-center gap-1">
                 Status: {statusFilter}
-                <button onClick={() => setStatusFilter("all")} className="hover:text-primary/80">×</button>
+                <button onClick={() => setStatusFilter("all")} className="hover:text-accent/80">×</button>
               </span>
             )}
             {dateFilter !== "all" && (
-              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-accent/10 text-accent px-3 py-1 rounded-full flex items-center gap-1">
                 Date: {dateFilter}
-                <button onClick={() => setDateFilter("all")} className="hover:text-primary/80">×</button>
+                <button onClick={() => setDateFilter("all")} className="hover:text-accent/80">×</button>
               </span>
             )}
           </div>
@@ -239,7 +287,7 @@ const AdminBookings = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-xl"
+        className="bg-card rounded-xl border border-border overflow-hidden shadow-lg"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -268,31 +316,33 @@ const AdminBookings = () => {
                       initial="hidden"
                       animate="visible"
                       exit={{ opacity: 0, y: -20 }}
-                      className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors"
+                      className="border-b border-border last:border-0 hover:bg-accent/5 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Scissors className="w-4 h-4 text-primary" />
+                          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                            <Scissors className="w-4 h-4 text-accent" />
+                          </div>
                           <span className="font-medium text-primary">{booking.service}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-detail" />
-                          <span className="text-detail">{booking.customerName}</span>
+                          <User className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">{booking.customerName}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-detail" />
-                          <span className="text-detail">{booking.stylistName}</span>
+                          <Users className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">{booking.stylistName}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-sm text-primary font-medium">{formatDate(booking.date)}</span>
-                          <span className="text-xs text-detail flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> {booking.time}
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-accent" /> {booking.time}
                           </span>
                         </div>
                       </td>
@@ -300,18 +350,22 @@ const AdminBookings = () => {
                         <span className="text-lg font-bold text-primary">${booking.price}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 w-fit ${status.bg} ${status.text}`}>
+                        <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 w-fit border ${status.bg} ${status.text} ${status.border}`}>
                           <StatusIcon className="w-3 h-3" />
                           {status.label}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
-                          
-                          
+                          <button className="p-1.5 rounded-lg hover:bg-accent/10 text-accent transition-colors">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button className="p-1.5 rounded-lg hover:bg-accent/10 text-accent transition-colors">
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() => deleteBooking(booking.id)}
-                            className="p-1.5 rounded-lg hover:bg-red-100 text-red-600 transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -327,12 +381,12 @@ const AdminBookings = () => {
 
         {/* Empty State */}
         {sortedBookings.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-8 h-8 text-primary" />
+          <div className="text-center py-20">
+            <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-10 h-10 text-accent" />
             </div>
-            <h3 className="font-serif text-xl font-bold text-primary mb-2">No bookings found</h3>
-            <p className="text-detail mb-6 max-w-sm mx-auto">
+            <h3 className="font-serif text-2xl font-bold text-primary mb-2">No bookings found</h3>
+            <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
               No bookings match your search criteria. Try adjusting your filters.
             </p>
             <button
@@ -341,7 +395,7 @@ const AdminBookings = () => {
                 setStatusFilter("all");
                 setDateFilter("all");
               }}
-              className="text-primary font-semibold hover:underline"
+              className="text-accent font-semibold hover:underline"
             >
               Clear all filters
             </button>
@@ -351,14 +405,14 @@ const AdminBookings = () => {
         {/* Table Footer */}
         {sortedBookings.length > 0 && (
           <div className="px-6 py-4 border-t border-border flex items-center justify-between">
-            <p className="text-xs text-detail">
+            <p className="text-xs text-muted-foreground">
               Showing {Math.min(startIndex + 1, sortedBookings.length)} - {Math.min(startIndex + itemsPerPage, sortedBookings.length)} of {sortedBookings.length} bookings
             </p>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-detail">Rows per page:</span>
+                <span className="text-xs text-muted-foreground">Rows per page:</span>
                 <select 
-                  className="text-xs border border-border rounded-lg px-2 py-1 bg-background"
+                  className="text-xs border border-border rounded-lg px-2 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                   value={itemsPerPage}
                   onChange={(e) => {
                     setItemsPerPage(Number(e.target.value));
@@ -374,25 +428,23 @@ const AdminBookings = () => {
                 <button 
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-1 rounded-lg border border-border hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg border border-border hover:bg-accent/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronDown className="w-4 h-4 text-detail rotate-90" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground rotate-90" />
                 </button>
                 <span className="text-sm text-primary">Page {currentPage} of {totalPages}</span>
                 <button 
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-1 rounded-lg border border-border hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg border border-border hover:bg-accent/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronUp className="w-4 h-4 text-detail rotate-90" />
+                  <ChevronUp className="w-4 h-4 text-muted-foreground rotate-90" />
                 </button>
               </div>
             </div>
           </div>
         )}
       </motion.div>
-
-    
     </div>
   );
 };
