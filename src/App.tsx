@@ -18,7 +18,6 @@ import PricingPage from "@/pages/PricingPage";
 import BecomeStylistPage from "@/pages/BecomeStylistPage";
 import FAQPage from "@/pages/FAQPage";
 import ContactPage from "@/pages/ContactPage";
-import BookingPage from "@/pages/BookingPage";
 import AIRecommendationPage from "@/pages/AIRecommendationPage";
 import FindStylistPage from "@/pages/FindStylistPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
@@ -102,7 +101,7 @@ const AppRoutes = () => (
       <Route path="/become-stylist" element={<BecomeStylistPage />} />
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/contact" element={<ContactPage />} />
-      <Route path="/booking" element={<BookingPage />} />
+     
       <Route path="/find-stylist" element={<FindStylistPage />} />
       <Route path="/ai-recommendation" element={<AIRecommendationPage />} />
       <Route path="/review-stylist" element={<ReviewStylistPage />} />

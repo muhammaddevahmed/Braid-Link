@@ -455,13 +455,26 @@ const StylistProfilePage = () => {
                   Book an Appointment
                 </h3>
                 
-                {/* <Link 
-                  to={`/booking?stylist=${stylist.id}`} 
+                <Link 
+                  to="/ai-recommendation"
+                  onClick={() => {
+                    // Store selected stylist in sessionStorage to preserve it in AI flow
+                    sessionStorage.setItem('selectedStylist', JSON.stringify({
+                      id: stylist.id,
+                      name: stylist.name,
+                      photo: stylist.photo,
+                      rating: stylist.rating,
+                      reviewCount: stylist.reviewCount,
+                      location: stylist.location,
+                      isManuallySelected: true,
+                    }));
+                  }}
+                  state={{ from: `/stylist/${stylist.id}`, label: `${stylist.name.split(' ')[0]}'s Profile` }}
                   className="bg-accent text-primary font-semibold w-full text-center py-4 rounded-xl mb-6 flex items-center justify-center gap-2 group hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25"
                 >
                   <Calendar className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   Book Now with {stylist.name.split(' ')[0]}
-                </Link> */}
+                </Link>
                 
                 {/* Availability - Premium */}
                 <div className="mb-6">

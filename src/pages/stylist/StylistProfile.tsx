@@ -21,6 +21,7 @@ const StylistProfile = () => {
     experience: (stylistData as any).experience || 0,
     bio: stylistData.bio || '',
     email: user?.email || stylistData.email || '',
+    verified: (stylistData as any).verified || false,
   };
   const [form, setForm] = useState({ 
     name: user?.name || s.name || "", 
@@ -34,7 +35,6 @@ const StylistProfile = () => {
   });
   const [saved, setSaved] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [avatarHover, setAvatarHover] = useState(false);
   const [activeTab, setActiveTab] = useState<"profile" | "contact">("profile");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -153,11 +153,7 @@ const StylistProfile = () => {
         <div className="p-6">
           {/* Avatar and Title Section */}
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 -mt-16 mb-8">
-            <div 
-              className="relative group"
-              onMouseEnter={() => setAvatarHover(true)}
-              onMouseLeave={() => setAvatarHover(false)}
-            >
+            <div className="relative group">
               <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center ring-4 ring-background shadow-xl overflow-hidden">
                 {user?.avatar ? (
                   <img 

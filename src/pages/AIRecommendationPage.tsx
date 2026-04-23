@@ -15,9 +15,20 @@ import { stylists, Booking } from '@/data/demo-data';
 import { Stylist } from '@/data/demo-data';
 import { mockStyleSuggestion, mockHealthReport } from '@/data/ai-data';
 import { motion } from 'framer-motion';
-import { CheckCircle, Calendar, Clock, CalendarDays } from 'lucide-react';
+import { CheckCircle, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
-type FlowState = 'upload' | 'processing' | 'suggestion' | 'date-selection' | 'matching' | 'matched' | 'confirmed';
+type FlowState = 'upload' | 'processing' | 'suggestion' | 'zip-code' | 'date-selection' | 'matching' | 'matched' | 'confirmed';
+
+interface ManuallySelectedStylist {
+  id: string;
+  name: string;
+  photo: string;
+  rating: number;
+  reviewCount: number;
+  location: string;
+  isManuallySelected: true;
+}
 
 const AIRecommendationPage = () => {
   const loadSavedState = () => {
@@ -30,26 +41,108 @@ const AIRecommendationPage = () => {
     return null;
   };
 
-  const savedState = loadSavedState();
+  const loadSelectedStylist = (): ManuallySelectedStylist | null => {
+    try {
+      const saved = sessionStorage.getItem('selectedStylist');
+      if (saved) {
+        const stylist = JSON.parse(saved);
+        sessionStorage.removeItem('selectedStylist');
+        return stylist;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  };
 
-  const [flowState, setFlowState] = useState<FlowState>(savedState?.flowState || 'upload');
+  const savedState = loadSavedState();
+  const manualStylist = loadSelectedStylist();
+
+  const getInitialFlowState = (): FlowState => {
+    if (savedState?.flowState && savedState.frontImage) {
+      return savedState.flowState;
+    }
+    if (manualStylist && savedState?.frontImage) {
+      return savedState.flowState || 'suggestion';
+    }
+    return 'upload';
+  };
+
+  const [flowState, setFlowState] = useState<FlowState>(getInitialFlowState());
   const [matchedStylist, setMatchedStylist] = useState<Stylist | null>(savedState?.matchedStylist || null);
   const [frontImage, setFrontImage] = useState<string | null>(savedState?.frontImage || null);
   const [backImage, setBackImage] = useState<string | null>(savedState?.backImage || null);
   const [selectedDate, setSelectedDate] = useState<string>(savedState?.selectedDate || '');
   const [selectedTime, setSelectedTime] = useState<string>(savedState?.selectedTime || '');
+  const [zipCode, setZipCode] = useState<string>(savedState?.zipCode || '');
   const [rejectedStylistIds, setRejectedStylistIds] = useState<Set<string>>(
     savedState?.rejectedStylistIds ? new Set(savedState.rejectedStylistIds) : new Set()
   );
+  const [isManualStylistSelected, setIsManualStylistSelected] = useState(!!manualStylist);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { createBooking } = useBooking();
 
-  const times = ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"];
-  const dates = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() + i + 1);
-    return d.toISOString().split("T")[0];
-  });
+  useEffect(() => {
+    if (manualStylist && !matchedStylist) {
+      const fullStylist = stylists.find(s => s.id === manualStylist.id);
+      if (fullStylist) {
+        setMatchedStylist(fullStylist);
+      }
+    }
+  }, [manualStylist, matchedStylist]);
+
+  const generateAvailableDates = () => {
+    if (isManualStylistSelected && matchedStylist?.availability) {
+      const availableDays = Object.keys(matchedStylist.availability);
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const result: string[] = [];
+      const today = new Date();
+      for (let i = 1; i <= 30 && result.length < 14; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const dayName = dayNames[d.getDay()];
+        if (availableDays.includes(dayName)) {
+          result.push(d.toISOString().split("T")[0]);
+        }
+      }
+      return result;
+    }
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(); d.setDate(d.getDate() + i + 1);
+      return d.toISOString().split("T")[0];
+    });
+  };
+
+  const generateAvailableTimes = () => {
+    if (isManualStylistSelected && matchedStylist?.availability && selectedDate) {
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dateObj = new Date(selectedDate + "T00:00:00");
+      const dayName = dayNames[dateObj.getDay()];
+      const daySchedule = matchedStylist.availability[dayName];
+      if (!daySchedule) return [];
+
+      const parseHour = (timeStr: string) => {
+        const [hourStr] = timeStr.split(":");
+        return parseInt(hourStr, 10);
+      };
+
+      const startHour = parseHour(daySchedule.start);
+      const endHour = parseHour(daySchedule.end);
+      const slots: string[] = [];
+
+      for (let h = startHour; h < endHour; h++) {
+        const period = h >= 12 ? "PM" : "AM";
+        const displayHour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+        slots.push(`${displayHour}:00 ${period}`);
+      }
+      return slots;
+    }
+    return ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"];
+  };
+
+  const dates = generateAvailableDates();
+  const times = generateAvailableTimes();
 
   useEffect(() => {
     const stateToSave = {
@@ -59,13 +152,13 @@ const AIRecommendationPage = () => {
       backImage,
       selectedDate,
       selectedTime,
+      zipCode,
       rejectedStylistIds: Array.from(rejectedStylistIds)
     };
     sessionStorage.setItem('aiRecommendationState', JSON.stringify(stateToSave));
-  }, [flowState, matchedStylist, frontImage, backImage, selectedDate, selectedTime, rejectedStylistIds]);
+  }, [flowState, matchedStylist, frontImage, backImage, selectedDate, selectedTime, zipCode, rejectedStylistIds]);
 
   useEffect(() => {
-    // Check for user on initial render and whenever user state changes
     if (user === null) {
       toast.error('You need to be logged in to access AI Recommendation.');
       navigate('/login');
@@ -73,21 +166,30 @@ const AIRecommendationPage = () => {
   }, [user, navigate]);
 
   useEffect(() => {
+    setSelectedTime('');
+  }, [selectedDate]);
+
+  useEffect(() => {
     if (flowState === 'processing') {
       const timer = setTimeout(() => {
         setFlowState('suggestion');
-      }, 5000); // 5-second processing simulation
+      }, 5000);
       return () => clearTimeout(timer);
     }
     if (flowState === 'matching') {
-      const timer = setTimeout(() => {
-        // Mock finding a stylist
-        setMatchedStylist(stylists.find(s => s.id === 's1') || stylists[0]);
+      if (isManualStylistSelected && matchedStylist) {
         setFlowState('matched');
-      }, 3000); // 3-second matching simulation
+        return;
+      }
+      const timer = setTimeout(() => {
+        if (!isManualStylistSelected || !matchedStylist) {
+          setMatchedStylist(stylists.find(s => s.id === 's1') || stylists[0]);
+        }
+        setFlowState('matched');
+      }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [flowState]);
+  }, [flowState, isManualStylistSelected, matchedStylist]);
 
   const handleUploadComplete = (front: string, back: string) => {
     setFrontImage(front);
@@ -96,32 +198,42 @@ const AIRecommendationPage = () => {
   };
 
   const handleSuggestionAccepted = () => {
-    setFlowState('date-selection');
+    if (isManualStylistSelected) {
+      setFlowState('date-selection');
+    } else {
+      setFlowState('zip-code');
+    }
   };
 
   const handleDateTimeSelected = () => {
     if (selectedDate && selectedTime) {
-      setFlowState('matching');
+      if (isManualStylistSelected && matchedStylist) {
+        setFlowState('matched');
+      } else {
+        setFlowState('matching');
+      }
     } else {
       toast.error("Please select a date and time.");
     }
   };
 
+  const handleZipCodeSubmit = () => {
+    if (!zipCode.trim()) {
+      toast.error("Please enter your zip/postal code.");
+      return;
+    }
+    setFlowState('date-selection');
+  };
+
   const handleFindAnother = async () => {
     if (matchedStylist) {
-      // Add current stylist to rejected list
       const newRejected = new Set([...rejectedStylistIds, matchedStylist.id]);
       setRejectedStylistIds(newRejected);
-
-      // Find available stylists
       const availableStylist = stylists.find(s => !newRejected.has(s.id));
-
       if (!availableStylist) {
         toast.error("No more stylists available. Try adjusting your preferences.");
         return;
       }
-
-      // Show loading and then set new stylist
       setFlowState('matching');
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setMatchedStylist(availableStylist);
@@ -160,6 +272,7 @@ const AIRecommendationPage = () => {
 
   const handleStartOver = () => {
     sessionStorage.removeItem('aiRecommendationState');
+    sessionStorage.removeItem('selectedStylist');
     setFlowState('upload');
     setMatchedStylist(null);
     setFrontImage(null);
@@ -167,6 +280,7 @@ const AIRecommendationPage = () => {
     setSelectedDate('');
     setSelectedTime('');
     setRejectedStylistIds(new Set());
+    setIsManualStylistSelected(false);
   };
 
   const renderContent = () => {
@@ -177,6 +291,58 @@ const AIRecommendationPage = () => {
         return <AIProcessingLoader />;
       case 'suggestion':
         return <AISuggestionCard onAccept={handleSuggestionAccepted} onTryAnother={() => setFlowState('processing')} />;
+      case 'zip-code':
+        return (
+          <div className="space-y-8 max-w-2xl mx-auto">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Enter Your Location</h2>
+                <p className="text-sm text-muted-foreground">Help us find stylists near you</p>
+              </div>
+            </div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-card rounded-2xl p-8 border border-border/50"
+            >
+              <label className="block text-sm font-semibold text-primary mb-3">Zip / Postal Code</label>
+              <Input
+                type="text"
+                placeholder="Enter your zip code (e.g., 10001)"
+                value={zipCode}
+                onChange={(e) => setZipCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleZipCodeSubmit();
+                  }
+                }}
+                className="h-12 rounded-lg border-border/50 mb-6"
+                autoFocus
+              />
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setFlowState('suggestion')}
+                  className="flex-1 px-6 py-3 rounded-lg border border-border/50 font-medium text-primary hover:bg-muted/50 transition-all"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleZipCodeSubmit}
+                  disabled={!zipCode.trim()}
+                  className="flex-1 px-6 py-3 rounded-lg bg-accent text-primary font-semibold hover:bg-accent/90 disabled:bg-muted disabled:cursor-not-allowed transition-all"
+                >
+                  Continue to Dates
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        );
       case 'date-selection':
         return (
           <div className="space-y-8 max-w-2xl mx-auto">
@@ -189,6 +355,28 @@ const AIRecommendationPage = () => {
                 <p className="text-sm text-muted-foreground">Choose when you'd like your appointment</p>
               </div>
             </div>
+
+            {isManualStylistSelected && matchedStylist && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-primary"
+              >
+                <p className="font-semibold mb-2 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-accent" />
+                  {matchedStylist.name}'s Weekly Availability
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {Object.entries(matchedStylist.availability).map(([day, time]) => (
+                    <div key={day} className="flex justify-between text-muted-foreground">
+                      <span>{day}</span>
+                      <span className="font-medium text-primary">{time.start} – {time.end}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             <div>
               <label className="text-sm font-medium mb-4 flex text-primary items-center gap-2">
                 <Calendar className="w-4 h-4 text-accent" />
@@ -249,18 +437,30 @@ const AIRecommendationPage = () => {
               </button>
             </div>
           </div>
-        )
+        );
       case 'matching':
         return <AIAutoMatchLoader />;
       case 'matched':
         return (
           <>
             <SelectedAIStyleDetails />
+            {isManualStylistSelected && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-center mb-6"
+              >
+                <div className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent px-4 py-2 rounded-full text-sm font-semibold border border-accent/30 flex items-center gap-2">
+                  ✨ Your Selected Stylist
+                </div>
+              </motion.div>
+            )}
             <AutoMatchedStylistCard 
               stylist={matchedStylist} 
               onAccept={handleStylistAccepted}
               onViewProfile={() => navigate(`/stylist/${matchedStylist?.id}`, { state: { from: '/ai-recommendation', label: 'AI Recommendation' } })}
               onFindAnother={handleFindAnother}
+              isManuallySelected={isManualStylistSelected}
             />
           </>
         );
@@ -285,7 +485,6 @@ const AIRecommendationPage = () => {
     }
   };
 
-  // While redirecting or if user is not logged in, render nothing.
   if (!user) {
     return null;
   }
@@ -308,3 +507,4 @@ const AIRecommendationPage = () => {
 };
 
 export default AIRecommendationPage;
+

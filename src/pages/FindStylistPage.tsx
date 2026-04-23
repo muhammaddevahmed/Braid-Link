@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
 interface FilterOptions {
@@ -38,7 +39,7 @@ const FindStylistPage = () => {
 
   const [filters, setFilters] = useState<FilterOptions>({
     searchQuery: "",
-    postalCode: params.get("postal") || user?.postalCode || "",
+    postalCode: "",
     minPrice: 0,
     maxPrice: 500,
     minRating: 0,
@@ -46,9 +47,17 @@ const FindStylistPage = () => {
     availability: "all",
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial loading to show skeletons
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [showFilters, setShowFilters] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [filteredStylists, setFilteredStylists] = useState(stylists);
+  const [filteredStylists, setFilteredStylists] = useState<typeof stylists>(stylists);
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -137,7 +146,23 @@ const FindStylistPage = () => {
       return;
     }
 
-    navigate(`/booking?stylist=${stylistId}`);
+    // Find the selected stylist
+    const selectedStylist = stylists.find(s => s.id === stylistId);
+    if (selectedStylist) {
+      // Store selected stylist in sessionStorage to preserve it in AI flow
+      sessionStorage.setItem('selectedStylist', JSON.stringify({
+        id: selectedStylist.id,
+        name: selectedStylist.name,
+        photo: selectedStylist.photo,
+        rating: selectedStylist.rating,
+        reviewCount: selectedStylist.reviewCount,
+        location: selectedStylist.location,
+        isManuallySelected: true,
+      }));
+    }
+
+    // Redirect to AI recommendation page instead of booking
+    navigate("/ai-recommendation", { state: { from: "/find-stylist", label: "Find Stylist" } });
   };
 
   // Get unique specialties
@@ -298,67 +323,10 @@ const FindStylistPage = () => {
                     />
                   </div>
 
-                  {/* Min Rating */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Minimum Rating: {filters.minRating.toFixed(1)}
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="5"
-                      step="0.5"
-                      value={filters.minRating}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          minRating: parseFloat(e.target.value),
-                        })
-                      }
-                      className="w-full"
-                    />
-                  </div>
 
-                  {/* Price Range */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Min Price: ${filters.minPrice}
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="500"
-                      step="10"
-                      value={filters.minPrice}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          minPrice: parseInt(e.target.value),
-                        })
-                      }
-                      className="w-full"
-                    />
-                  </div>
+                 
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Max Price: ${filters.maxPrice}
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="500"
-                      step="10"
-                      value={filters.maxPrice}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          maxPrice: parseInt(e.target.value),
-                        })
-                      }
-                      className="w-full"
-                    />
-                  </div>
+                
 
                   {/* Specialties */}
                   <div className="md:col-span-2">
@@ -406,12 +374,35 @@ const FindStylistPage = () => {
             className="max-w-3xl mx-auto mb-8"
           >
             <p className="text-sm text-muted-foreground">
-              Found {filteredStylists.length} stylist{filteredStylists.length !== 1 ? "s" : ""}
+              {isLoading ? 'Loading stylists...' : `Found ${filteredStylists.length} stylist${filteredStylists.length !== 1 ? "s" : ""}`}
             </p>
           </motion.div>
 
-          {/* Stylists Grid - Big Cards */}
-          {filteredStylists.length > 0 ? (
+          {/* Skeleton Loading Grid */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-card rounded-2xl border border-border/50 overflow-hidden flex flex-col h-full">
+                  <Skeleton className="aspect-[3/4] w-full" />
+                  <div className="p-6 flex flex-col gap-4">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <Skeleton className="h-8 w-full mt-2" />
+                    <div className="flex gap-3 mt-auto">
+                      <Skeleton className="h-12 w-full rounded-lg" />
+                      <Skeleton className="h-12 w-full rounded-lg" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredStylists.length > 0 ? (
             <motion.div
               variants={container}
               initial="hidden"
@@ -492,11 +483,7 @@ const FindStylistPage = () => {
                           <span className="line-clamp-1">{stylist.location || "City"}</span>
                         </div>
 
-                        {/* Price */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <DollarSign className="w-4 h-4 text-accent flex-shrink-0" />
-                          <span className="font-semibold">${stylist.services.length > 0 ? Math.round(stylist.services.reduce((sum, s) => sum + s.price, 0) / stylist.services.length) : 0}</span>
-                        </div>
+                       
 
                         {/* Experience */}
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
