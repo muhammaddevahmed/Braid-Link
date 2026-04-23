@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   const totalRevenue = stylists.reduce((a, s) => a + s.totalEarnings, 0);
   const totalPendingBookings = bookings.filter(b => b.status === "pending-approval").length;
   const totalCompletedBookings = bookings.filter(b => b.status === "completed").length;
-  const totalActiveStylists = stylists.filter(s => s.verified).length;
+  const totalActiveStylists = stylists.filter(s => s.status === "active").length;
   const averageRating = stylists.reduce((a, s) => a + s.rating, 0) / stylists.length;
 
   const stats = [

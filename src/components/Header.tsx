@@ -69,6 +69,7 @@ const Header = () => {
   const navLinks = [
     { label: "Home", to: "/", icon: Home },
     { label: "Hairstyles", to: "/hairstyles", icon: Scissors },
+    { label: "Find Stylist", to: "/find-stylist", icon: Search },
     { label: "Become a Stylist", to: "/become-stylist", icon: Users },
     { label: "Pricing", to: "/pricing", icon: CreditCard },
     { label: "FAQ", to: "/faq", icon: HelpCircle },

@@ -76,10 +76,7 @@ const AutoMatchedStylistCard = ({
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="bg-green-500/10 text-green-600 font-semibold p-3 rounded-lg flex items-center justify-center gap-2 border border-green-200">
-              <CheckCircle size={20} />
-             
-            </div>
+           
           </motion.div>
         )}
 

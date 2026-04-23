@@ -249,9 +249,9 @@ const StylistProfilePage = () => {
                       <p className="text-xs text-muted-foreground">{allServices.length} available services</p>
                     </div>
                   </div>
-                  <span className="text-xs text-accent font-medium bg-accent/10 px-3 py-1.5 rounded-full">
+                  {/* <span className="text-xs text-accent font-medium bg-accent/10 px-3 py-1.5 rounded-full">
                     From £{Math.min(...stylist.services.map((s) => s.price))}
-                  </span>
+                  </span> */}
                 </div>
                 
                 <div className="space-y-3">
@@ -276,16 +276,16 @@ const StylistProfilePage = () => {
                           </p>
                         </div>
                         <div className="text-right flex items-center gap-4">
-                          <div>
+                          {/* <div>
                             <p className="font-bold text-primary text-lg">£{service.price}</p>
                             <p className="text-xs text-muted-foreground">+ fees</p>
-                          </div>
-                          <Link 
+                          </div> */}
+                          {/* <Link 
                             to={`/booking?stylist=${stylist.id}&service=${service.id}`} 
                             className="bg-accent text-primary text-xs font-semibold px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-accent/90 shadow-lg hover:shadow-accent/25"
                           >
                             Book
-                          </Link>
+                          </Link> */}
                         </div>
                       </div>
                     </motion.div>
@@ -455,13 +455,13 @@ const StylistProfilePage = () => {
                   Book an Appointment
                 </h3>
                 
-                <Link 
+                {/* <Link 
                   to={`/booking?stylist=${stylist.id}`} 
                   className="bg-accent text-primary font-semibold w-full text-center py-4 rounded-xl mb-6 flex items-center justify-center gap-2 group hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-accent/25"
                 >
                   <Calendar className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   Book Now with {stylist.name.split(' ')[0]}
-                </Link>
+                </Link> */}
                 
                 {/* Availability - Premium */}
                 <div className="mb-6">
@@ -486,7 +486,7 @@ const StylistProfilePage = () => {
                 </div>
                 
                 {/* Price Summary - Premium */}
-                <div className="pt-5 border-t border-border/50">
+                {/* <div className="pt-5 border-t border-border/50">
                   <p className="text-sm text-muted-foreground mb-2">Starting from</p>
                   <div className="flex items-end justify-between">
                     <div>
@@ -495,7 +495,7 @@ const StylistProfilePage = () => {
                     </div>
                     <p className="text-xs text-muted-foreground">fees apply</p>
                   </div>
-                </div>
+                </div> */}
                 
                 {/* Quick Stats - Premium */}
                 <div className="grid grid-cols-2 gap-3 mt-5">

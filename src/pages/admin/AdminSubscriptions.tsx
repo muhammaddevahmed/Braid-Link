@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { subscriptionPlans as initialPlans, SubscriptionPlan } from "@/data/demo-data";
+import { subscriptionPlans as initialPlans } from "@/data/demo-data";
 import { 
   Edit2, X, Check, Save, DollarSign, Calendar,
   Crown, Sparkles, Award, Zap, TrendingUp,
@@ -9,6 +9,18 @@ import {
   BarChart, Globe, Users, Star
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Define subscription plan type
+interface SubscriptionPlan {
+  id: string;
+  name: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  description: string;
+  features: string[];
+  notIncluded?: string[];
+  popular?: boolean;
+}
 
 // Define a more specific type for the form data
 type PlanFormData = Omit<SubscriptionPlan, 'id' | 'popular' | 'notIncluded'>;

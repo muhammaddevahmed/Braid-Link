@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Heart, Award, TrendingUp, X, Scissors,
   Calendar, Clock, DollarSign, Star, Shield, Sparkles, CheckCircle, Camera
@@ -66,17 +66,16 @@ const ViewCustomerProfileModal: React.FC<ViewCustomerProfileModalProps> = ({
     exit: { opacity: 0 }
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: { opacity: 0, scale: 0.95, y: 30 },
     visible: { 
       opacity: 1, 
       scale: 1, 
       y: 0,
       transition: { 
-        type: "spring", 
+        type: "spring" as const, 
         damping: 25, 
-        stiffness: 300,
-        duration: 0.4 
+        stiffness: 300
       }
     },
     exit: { 

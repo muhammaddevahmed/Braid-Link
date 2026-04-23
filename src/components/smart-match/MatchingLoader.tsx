@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 
 const MatchingLoader = () => {
@@ -23,13 +23,13 @@ const MatchingLoader = () => {
     },
   };
 
-  const dotVariants = {
+  const dotVariants: Variants = {
     hidden: { scale: 0 },
     visible: {
       scale: 1,
       transition: {
         duration: 0.4,
-        type: 'spring',
+        type: 'spring' as const,
       },
     },
     animate: {

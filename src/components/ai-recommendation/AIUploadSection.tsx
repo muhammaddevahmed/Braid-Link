@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { UploadCloud, Image, X, ArrowRight } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
+import { HTMLAttributes, InputHTMLAttributes } from 'react';
 
 const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: string, backImage: string) => void }) => {
   const [frontImage, setFrontImage] = useState<string | null>(null);
@@ -35,7 +36,12 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
     }
   };
 
-  const renderUploadBox = (type: 'front' | 'back', image: string | null, getRootProps: any, getInputProps: any) => (
+  const renderUploadBox = (
+    type: 'front' | 'back',
+    image: string | null,
+    getRootProps: (options?: Record<string, unknown>) => HTMLAttributes<HTMLDivElement>,
+    getInputProps: (options?: Record<string, unknown>) => InputHTMLAttributes<HTMLInputElement>
+  ) => (
     <div className="w-full">
       <h3 className="text-lg font-semibold text-primary mb-2">{type === 'front' ? 'Upload Front Face' : 'Upload Back Hair'}</h3>
       <div

@@ -112,7 +112,7 @@ const AdminBookings = () => {
     total: bookingList.length,
     upcoming: bookingList.filter(b => b.status === "upcoming").length,
     completed: bookingList.filter(b => b.status === "completed").length,
-    pending: bookingList.filter(b => b.status === "pending" || b.status === "pending-approval").length,
+    pending: bookingList.filter(b => b.status === "pending-approval").length,
     cancelled: bookingList.filter(b => b.status === "cancelled" || b.status === "rejected").length,
     revenue: bookingList.reduce((sum, b) => sum + b.price, 0)
   };
