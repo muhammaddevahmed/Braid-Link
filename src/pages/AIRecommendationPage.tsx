@@ -14,8 +14,12 @@ import {
 import { stylists, Booking } from '@/data/demo-data';
 import { Stylist } from '@/data/demo-data';
 import { mockStyleSuggestion, mockHealthReport } from '@/data/ai-data';
-import { motion } from 'framer-motion';
-import { CheckCircle, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  CheckCircle, Calendar, Clock, CalendarDays, MapPin, 
+  Sparkles, ArrowLeft, Shield, Award, Scissors, Star,
+  ChevronRight, Loader2, Zap, Heart, RefreshCw
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 type FlowState = 'upload' | 'processing' | 'suggestion' | 'zip-code' | 'date-selection' | 'matching' | 'matched' | 'confirmed';
@@ -79,6 +83,7 @@ const AIRecommendationPage = () => {
     savedState?.rejectedStylistIds ? new Set(savedState.rejectedStylistIds) : new Set()
   );
   const [isManualStylistSelected, setIsManualStylistSelected] = useState(!!manualStylist);
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { createBooking } = useBooking();
@@ -254,7 +259,14 @@ const AIRecommendationPage = () => {
         customerName: user.name,
         bookingType: 'ai-recommended',
         aiRecommendation: {
-          ...mockStyleSuggestion,
+          styleName: mockStyleSuggestion.name,
+          styleImage: mockStyleSuggestion.image,
+          confidence: mockStyleSuggestion.confidence,
+          safety: mockStyleSuggestion.safety,
+          tension: mockStyleSuggestion.tension,
+          price: mockStyleSuggestion.price,
+          duration: mockStyleSuggestion.duration,
+          careNote: mockStyleSuggestion.careNote,
           frontImage: frontImage || undefined,
           backImage: backImage || undefined,
           healthReport: mockHealthReport,
@@ -283,6 +295,30 @@ const AIRecommendationPage = () => {
     setIsManualStylistSelected(false);
   };
 
+  const handleGoBack = () => {
+    setIsNavigatingBack(true);
+    setTimeout(() => {
+      switch (flowState) {
+        case 'zip-code':
+          setFlowState('suggestion');
+          break;
+        case 'date-selection':
+          if (isManualStylistSelected) {
+            setFlowState('suggestion');
+          } else {
+            setFlowState('zip-code');
+          }
+          break;
+        case 'matched':
+          setFlowState('date-selection');
+          break;
+        default:
+          break;
+      }
+      setIsNavigatingBack(false);
+    }, 300);
+  };
+
   const renderContent = () => {
     switch (flowState) {
       case 'upload':
@@ -294,50 +330,55 @@ const AIRecommendationPage = () => {
       case 'zip-code':
         return (
           <div className="space-y-8 max-w-2xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Enter Your Location</h2>
-                <p className="text-sm text-muted-foreground">Help us find stylists near you</p>
-              </div>
-            </div>
-            
-            <motion.div
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-card rounded-2xl p-8 border border-border/50"
+              className="flex items-center gap-4 mb-6"
             >
-              <label className="block text-sm font-semibold text-primary mb-3">Zip / Postal Code</label>
-              <Input
-                type="text"
-                placeholder="Enter your zip code (e.g., 10001)"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value.toUpperCase())}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleZipCodeSubmit();
-                  }
-                }}
-                className="h-12 rounded-lg border-border/50 mb-6"
-                autoFocus
-              />
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shadow-sm">
+                <MapPin className="w-7 h-7 text-accent" />
+              </div>
+              <div>
+                <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary">Where are you located?</h2>
+                <p className="text-muted-foreground mt-1">We'll find the best stylists in your area</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white/50 dark:bg-card/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-border shadow-lg"
+            >
+              <div className="relative">
+                <label className="block text-sm font-semibold text-primary mb-2">Zip / Postal Code</label>
+                <Input
+                  type="text"
+                  placeholder="Enter your zip code (e.g., 10001)"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleZipCodeSubmit();
+                    }
+                  }}
+                  className="h-14 rounded-xl border-border/60 bg-background/50 text-lg pl-4 focus:border-accent focus:ring-accent/20 transition-all"
+                  autoFocus
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 text-sm">
+                  {zipCode.length > 0 && <CheckCircle className="w-5 h-5 text-green-500" />}
+                </div>
+              </div>
               
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setFlowState('suggestion')}
-                  className="flex-1 px-6 py-3 rounded-lg border border-border/50 font-medium text-primary hover:bg-muted/50 transition-all"
-                >
-                  Back
-                </button>
+              <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                
                 <button
                   onClick={handleZipCodeSubmit}
                   disabled={!zipCode.trim()}
-                  className="flex-1 px-6 py-3 rounded-lg bg-accent text-primary font-semibold hover:bg-accent/90 disabled:bg-muted disabled:cursor-not-allowed transition-all"
+                  className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-primary font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                 >
-                  Continue to Dates
+                  Find Available Dates
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </motion.div>
@@ -345,31 +386,35 @@ const AIRecommendationPage = () => {
         );
       case 'date-selection':
         return (
-          <div className="space-y-8 max-w-2xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
-                <CalendarDays className="w-6 h-6 text-accent" />
+          <div className="space-y-10 max-w-3xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-4 mb-6"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shadow-sm">
+                <CalendarDays className="w-7 h-7 text-accent" />
               </div>
               <div>
-                <h2 className="font-serif text-xl md:text-2xl font-semibold text-primary">Select Date & Time</h2>
-                <p className="text-sm text-muted-foreground">Choose when you'd like your appointment</p>
+                <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary">Select Your Appointment</h2>
+                <p className="text-muted-foreground mt-1">Choose a date and time that works for you</p>
               </div>
-            </div>
+            </motion.div>
 
             {isManualStylistSelected && matchedStylist && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-primary"
+                className="bg-gradient-to-r from-accent/5 to-transparent border-l-4 border-accent rounded-xl p-5"
               >
-                <p className="font-semibold mb-2 flex items-center gap-2">
+                <p className="font-semibold mb-3 flex items-center gap-2 text-primary">
                   <Clock className="w-4 h-4 text-accent" />
-                  {matchedStylist.name}'s Weekly Availability
+                  {matchedStylist.name}'s Weekly Schedule
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                   {Object.entries(matchedStylist.availability).map(([day, time]) => (
-                    <div key={day} className="flex justify-between text-muted-foreground">
-                      <span>{day}</span>
+                    <div key={day} className="flex justify-between items-center border-b border-border/30 pb-1">
+                      <span className="text-muted-foreground">{day.slice(0,3)}</span>
                       <span className="font-medium text-primary">{time.start} – {time.end}</span>
                     </div>
                   ))}
@@ -378,62 +423,80 @@ const AIRecommendationPage = () => {
             )}
 
             <div>
-              <label className="text-sm font-medium mb-4 flex text-primary items-center gap-2">
-                <Calendar className="w-4 h-4 text-accent" />
-                Available Dates
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {dates.map((d) => {
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-accent" />
+                <label className="text-sm font-semibold text-primary">Available Dates</label>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {dates.map((d, idx) => {
                   const dateObj = new Date(d + "T00:00:00");
                   const isSelected = selectedDate === d;
                   return (
                     <motion.button
                       key={d}
-                      whileHover={{ scale: 1.02 }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.03 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedDate(d)}
-                      className={`p-4 rounded-xl text-sm font-medium border-2 transition-all duration-200 ${isSelected
-                        ? "bg-accent text-primary border-accent shadow-lg"
-                        : "border-border hover:border-accent/30 hover:bg-accent/5"
-                        }`}
+                      className={`p-4 rounded-xl text-center transition-all duration-200 ${
+                        isSelected
+                          ? "bg-accent text-primary shadow-lg ring-2 ring-accent/30"
+                          : "bg-card border border-border/50 hover:border-accent/30 hover:shadow-md"
+                      }`}
                     >
-                      <div className="text-xs opacity-70 mb-1">{dateObj.toLocaleDateString("en-US", { weekday: "short" })}</div>
-                      <div className="font-bold text-lg">{dateObj.getDate()}</div>
-                      <div className="text-xs">{dateObj.toLocaleDateString("en-US", { month: "short" })}</div>
+                      <div className="text-xs uppercase tracking-wider opacity-70 mb-1">{dateObj.toLocaleDateString("en-US", { weekday: "short" })}</div>
+                      <div className="font-bold text-2xl">{dateObj.getDate()}</div>
+                      <div className="text-xs mt-1">{dateObj.toLocaleDateString("en-US", { month: "short" })}</div>
                     </motion.button>
                   );
                 })}
               </div>
             </div>
+
             <div>
-              <label className="text-sm font-medium mb-4 flex text-primary items-center gap-2">
-                <Clock className="w-4 h-4 text-accent" />
-                Available Times
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {times.map((t) => (
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-accent" />
+                <label className="text-sm font-semibold text-primary">Available Times</label>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {times.map((t, idx) => (
                   <motion.button
                     key={t}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.02 }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedTime(t)}
-                    className={`p-4 rounded-xl text-sm font-medium border-2 transition-all duration-200 ${selectedTime === t
-                      ? "bg-accent text-primary border-accent shadow-lg"
-                      : "border-border hover:border-accent/30 hover:bg-accent/5"
-                      }`}
+                    className={`p-3 rounded-xl text-center font-medium transition-all duration-200 ${
+                      selectedTime === t
+                        ? "bg-accent text-primary shadow-lg ring-2 ring-accent/30"
+                        : "bg-card border border-border/50 hover:border-accent/30"
+                    }`}
                   >
                     {t}
                   </motion.button>
                 ))}
               </div>
             </div>
-            <div className="text-center pt-4">
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-6">
+              <button
+                onClick={() => setFlowState(isManualStylistSelected ? 'suggestion' : 'zip-code')}
+                className="px-6 py-3 rounded-xl border border-border/50 font-medium text-primary hover:bg-muted/50 transition-all flex items-center justify-center gap-2 group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Back
+              </button>
               <button
                 onClick={handleDateTimeSelected}
                 disabled={!selectedDate || !selectedTime}
-                className="bg-accent text-primary font-semibold inline-flex items-center gap-2 px-8 py-3 rounded-lg text-lg hover:bg-accent/90 transition-all disabled:bg-muted disabled:cursor-not-allowed"
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-primary font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
               >
-                Find Stylist
+                {isManualStylistSelected ? "Confirm & Continue" : "Find My Stylist"}
+                <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform" />
               </button>
             </div>
           </div>
@@ -442,7 +505,7 @@ const AIRecommendationPage = () => {
         return <AIAutoMatchLoader />;
       case 'matched':
         return (
-          <>
+          <div className="max-w-4xl mx-auto">
             <SelectedAIStyleDetails />
             {isManualStylistSelected && (
               <motion.div
@@ -450,8 +513,9 @@ const AIRecommendationPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-center mb-6"
               >
-                <div className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent px-4 py-2 rounded-full text-sm font-semibold border border-accent/30 flex items-center gap-2">
-                  ✨ Your Selected Stylist
+                <div className="bg-gradient-to-r from-accent/10 to-accent/5 text-accent px-5 py-2 rounded-full text-sm font-semibold border border-accent/30 flex items-center gap-2 shadow-sm">
+                  <Star className="w-4 h-4 fill-accent text-accent" />
+                  Your Selected Stylist
                 </div>
               </motion.div>
             )}
@@ -462,20 +526,32 @@ const AIRecommendationPage = () => {
               onFindAnother={handleFindAnother}
               isManuallySelected={isManualStylistSelected}
             />
-          </>
+          </div>
         );
       case 'confirmed':
         return (
-          <div className="text-center py-12">
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", duration: 0.6 }}>
-              <CheckCircle className="w-24 h-24 text-green-500 mx-auto mb-6" />
+          <div className="text-center py-12 px-4">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0, y: 20 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }} 
+              transition={{ type: "spring", duration: 0.6 }}
+              className="max-w-md mx-auto"
+            >
+              <div className="w-28 h-28 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-14 h-14 text-green-500" />
+              </div>
               <h2 className="font-serif text-3xl font-bold text-primary mb-4">Booking Request Sent!</h2>
-              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                Your request has been sent to {matchedStylist?.name}. You will be notified once it is approved.
+              <p className="text-muted-foreground mb-8">
+                Your request has been sent to <span className="font-semibold text-primary">{matchedStylist?.name}</span>. 
+                You will be notified once it is approved.
               </p>
-              <Link to="/customer/bookings" className="bg-accent text-primary font-semibold inline-flex items-center gap-2 px-8 py-3 rounded-lg text-lg hover:bg-accent/90 transition-all">
+              <Link 
+                to="/customer/bookings" 
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-primary font-semibold hover:shadow-lg transition-all group"
+              >
                 <Calendar className="w-5 h-5" />
                 View My Bookings
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
           </div>
@@ -489,22 +565,114 @@ const AIRecommendationPage = () => {
     return null;
   }
 
+  const getFlowProgress = () => {
+    const steps = ['upload', 'processing', 'suggestion', 'zip-code', 'date-selection', 'matching', 'matched'];
+    const currentIndex = steps.indexOf(flowState);
+    if (currentIndex === -1 || flowState === 'confirmed') return null;
+    return { current: currentIndex + 1, total: steps.length };
+  };
+
+  const progress = getFlowProgress();
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="relative mb-8 text-center">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary">
-          AI-Powered Style Recommendation
-        </h1>
-        {flowState !== 'upload' && flowState !== 'confirmed' && (
-          <button onClick={handleStartOver} className="mt-4 text-sm font-medium text-muted-foreground hover:text-accent transition-colors">
-            ← Start Over
-          </button>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Header Section */}
+        <div className="relative mb-8 md:mb-12 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-4"
+          >
+            <Sparkles className="w-4 h-4 text-accent" />
+            <span className="text-xs font-medium text-accent">AI-Powered</span>
+          </motion.div>
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary tracking-tight">
+            Style Intelligence
+          </h1>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+            Upload your photos and let our AI analyze your style, then get matched with the perfect stylist for you.
+          </p>
+          
+          {progress && flowState !== 'upload' && flowState !== 'confirmed' && (
+            <div className="max-w-md mx-auto mt-6">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>Progress</span>
+                <span>{progress.current} / {progress.total}</span>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-accent to-accent/60 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(progress.current / progress.total) * 100}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+          )}
+          
+          {flowState !== 'upload' && flowState !== 'confirmed' && flowState !== 'processing' && flowState !== 'matching' && (
+            <motion.button 
+              onClick={handleGoBack}
+              disabled={isNavigatingBack}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors flex items-center gap-1 text-sm group"
+              whileHover={{ x: -2 }}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back</span>
+            </motion.button>
+          )}
+          
+          {flowState !== 'upload' && flowState !== 'confirmed' && (
+            <motion.button 
+              onClick={handleStartOver}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors flex items-center gap-1 text-sm group"
+              whileHover={{ scale: 1.05 }}
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Start Over</span>
+            </motion.button>
+          )}
+        </div>
+
+        {/* Main Content with Animation */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={flowState}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Trust Badges */}
+        {flowState === 'upload' && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-6 mt-12 pt-8 border-t border-border/30"
+          >
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Shield className="w-4 h-4 text-accent" />
+              <span>Secure & Private</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Award className="w-4 h-4 text-accent" />
+              <span>Top Rated Stylists</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Scissors className="w-4 h-4 text-accent" />
+              <span>Expert Matching</span>
+            </div>
+          </motion.div>
         )}
       </div>
-      <div>{renderContent()}</div>
     </div>
   );
 };
 
 export default AIRecommendationPage;
-

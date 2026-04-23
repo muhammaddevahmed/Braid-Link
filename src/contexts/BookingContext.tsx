@@ -2,6 +2,27 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { bookings as initialBookings, Booking } from "@/data/demo-data";
 import { useAuth } from "./AuthContext";
 
+// Strip base64 images from aiRecommendation to prevent localStorage quota exceeded
+const stripStorageHeavyFields = (bookings: Booking[]): Booking[] => {
+  return bookings.map(b => {
+    if (!b.aiRecommendation) return b;
+    const { frontImage, backImage, ...lightweightAiRec } = b.aiRecommendation;
+    return { ...b, aiRecommendation: lightweightAiRec };
+  });
+};
+
+const safeLocalStorageSet = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "QuotaExceededError") {
+      console.error(`localStorage quota exceeded for key "${key}". Data size: ~${(value.length / 1024).toFixed(1)}KB`);
+    } else {
+      console.error(`Failed to save "${key}" to localStorage:`, err);
+    }
+  }
+};
+
 type BookingStatus = "pending-approval" | "approved" | "upcoming" | "completed" | "cancelled" | "rejected" | "reschedule-requested";
 
 export interface RejectedInstantMatch {
@@ -52,11 +73,12 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem("braidbook_bookings", JSON.stringify(bookings));
+    const cleaned = stripStorageHeavyFields(bookings);
+    safeLocalStorageSet("braidbook_bookings", JSON.stringify(cleaned));
   }, [bookings]);
 
   useEffect(() => {
-    localStorage.setItem("braidbook_rejected_instant_matches", JSON.stringify(rejectedInstantMatches));
+    safeLocalStorageSet("braidbook_rejected_instant_matches", JSON.stringify(rejectedInstantMatches));
   }, [rejectedInstantMatches]);
 
   const createBooking = (bookingData: Omit<Booking, "id" | "status">): boolean => {

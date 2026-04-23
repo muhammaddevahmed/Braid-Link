@@ -16,6 +16,13 @@ import {
   Eye,
   Zap,
   Award,
+  Sparkles,
+  Shield,
+  Camera,
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,7 +56,6 @@ const FindStylistPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate initial loading to show skeletons
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
@@ -59,7 +65,6 @@ const FindStylistPage = () => {
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [filteredStylists, setFilteredStylists] = useState<typeof stylists>(stylists);
 
-  // Load favorites from localStorage
   useEffect(() => {
     if (user?.id) {
       const stored = localStorage.getItem(`favorites_${user.id}`);
@@ -69,51 +74,29 @@ const FindStylistPage = () => {
     }
   }, [user?.id]);
 
-  // Apply filters
   useEffect(() => {
     const results = stylists.filter((stylist) => {
-      // Search query filter
-      if (
-        filters.searchQuery &&
-        !stylist.name
-          .toLowerCase()
-          .includes(filters.searchQuery.toLowerCase())
-      ) {
+      if (filters.searchQuery && !stylist.name.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
         return false;
       }
-
-      // Postal code filter
-      if (
-        filters.postalCode &&
-        stylist.location &&
-        !stylist.location.includes(filters.postalCode)
-      ) {
+      if (filters.postalCode && stylist.location && !stylist.location.includes(filters.postalCode)) {
         return false;
       }
-
-      // Rating filter
       if (stylist.rating < filters.minRating) {
         return false;
       }
-
-      // Price filter (average price from services)
       const avgPrice = stylist.services.length > 0
         ? stylist.services.reduce((sum, s) => sum + s.price, 0) / stylist.services.length
         : 0;
       if (avgPrice < filters.minPrice || avgPrice > filters.maxPrice) {
         return false;
       }
-
-      // Specialties filter
       if (filters.selectedSpecialties.length > 0) {
         const hasSpecialty = filters.selectedSpecialties.some((spec) =>
-          stylist.specialties.some((s) =>
-            s.toLowerCase().includes(spec.toLowerCase())
-          )
+          stylist.specialties.some((s) => s.toLowerCase().includes(spec.toLowerCase()))
         );
         if (!hasSpecialty) return false;
       }
-
       return true;
     });
 
@@ -132,10 +115,7 @@ const FindStylistPage = () => {
     setFavoriteIds(newFavorites);
 
     if (user?.id) {
-      localStorage.setItem(
-        `favorites_${user.id}`,
-        JSON.stringify(Array.from(newFavorites))
-      );
+      localStorage.setItem(`favorites_${user.id}`, JSON.stringify(Array.from(newFavorites)));
     }
   };
 
@@ -146,10 +126,8 @@ const FindStylistPage = () => {
       return;
     }
 
-    // Find the selected stylist
     const selectedStylist = stylists.find(s => s.id === stylistId);
     if (selectedStylist) {
-      // Store selected stylist in sessionStorage to preserve it in AI flow
       sessionStorage.setItem('selectedStylist', JSON.stringify({
         id: selectedStylist.id,
         name: selectedStylist.name,
@@ -161,24 +139,20 @@ const FindStylistPage = () => {
       }));
     }
 
-    // Redirect to AI recommendation page instead of booking
     navigate("/ai-recommendation", { state: { from: "/find-stylist", label: "Find Stylist" } });
   };
 
-  // Get unique specialties
-  const allSpecialties = Array.from(
-    new Set(
-      stylists.flatMap((s) => s.specialties)
-    )
-  ).sort();
+  const handleAIRec = () => {
+    navigate("/ai-recommendation");
+  };
+
+  const allSpecialties = Array.from(new Set(stylists.flatMap((s) => s.specialties))).sort();
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+      transition: { staggerChildren: 0.1 },
     },
   };
 
@@ -190,7 +164,7 @@ const FindStylistPage = () => {
   return (
     <div className="relative bg-background min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95">
+      <section className="relative overflow-hidden py-16 md:py-20 bg-gradient-to-br from-primary via-primary to-primary/95">
         <div className="absolute inset-0">
           <div className="absolute top-20 right-20 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-0 left-20 w-[500px] h-[500px] bg-accent/8 rounded-full blur-[140px] animate-pulse delay-1000" />
@@ -210,6 +184,10 @@ const FindStylistPage = () => {
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto text-center"
           >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 mb-6">
+              <Sparkles className="w-3.5 h-3.5 text-accent" />
+              <span className="text-xs font-medium text-accent">Find Your Match</span>
+            </div>
             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Find Your Perfect <br />
               <span className="text-accent relative inline-block">
@@ -230,29 +208,53 @@ const FindStylistPage = () => {
                 </svg>
               </span>
             </h1>
-
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-light">
-              Browse our talented community of braiding experts and book your
-              perfect appointment.
+            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+              Browse our talented community of braiding experts and book your perfect appointment.
             </p>
           </motion.div>
         </div>
 
-        {/* Curved divider */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            viewBox="0 0 1440 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto"
-          >
-            <path
-              d="M0 60L60 52C120 44 240 28 360 24C480 20 600 28 720 32C840 36 960 36 1080 32C1200 28 1320 20 1380 16L1440 12V60H0Z"
-              fill="hsl(var(--background))"
-            />
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+            <path d="M0 60L60 52C120 44 240 28 360 24C480 20 600 28 720 32C840 36 960 36 1080 32C1200 28 1320 20 1380 16L1440 12V60H0Z" fill="hsl(var(--background))" />
           </svg>
         </div>
       </section>
+
+      {/* AI Recommendation Banner - Prominent CTA */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="bg-gradient-to-r from-accent/20 via-accent/10 to-accent/5 rounded-2xl border border-accent/30 p-5 md:p-6 shadow-xl"
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+                <Camera className="w-6 h-6 text-accent" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-accent uppercase tracking-wider">NEW</span>
+                  <h3 className="font-semibold text-primary text-lg">AI Smart Stylist Matching</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Upload your photo and let our AI find the perfect stylist for your hair type
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={handleAIRec}
+              className="bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all group whitespace-nowrap"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Get AI Recommendation
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Main Content */}
       <section className="py-12 md:py-16">
@@ -268,22 +270,21 @@ const FindStylistPage = () => {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search stylists by name..."
+                  placeholder="Search stylists by name, specialty..."
                   value={filters.searchQuery}
-                  onChange={(e) =>
-                    setFilters({ ...filters, searchQuery: e.target.value })
-                  }
-                  className="pl-10 h-12 rounded-lg border-border/50"
+                  onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+                  className="pl-10 h-12 rounded-xl border-border/50 focus:border-accent focus:ring-accent/20"
                 />
               </div>
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => setShowFilters(!showFilters)}
-                className="gap-2"
+                className="gap-2 rounded-xl border-border/50 hover:border-accent/50"
               >
                 <Filter className="w-4 h-4" />
                 <span className="hidden sm:inline">Filters</span>
+                {showFilters ? <ChevronUp className="w-3 h-3 ml-1" /> : <ChevronDown className="w-3 h-3 ml-1" />}
               </Button>
             </div>
           </motion.div>
@@ -295,65 +296,67 @@ const FindStylistPage = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="max-w-3xl mx-auto mb-8 bg-muted/50 rounded-lg p-6 border border-border/50"
+                className="max-w-3xl mx-auto mb-8 bg-muted/30 rounded-xl p-6 border border-border/50"
               >
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold text-lg">Filter Results</h3>
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-accent" />
+                    Filter Results
+                  </h3>
                   <button
                     onClick={() => setShowFilters(false)}
-                    className="p-1 hover:bg-background rounded transition-colors"
+                    className="p-1 hover:bg-background rounded-full transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Postal Code */}
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Postal Code
-                    </label>
+                    <label className="block text-sm font-medium mb-2">Postal Code</label>
                     <Input
                       placeholder="Enter postal code"
                       value={filters.postalCode}
-                      onChange={(e) =>
-                        setFilters({ ...filters, postalCode: e.target.value })
-                      }
+                      onChange={(e) => setFilters({ ...filters, postalCode: e.target.value })}
                       className="border-border/50"
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Min Rating</label>
+                    <div className="flex gap-2">
+                      {[0, 3, 4, 4.5].map((rating) => (
+                        <button
+                          key={rating}
+                          onClick={() => setFilters({ ...filters, minRating: rating })}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                            filters.minRating === rating
+                              ? "bg-accent text-accent-foreground"
+                              : "bg-muted hover:bg-muted/80"
+                          }`}
+                        >
+                          {rating === 0 ? "Any" : `${rating}+`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                 
-
-                
-
-                  {/* Specialties */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">
-                      Specialties
-                    </label>
+                    <label className="block text-sm font-medium mb-2">Specialties</label>
                     <div className="flex flex-wrap gap-2">
-                      {allSpecialties.map((specialty) => (
+                      {allSpecialties.slice(0, 12).map((specialty) => (
                         <button
                           key={specialty}
                           onClick={() => {
-                            const updated = filters.selectedSpecialties.includes(
-                              specialty
-                            )
-                              ? filters.selectedSpecialties.filter(
-                                  (s) => s !== specialty
-                                )
+                            const updated = filters.selectedSpecialties.includes(specialty)
+                              ? filters.selectedSpecialties.filter((s) => s !== specialty)
                               : [...filters.selectedSpecialties, specialty];
-                            setFilters({
-                              ...filters,
-                              selectedSpecialties: updated,
-                            });
+                            setFilters({ ...filters, selectedSpecialties: updated });
                           }}
-                          className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                             filters.selectedSpecialties.includes(specialty)
                               ? "bg-accent text-accent-foreground"
-                              : "bg-muted hover:bg-muted/80 text-foreground"
+                              : "bg-muted hover:bg-muted/80"
                           }`}
                         >
                           {specialty}
@@ -361,6 +364,27 @@ const FindStylistPage = () => {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border/30 flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFilters({
+                        searchQuery: "",
+                        postalCode: "",
+                        minPrice: 0,
+                        maxPrice: 500,
+                        minRating: 0,
+                        selectedSpecialties: [],
+                        availability: "all",
+                      });
+                    }}
+                    className="text-muted-foreground"
+                  >
+                    Clear All
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -373,12 +397,25 @@ const FindStylistPage = () => {
             transition={{ delay: 0.2 }}
             className="max-w-3xl mx-auto mb-8"
           >
-            <p className="text-sm text-muted-foreground">
-              {isLoading ? 'Loading stylists...' : `Found ${filteredStylists.length} stylist${filteredStylists.length !== 1 ? "s" : ""}`}
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">
+                {isLoading ? 'Loading stylists...' : `Found ${filteredStylists.length} stylist${filteredStylists.length !== 1 ? "s" : ""}`}
+              </p>
+              {!isLoading && filteredStylists.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAIRec}
+                  className="text-xs gap-1 text-accent"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Get AI matched instead
+                </Button>
+              )}
+            </div>
           </motion.div>
 
-          {/* Skeleton Loading Grid */}
+          {/* Stylists Grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -388,8 +425,6 @@ const FindStylistPage = () => {
                     <Skeleton className="h-6 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
                     <div className="grid grid-cols-2 gap-4">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-full" />
                     </div>
@@ -410,32 +445,22 @@ const FindStylistPage = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
             >
               {filteredStylists.map((stylist) => (
-                <motion.div
-                  key={stylist.id}
-                  variants={item}
-                  className="h-full"
-                >
-                  <div className="bg-gradient-to-br from-card to-card/95 rounded-2xl border border-border/50 overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 flex flex-col h-full">
-                    {/* Header with background image */}
-                    <div className="aspect-[3/4] relative overflow-hidden group">
+                <motion.div key={stylist.id} variants={item} className="h-full group">
+                  <div className="bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-accent/40 transition-all duration-300 hover:shadow-xl flex flex-col h-full">
+                    {/* Image Container */}
+                    <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5">
                       {stylist.photo ? (
                         <img
                           src={stylist.photo}
                           alt={stylist.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center">
-                          <div className="text-center">
-                            <Award className="w-20 h-20 text-primary/40 mx-auto mb-2" />
-                            <span className="text-4xl font-bold text-primary/30">
-                              {stylist.name.charAt(0)}
-                            </span>
-                          </div>
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Award className="w-16 h-16 text-accent/30" />
                         </div>
                       )}
 
-                      {/* Favorite Button - Overlay */}
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -443,10 +468,10 @@ const FindStylistPage = () => {
                           e.preventDefault();
                           toggleFavorite(stylist.id);
                         }}
-                        className="absolute top-4 right-4 p-3 bg-background/80 backdrop-blur-sm rounded-full hover:bg-accent hover:text-primary transition-all shadow-lg"
+                        className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-accent hover:text-primary transition-all shadow-md"
                       >
                         <Heart
-                          className={`w-5 h-5 ${
+                          className={`w-4 h-4 ${
                             favoriteIds.has(stylist.id)
                               ? "fill-current text-red-500"
                               : "text-muted-foreground"
@@ -454,90 +479,62 @@ const FindStylistPage = () => {
                         />
                       </motion.button>
 
-                      {/* Rating Badge */}
-                      <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
-                        <Star className="w-4 h-4 text-accent fill-accent" />
-                        <span className="font-semibold text-sm">
-                          {stylist.rating} ({stylist.reviewCount} reviews)
-                        </span>
+                      <div className="absolute bottom-3 left-3 bg-background/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+                        <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+                        <span className="font-semibold text-sm">{stylist.rating}</span>
+                        <span className="text-xs text-muted-foreground">({stylist.reviewCount})</span>
                       </div>
                     </div>
 
-                    {/* Content Section */}
-                    <div className="flex-1 p-6 flex flex-col">
-                      {/* Name and Title */}
-                      <div className="mb-4">
-                        <h3 className="text-2xl font-bold text-primary mb-1">
-                          {stylist.name}
-                        </h3>
+                    <div className="flex-1 p-5 flex flex-col">
+                      <div className="mb-3">
+                        <h3 className="text-xl font-bold text-primary mb-1">{stylist.name}</h3>
                         <p className="text-accent font-medium text-sm">
                           {stylist.specialties[0] || "Professional Stylist"}
                         </p>
                       </div>
 
-                      {/* Info Grid */}
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        {/* Location */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
-                          <span className="line-clamp-1">{stylist.location || "City"}</span>
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <MapPin className="w-3.5 h-3.5 text-accent" />
+                          <span className="truncate">{stylist.location || "City"}</span>
                         </div>
-
-                       
-
-                        {/* Experience */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Zap className="w-4 h-4 text-accent flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Clock className="w-3.5 h-3.5 text-accent" />
                           <span>{stylist.experience}+ years</span>
                         </div>
-
-                        {/* Status */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Zap className="w-4 h-4 text-accent flex-shrink-0" />
-                          <span className="capitalize font-medium text-accent">{stylist.status}</span>
-                        </div>
                       </div>
 
-                      {/* Specialties */}
-                      <div className="mb-6">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">
-                          SPECIALTIES
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {stylist.specialties.slice(0, 3).map((specialty) => (
-                            <span
-                              key={specialty}
-                              className="text-xs bg-accent/10 text-accent px-3 py-1 rounded-full font-medium"
-                            >
-                              {specialty}
-                            </span>
-                          ))}
-                          {stylist.specialties.length > 3 && (
-                            <span className="text-xs bg-muted text-muted-foreground px-3 py-1 rounded-full font-medium">
-                              +{stylist.specialties.length - 3} more
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {stylist.specialties.slice(0, 3).map((specialty) => (
+                          <span key={specialty} className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+                            {specialty}
+                          </span>
+                        ))}
+                        {stylist.specialties.length > 3 && (
+                          <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                            +{stylist.specialties.length - 3}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Buttons Section */}
-                      <div className="flex gap-3 mt-auto">
+                      <div className="flex gap-2 mt-auto">
                         <Button
                           variant="outline"
-                          size="lg"
-                          className="flex-1 gap-2"
+                          size="sm"
+                          className="flex-1 gap-1 text-sm"
                           onClick={() => navigate(`/stylist/${stylist.id}`)}
                         >
-                          <Eye className="w-4 h-4" />
-                          View Profile
+                          <Eye className="w-3.5 h-3.5" />
+                          Profile
                         </Button>
                         <Button
-                          size="lg"
-                          className="flex-1 gap-2 bg-gradient-to-r from-accent to-accent/90"
+                          size="sm"
+                          className="flex-1 gap-1 bg-gradient-to-r from-accent to-accent/90 text-sm"
                           onClick={() => handleSelectStylist(stylist.id)}
                         >
-                          <ArrowRight className="w-4 h-4" />
-                          Book Now
+                          Book
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </Button>
                       </div>
                     </div>
@@ -551,39 +548,45 @@ const FindStylistPage = () => {
               animate={{ opacity: 1 }}
               className="max-w-3xl mx-auto text-center py-16"
             >
-              <div className="bg-muted/50 rounded-lg p-12 border border-border/50">
+              <div className="bg-muted/30 rounded-xl p-12 border border-border/50">
                 <Search className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <h3 className="text-xl font-semibold mb-2">
-                  No stylists found
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">No stylists found</h3>
                 <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters to find the perfect stylist for
-                  you.
+                  Try adjusting your filters to find the perfect stylist for you.
                 </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFilters({
-                      searchQuery: "",
-                      postalCode: "",
-                      minPrice: 0,
-                      maxPrice: 500,
-                      minRating: 0,
-                      selectedSpecialties: [],
-                      availability: "all",
-                    });
-                    setShowFilters(false);
-                  }}
-                >
-                  Clear All Filters
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setFilters({
+                        searchQuery: "",
+                        postalCode: "",
+                        minPrice: 0,
+                        maxPrice: 500,
+                        minRating: 0,
+                        selectedSpecialties: [],
+                        availability: "all",
+                      });
+                      setShowFilters(false);
+                    }}
+                  >
+                    Clear All Filters
+                  </Button>
+                  <Button
+                    onClick={handleAIRec}
+                    className="bg-gradient-to-r from-accent to-accent/90"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Try AI Recommendation
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
         </div>
       </section>
 
-      {/* Footer CTA */}
+      {/* Footer CTA Section */}
       <section className="py-12 md:py-16 bg-primary/5 border-t border-border/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -592,21 +595,44 @@ const FindStylistPage = () => {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-accent" />
+              <span className="text-xs font-medium text-accent">AI Powered</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-primary mb-3">
               Can't find what you're looking for?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-lg mx-auto">
               Use our AI recommendation engine to get personalized stylist matches
               based on your hair needs and preferences.
             </p>
-            <Button
-              size="lg"
-              onClick={() => navigate("/ai-recommendation")}
-              className="gap-2"
-            >
-              Get AI Recommendations
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={handleAIRec}
+                className="gap-2 bg-gradient-to-r from-accent to-accent/90 text-primary font-semibold px-8 py-3 rounded-full"
+              >
+                <Camera className="w-4 h-4" />
+                Upload Photo for AI Match
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mt-6 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-accent" />
+                <span>Free Consultation</span>
+              </div>
+              <span className="text-muted-foreground/30">•</span>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                <span>100% Privacy</span>
+              </div>
+              <span className="text-muted-foreground/30">•</span>
+              <div className="flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-accent" />
+                <span>Smart Matching</span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>

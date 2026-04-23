@@ -62,6 +62,32 @@ export interface HairstyleCategory {
   startingPrice?: number;
 }
 
+export interface AIRecommendation {
+  styleName: string;
+  styleImage: string;
+  confidence: number;
+  safety: string;
+  tension: string;
+  price: number;
+  duration: number;
+  careNote: string;
+  frontImage?: string;
+  backImage?: string;
+  healthReport?: {
+    hairHealthScore: number;
+    riskLevel: string;
+    safeStyling: boolean;
+    recommendations: string[];
+    analysis: {
+      texture: string;
+      density: string;
+      strength: string;
+      scalpSensitivity: string;
+      damage: string;
+    };
+  };
+}
+
 export interface Booking {
   id: string;
   customerId: string;
@@ -94,7 +120,7 @@ export interface Booking {
     minPrice: number;
     maxPrice: number;
   };
-  aiRecommendation?: any;
+  aiRecommendation?: AIRecommendation;
 }
 
 export interface Review {
