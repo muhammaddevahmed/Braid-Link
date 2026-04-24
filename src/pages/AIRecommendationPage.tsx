@@ -79,6 +79,7 @@ const AIRecommendationPage = () => {
   const [selectedDate, setSelectedDate] = useState<string>(savedState?.selectedDate || '');
   const [selectedTime, setSelectedTime] = useState<string>(savedState?.selectedTime || '');
   const [zipCode, setZipCode] = useState<string>(savedState?.zipCode || '');
+  const [zipCodeError, setZipCodeError] = useState<string>('');
   const [rejectedStylistIds, setRejectedStylistIds] = useState<Set<string>>(
     savedState?.rejectedStylistIds ? new Set(savedState.rejectedStylistIds) : new Set()
   );
@@ -223,10 +224,23 @@ const AIRecommendationPage = () => {
   };
 
   const handleZipCodeSubmit = () => {
+    setZipCodeError('');
+    
     if (!zipCode.trim()) {
-      toast.error("Please enter your zip/postal code.");
+      setZipCodeError('Postal code is required');
+      toast.error('Please enter your postal code.');
       return;
     }
+    
+    // Validate UK postal code format
+    const isValidUKPostalCode = /^[A-Z]{1,2}[0-9R][0-9A-Z]? ?[0-9][A-Z]{2}$/i.test(zipCode);
+    
+    if (!isValidUKPostalCode) {
+      setZipCodeError('Please enter a valid UK postcode.');
+      toast.error('Invalid postal code format. Example: SW1A 1AA');
+      return;
+    }
+    
     setFlowState('date-selection');
   };
 
@@ -351,23 +365,35 @@ const AIRecommendationPage = () => {
               className="bg-white/50 dark:bg-card/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-border shadow-lg"
             >
               <div className="relative">
-                <label className="block text-sm font-semibold text-primary mb-2">Zip / Postal Code</label>
+                <label className="block text-sm font-semibold text-primary mb-2">UK Postal Code</label>
+                <p className="text-xs text-muted-foreground mb-3">Example format: SW1A 1AA</p>
                 <Input
                   type="text"
-                  placeholder="Enter your zip code (e.g., 10001)"
+                  placeholder="Enter your UK postcode (e.g., SW1A 1AA)"
                   value={zipCode}
-                  onChange={(e) => setZipCode(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    setZipCode(e.target.value.toUpperCase());
+                    setZipCodeError('');
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleZipCodeSubmit();
                     }
                   }}
-                  className="h-14 rounded-xl border-border/60 bg-background/50 text-lg pl-4 focus:border-accent focus:ring-accent/20 transition-all"
+                  className={`h-14 rounded-xl border-border/60 bg-background/50 text-lg pl-4 focus:ring-accent/20 transition-all ${
+                    zipCodeError ? 'border-red-500 focus:border-red-500' : 'focus:border-accent'
+                  }`}
                   autoFocus
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 text-sm">
-                  {zipCode.length > 0 && <CheckCircle className="w-5 h-5 text-green-500" />}
+                  {zipCode.length > 0 && !zipCodeError && <CheckCircle className="w-5 h-5 text-green-500" />}
                 </div>
+                {zipCodeError && (
+                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                    <span>⚠</span>
+                    {zipCodeError}
+                  </p>
+                )}
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
