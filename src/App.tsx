@@ -22,6 +22,7 @@ import AIRecommendationPage from "@/pages/AIRecommendationPage";
 import FindStylistPage from "@/pages/FindStylistPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
+import AIEthicsPolicyPage from "@/pages/AIEthicsPolicyPage";
 import NotFound from "@/pages/NotFound";
 
 import CustomerDashboard from "@/pages/customer/CustomerDashboard";
@@ -107,6 +108,7 @@ const AppRoutes = () => (
       <Route path="/review-stylist" element={<ReviewStylistPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+      <Route path="/ai-ethics-policy" element={<AIEthicsPolicyPage />} />
     </Route>
 
     {/* Customer */}

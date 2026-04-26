@@ -1,17 +1,13 @@
 import { motion } from "framer-motion";
 import {
-  Shield, Scale, FileText, AlertCircle, CheckCircle,
-  Mail, Phone, MapPin, BookOpen, Users,
-  Calendar, CreditCard, Crown, Star, MessageSquare,
-  Ban, AlertTriangle, Gavel, RefreshCw, Sparkles,
-  ChevronRight, Clock, Award, BadgeCheck, Fingerprint,
-  Globe, FileCheck, Heart, Zap, Briefcase, FileSpreadsheet,
-  Banknote, Percent, XCircle, UserX, HandCoins, Landmark
+  Brain, Shield, Heart, Eye, Scale, Lock, Users, Stethoscope,
+  ClipboardCheck, RefreshCw, Sparkles, ChevronRight, BookOpen,
+  Calendar, BadgeCheck, Fingerprint, Mail, Phone, MapPin,
+  Clock, Activity, AlertTriangle, Globe, FileCheck, Gavel
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const TermsOfServicePage = () => {
-  // Animation variants
+const AIEthicsPolicyPage = () => {
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
@@ -19,113 +15,293 @@ const TermsOfServicePage = () => {
 
   const sections = [
     {
-      id: "terms",
-      title: "1. Terms and Conditions of Service",
-      icon: Scale,
-      content: `BraidLink Ltd operates solely as a technology marketplace that enables customers to discover and book independent hairstylists. BraidLink Ltd does not itself provide hairdressing or beauty services and no stylist is an employee, worker, partner or agent of BraidLink Ltd unless expressly agreed in writing.`,
+      id: "purpose",
+      title: "1. Policy Purpose",
+      icon: Brain,
+      content: `BraidLink Ltd ("BraidLink", "the Company") is committed to ensuring that all artificial intelligence systems deployed within its platform operate in a manner that is ethical, transparent, fair, safe, accountable, health-conscious and legally compliant.`,
       subsections: [
         {
-          title: "Platform Role",
-          content: `BraidLink Ltd operates solely as a technology marketplace that enables customers to discover and book independent hairstylists. BraidLink Ltd does not itself provide hairdressing or beauty services and no stylist is an employee, worker, partner or agent of BraidLink Ltd unless expressly agreed in writing.`
-        },
-        {
-          title: "Booking and Payments",
-          content: `All payments are processed through Stripe or another approved payment processor. A non-refundable platform booking fee of 10% is charged on each completed booking to cover technology, payment processing and administration costs.`
-        },
-        {
-          title: "Customer Cancellation",
+          title: "Our Commitment",
           list: [
-            "Where a customer cancels more than 48 hours before the appointment, 90% of the total booking amount will be refunded to the original payment method.",
-            "Where a customer cancels within 48 hours of the appointment, no cash refund shall be due and a platform credit voucher for 90% of the booking value shall be issued, valid for 12 months.",
-            "Rebooking priority may be given to stylists on enhanced subscription plans."
+            "Ethical AI design and deployment",
+            "Transparent algorithmic decision-making",
+            "Fair treatment across all user groups",
+            "Safety-first hairstyle recommendations",
+            "Accountable AI governance",
+            "Health-conscious beauty innovation",
+            "Full legal compliance"
           ]
         },
         {
-          title: "Stylist Cancellation",
-          content: `Where a stylist cancels at least 48 hours before the appointment, BraidLink Ltd may attempt to reassign the booking to another suitable stylist. If no suitable replacement is available or the customer declines the reassignment, the customer shall receive a full refund.`
+          title: "What We Promote",
+          list: [
+            "Customer wellbeing and scalp health",
+            "Hair integrity and damage prevention",
+            "Cultural sensitivity and inclusion",
+            "Responsible innovation in beauty tech"
+          ]
         },
         {
-          title: "No-show",
-          content: `If a customer fails to attend within 30 minutes of the agreed appointment time without communication, the booking may be marked as a no-show. In such circumstances, 50% of the service value may be issued as customer credit and the remaining balance, less platform fees, may be released to the stylist.`
-        },
-        {
-          title: "Disputes",
-          content: `BraidLink Ltd may investigate and determine disputes in its sole discretion acting reasonably. Its decision on platform-related disputes shall be final, subject to applicable consumer rights under UK law.`
-        },
-        {
-          title: "Liability",
-          content: `To the fullest extent permitted by law, BraidLink Ltd's total liability shall not exceed the total amount paid for the booking giving rise to the claim. Nothing excludes liability that cannot lawfully be excluded under the laws of England and Wales.`
-        },
-        {
-          title: "Governing Law",
-          content: `These terms shall be governed by the laws of England and Wales and disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.`
+          title: "Legal Frameworks",
+          list: [
+            "UK AI governance principles",
+            "UK GDPR",
+            "Equality Act 2010",
+            "Consumer protection law",
+            "Public health standards",
+            "Emerging international AI ethics frameworks"
+          ]
         }
       ]
     },
     {
-      id: "stylist",
-      title: "2. Professional Stylist Agreement",
-      icon: Crown,
-      content: `Stylists use the platform as independent businesses and remain solely responsible for tax, National Insurance, licensing, equipment and compliance with all applicable laws and professional standards.`,
+      id: "objectives",
+      title: "2. Policy Objectives",
+      icon: ClipboardCheck,
+      content: `BraidLink's AI systems operate under three established objectives: protecting customer health, supporting informed choice, and maintaining ethical AI standards.`,
       subsections: [
         {
-          title: "Independent Status",
-          content: `Stylists use the platform as independent businesses and remain solely responsible for tax, National Insurance, licensing, equipment and compliance with all applicable laws and professional standards.`
+          title: "Protect Customer Health",
+          list: [
+            "Hair density assessment",
+            "Hair porosity evaluation",
+            "Hair fragility detection",
+            "Scalp sensitivity analysis",
+            "Traction risk calculation",
+            "Breakage risk assessment",
+            "Alopecia risk awareness",
+            "Age suitability checks"
+          ]
         },
         {
-          title: "Commercial Terms",
-          content: `Stylists may be charged a registration fee, a monthly subscription and a commission on completed bookings. Current commission rates are 15% for Basic, 12% for Pro and 10% for Premium plans unless otherwise notified in writing. Payouts are normally released within 2 to 3 business days after service completion.`
+          title: "Support Informed Choice",
+          list: [
+            "Clear reasoning for each recommendation",
+            "Visible health considerations",
+            "Maintenance requirement disclosures",
+            "Expected tension level indicators",
+            "Estimated wear duration guidance"
+          ]
         },
         {
-          title: "Professional Standards",
-          content: `Stylists must provide accurate service listings, maintain punctuality, use safe products and behave professionally. Any material delay or change must be communicated promptly to the customer.`
-        },
-        {
-          title: "Safety and Conduct",
-          content: `Where harassment, abuse or safety concerns arise, BraidLink Ltd may suspend accounts and cooperate with law enforcement or regulatory authorities.`
-        },
-        {
-          title: "Insurance",
-          content: `Stylists are strongly advised, and may in future be required, to maintain valid Public Liability and Treatment Risk Insurance and to provide evidence upon request.`
+          title: "Maintain Ethical AI Standards",
+          list: [
+            "Avoid harmful bias",
+            "Prevent discriminatory outputs",
+            "Preserve user dignity",
+            "Respect personal identity",
+            "Protect customer privacy",
+            "Remain human-reviewable"
+          ]
         }
       ]
     },
     {
-      id: "aup",
-      title: "3. Acceptable Use Policy",
+      id: "principles",
+      title: "3. Core AI Ethics Principles",
+      icon: Scale,
+      content: `Our AI ethics framework is built on five foundational principles that guide every aspect of our technology.`,
+      subsections: [
+        {
+          title: "Safety First Principle",
+          list: [
+            "Automatic risk flagging for hazardous styles",
+            "Recommendation of safer alternatives",
+            "Clear explanation of health concerns",
+            "Health prioritised over trends"
+          ]
+        },
+        {
+          title: "Human Oversight Principle",
+          content: `AI shall support professional decisions, not replace them. Final responsibility remains with the customer, the stylist, and the company's professional review processes.`
+        },
+        {
+          title: "Transparency Principle",
+          list: [
+            "Customers informed when AI is being used",
+            "Disclosure when images are AI-generated",
+            "Clear indication that predictions are estimates",
+            "Transparency when recommendations are algorithmic"
+          ]
+        },
+        {
+          title: "Fairness Principle",
+          list: [
+            "Fair operation across all skin tones",
+            "Inclusive facial structure analysis",
+            "Respectful handling of all hair textures",
+            "Equitable treatment of all hair lengths",
+            "Cultural identity sensitivity",
+            "Age group inclusivity"
+          ]
+        },
+        {
+          title: "Privacy Principle",
+          list: [
+            "Secure encryption of customer images",
+            "Data minimisation practices",
+            "Lawful storage protocols",
+            "Consent-based processing only",
+            "Deletion when no longer required"
+          ]
+        }
+      ]
+    },
+    {
+      id: "health",
+      title: "4. Public Health & Hair Wellbeing Framework",
+      icon: Stethoscope,
+      content: `BraidLink recognises that Afro-Caribbean hair requires specialised health considerations. Our framework addresses mechanical risks, scalp risks, and health-aware recommendations.`,
+      subsections: [
+        {
+          title: "Hair Health Risk Factors",
+          list: [
+            "Mechanical risks: excessive braid weight, prolonged tension, fragile edges, follicle strain",
+            "Scalp risks: inflammation, dermatitis, traction alopecia, sensitivity reactions"
+          ]
+        },
+        {
+          title: "Health-Aware Recommendations",
+          list: [
+            "Style safety evaluation",
+            "Braid size appropriateness",
+            "Extension weight assessment",
+            "Scalp exposure suitability",
+            "Long-term wear advisability"
+          ]
+        },
+        {
+          title: "Medical Boundary",
+          content: `BraidLink does not provide medical diagnosis. Where the system identifies warning signs, customers are advised to seek advice from a dermatologist, trichologist, GP, or qualified specialist.`
+        }
+      ]
+    },
+    {
+      id: "governance",
+      title: "5. Data Governance",
+      icon: Lock,
+      content: `Robust data governance ensures that all AI training and customer data is handled lawfully, securely, and responsibly.`,
+      subsections: [
+        {
+          title: "Data Sources",
+          list: [
+            "Lawfully sourced training data",
+            "Fully consented data usage",
+            "Representative datasets",
+            "Diverse data inclusion",
+            "Clinically informed where relevant"
+          ]
+        },
+        {
+          title: "Data Retention",
+          list: [
+            "Facial data retained only where necessary",
+            "Deletion upon customer request",
+            "Anonymisation where possible",
+            "Never sold to third parties"
+          ]
+        },
+        {
+          title: "Security Measures",
+          list: [
+            "End-to-end encryption",
+            "Strict access controls",
+            "Comprehensive audit logs",
+            "Secure API management",
+            "Regular security reviews"
+          ]
+        }
+      ]
+    },
+    {
+      id: "stylists",
+      title: "6. Stylist Responsibilities",
+      icon: Users,
+      content: `Stylists using BraidLink play a critical role in the responsible use of AI recommendations.`,
+      list: [
+        "Review AI recommendations responsibly",
+        "Consider visible scalp conditions",
+        "Refuse unsafe styling requests",
+        "Inform customers of risks",
+        "Avoid harmful braid tension",
+        "Comply with hygiene standards"
+      ]
+    },
+    {
+      id: "accountability",
+      title: "7. AI Accountability Governance",
       icon: Shield,
-      content: `Users must not use the platform for unlawful activity, fraud, harassment, discrimination, abuse, defamation, malware distribution or the upload of infringing content.`,
+      content: `BraidLink maintains rigorous governance structures to ensure ongoing AI accountability.`,
       subsections: [
         {
-          title: "Prohibited Conduct",
-          content: `Users must not use the platform for unlawful activity, fraud, harassment, discrimination, abuse, defamation, malware distribution or the upload of infringing content.`
+          title: "AI Oversight Committee",
+          list: [
+            "Regular review of AI outputs",
+            "Investigation of safety incidents",
+            "Fairness auditing",
+            "Risk control assessment"
+          ]
         },
         {
-          title: "Payment Circumvention",
-          content: `Any attempt to avoid platform fees by taking bookings or payments outside the platform following an introduction through BraidLink Ltd constitutes a material breach and may result in immediate suspension or termination.`
-        },
-        {
-          title: "Content Standards",
-          content: `Users must ensure all images, reviews and profile content are accurate, lawful and respectful.`
-        },
-        {
-          title: "Enforcement",
-          content: `BraidLink Ltd reserves the right to remove content, suspend accounts, refuse access or report misconduct where necessary to protect users and the platform.`
+          title: "Incident Reporting",
+          list: [
+            "Hair damage reports",
+            "Allergic reaction incidents",
+            "Discriminatory recommendation reports",
+            "Misleading AI output investigations"
+          ]
         }
       ]
+    },
+    {
+      id: "consent",
+      title: "8. Customer Consent",
+      icon: FileCheck,
+      content: `Before accessing AI features, customers provide explicit consent to image analysis, hairstyle simulation, algorithmic recommendations, and data processing. Consent must be informed, voluntary, and revocable at any time.`,
+    },
+    {
+      id: "improvement",
+      title: "9. Continuous Improvement",
+      icon: RefreshCw,
+      content: `The Company continuously improves the AI system through ongoing review of:`,
+      list: [
+        "Customer feedback",
+        "Stylist feedback",
+        "Health outcomes",
+        "Booking data patterns",
+        "Safety incident analysis",
+        "Recommendation accuracy metrics"
+      ]
+    },
+    {
+      id: "compliance",
+      title: "10. Compliance",
+      icon: Gavel,
+      content: `This policy operates in alignment with:`,
+      list: [
+        "UK GDPR",
+        "Data Protection Act 2018",
+        "Equality Act 2010",
+        "Consumer Rights Act 2015",
+        "ICO guidance",
+        "UK AI governance principles"
+      ]
+    },
+    {
+      id: "commitment",
+      title: "11. Company Commitment",
+      icon: Heart,
+      content: `BraidLink is committed to ensuring that innovation in beauty technology does not compromise health, dignity, trust, safety, or fairness.`,
     }
   ];
 
   return (
     <div className="relative bg-background">
-      {/* Hero Section - Refined premium design */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95">
-        {/* Sophisticated background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 right-20 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-0 left-20 w-[500px] h-[500px] bg-accent/8 rounded-full blur-[140px] animate-pulse delay-1000" />
-
-          {/* Refined pattern overlay */}
           <div className="absolute inset-0 opacity-[0.03]"
                style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
         </div>
@@ -137,32 +313,30 @@ const TermsOfServicePage = () => {
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto text-center"
           >
-            {/* Premium badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white text-xs font-medium px-5 py-2.5 rounded-full mb-6 border border-white/20 shadow-xl"
             >
-              <Scale className="w-4 h-4 text-accent" />
-              <span>Legal Agreement</span>
+              <Brain className="w-4 h-4 text-accent" />
+              <span>Responsible AI Framework</span>
             </motion.div>
 
             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Terms of <br />
+              AI Ethics, Governance <br />
               <span className="text-accent relative inline-block">
-                Service
-                <svg className="absolute -bottom-3 left-0 w-full" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 4L200 4" stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="text-accent/40"/>
+                &amp; Hair Health Policy
+                <svg className="absolute -bottom-3 left-0 w-full" viewBox="0 0 420 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 4L420 4" stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="text-accent/40"/>
                 </svg>
               </span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-light">
-              Platform Terms of Service, Professional Stylist Agreement and Acceptable Use Policy
+              Responsible Artificial Intelligence and Public Health Framework — ensuring ethical, safe, and inclusive AI-powered hairstyle recommendations.
             </p>
 
-            {/* Effective Date */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -175,7 +349,6 @@ const TermsOfServicePage = () => {
           </motion.div>
         </div>
 
-        {/* Elegant curved divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
             <path d="M0 60L60 52C120 44 240 28 360 24C480 20 600 28 720 32C840 36 960 36 1080 32C1200 28 1320 20 1380 16L1440 12V60H0Z" fill="hsl(var(--background))" />
@@ -187,7 +360,7 @@ const TermsOfServicePage = () => {
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
 
-          {/* Quick Navigation - Premium redesign */}
+          {/* Quick Navigation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -200,7 +373,7 @@ const TermsOfServicePage = () => {
               </div>
               Quick Navigation
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {sections.map((section) => (
                 <a
                   key={section.id}
@@ -208,13 +381,13 @@ const TermsOfServicePage = () => {
                   className="text-xs text-muted-foreground hover:text-accent transition-all p-3 hover:bg-accent/5 rounded-lg flex items-center gap-1.5 group border border-transparent hover:border-accent/20"
                 >
                   <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  {section.title}
+                  {section.title.split(' ').slice(0, 2).join(' ')}
                 </a>
               ))}
             </div>
           </motion.div>
 
-          {/* Key Points Summary - Premium redesign */}
+          {/* Trust Badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,10 +395,10 @@ const TermsOfServicePage = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-12"
           >
             {[
-              { icon: Percent, label: "Platform Fee", value: "10%", color: "from-blue-500/20 to-blue-500/5" },
-              { icon: HandCoins, label: "Commission", value: "15%/12%/10%", color: "from-purple-500/20 to-purple-500/5" },
-              { icon: Clock, label: "Payouts", value: "2-3 Days", color: "from-amber-500/20 to-amber-500/5" },
-              { icon: Landmark, label: "Jurisdiction", value: "England & Wales", color: "from-green-500/20 to-green-500/5" },
+              { icon: Shield, label: "Governance", value: "UK Aligned", color: "from-blue-500/20 to-blue-500/5" },
+              { icon: Heart, label: "Health First", value: "Safety Focus", color: "from-purple-500/20 to-purple-500/5" },
+              { icon: Scale, label: "Fairness", value: "Inclusive", color: "from-amber-500/20 to-amber-500/5" },
+              { icon: Lock, label: "Privacy", value: "GDPR Ready", color: "from-green-500/20 to-green-500/5" },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -248,7 +421,7 @@ const TermsOfServicePage = () => {
             ))}
           </motion.div>
 
-          {/* Terms Sections - Premium redesign */}
+          {/* Policy Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => (
               <motion.section
@@ -269,14 +442,25 @@ const TermsOfServicePage = () => {
                       {section.title}
                     </h2>
 
-                    {/* Main content */}
                     {section.content && (
                       <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                         {section.content}
                       </p>
                     )}
 
-                    {/* Subsections */}
+                    {section.list && (
+                      <ul className="space-y-2 mb-6">
+                        {section.list.map((item, j) => (
+                          <li key={j} className="text-sm text-muted-foreground leading-relaxed flex items-start gap-2">
+                            <div className="w-4 h-4 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="w-1 h-1 rounded-full bg-accent" />
+                            </div>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
                     {section.subsections && (
                       <div className="space-y-6">
                         {section.subsections.map((subsection, i) => (
@@ -314,7 +498,7 @@ const TermsOfServicePage = () => {
             ))}
           </div>
 
-          {/* Important Notice - Premium redesign */}
+          {/* Important Notice */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -326,17 +510,15 @@ const TermsOfServicePage = () => {
                 <AlertTriangle className="w-8 h-8 text-primary" />
               </div>
               <div className="flex-1">
-                <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-4">Important Legal Notice</h2>
+                <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-4">Important Notice</h2>
                 <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                  These Terms of Service, Professional Stylist Agreement and Acceptable Use Policy constitute a legally binding agreement between you and BraidLink Ltd.
-                  By using our platform, you acknowledge that you have read, understood, and agree to be bound by these terms.
-                  This document is intended as a platform policy template for BraidLink Ltd and should be reviewed periodically to ensure continued compliance with UK law.
+                  This AI Ethics, Governance &amp; Hair Health Policy is a living document that reflects BraidLink Ltd's ongoing commitment to responsible innovation. It is intended as a platform policy template and should be reviewed periodically to ensure continued alignment with emerging UK and international AI governance standards.
                 </p>
                 <div className="bg-background/50 rounded-xl p-5 border border-accent/10">
                   <div className="flex items-start gap-3">
                     <BadgeCheck className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-muted-foreground">
-                      If you have any questions about these terms, please contact our legal department at <span className="text-accent font-semibold">legal@braidlink.com</span>
+                      For questions about this policy, contact our ethics team at <span className="text-accent font-semibold">ethics@braidlink.com</span>
                     </p>
                   </div>
                 </div>
@@ -344,7 +526,7 @@ const TermsOfServicePage = () => {
             </div>
           </motion.div>
 
-          {/* Contact Section - Premium redesign */}
+          {/* Contact Section */}
           <motion.section
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -358,7 +540,7 @@ const TermsOfServicePage = () => {
               <div className="flex-1">
                 <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-4">Contact Us</h2>
                 <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-                  If you have questions about these Terms of Service, please contact us at:
+                  If you have questions about our AI Ethics Policy or wish to report an AI-related concern, please contact us at:
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -382,7 +564,7 @@ const TermsOfServicePage = () => {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Email</p>
-                        <p className="text-sm font-semibold text-primary">legal@braidlink.com</p>
+                        <p className="text-sm font-semibold text-primary">ethics@braidlink.com</p>
                       </div>
                     </div>
 
@@ -402,7 +584,7 @@ const TermsOfServicePage = () => {
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2 bg-accent/10 px-3 py-2 rounded-full">
                       <Clock className="w-3 h-3 text-accent" />
-                      <span>Legal department response: Within 24-48 hours</span>
+                      <span>Ethics team response: Within 24-48 hours</span>
                     </div>
                     <Fingerprint className="w-4 h-4 text-accent" />
                   </div>
@@ -411,7 +593,7 @@ const TermsOfServicePage = () => {
             </div>
           </motion.section>
 
-          {/* Footer Note - Premium */}
+          {/* Footer Note */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -420,18 +602,18 @@ const TermsOfServicePage = () => {
           >
             <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50 shadow-sm">
               <Heart className="w-3 h-3 text-accent" />
-              <span>By using BraidLink, you agree to these Terms of Service</span>
-              <Zap className="w-3 h-3 text-accent" />
+              <span>Intelligent. Ethical. Safe. Inclusive.</span>
+              <Sparkles className="w-3 h-3 text-accent" />
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer - Premium redesign */}
+      {/* Footer */}
       <div className="border-t border-border/40 py-8 bg-gradient-to-b from-secondary/5 to-secondary/10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-xs text-muted-foreground/60 tracking-wide flex items-center justify-center gap-3 flex-wrap">
-            <span>© 2026 BraidLink Ltd. All rights reserved.</span>
+            <span>&copy; 2026 BraidLink Ltd. All rights reserved.</span>
             <span className="w-1 h-1 rounded-full bg-accent/30" />
             <Link to="/terms-of-service" className="text-accent hover:text-accent/80 transition-colors flex items-center gap-1 group">
               <Gavel className="w-3 h-3 group-hover:scale-110 transition-transform" />
@@ -442,6 +624,11 @@ const TermsOfServicePage = () => {
               <Shield className="w-3 h-3 group-hover:scale-110 transition-transform" />
               Privacy Policy
             </Link>
+            <span className="w-1 h-1 rounded-full bg-accent/30" />
+            <Link to="/ai-ethics-policy" className="text-accent hover:text-accent/80 transition-colors flex items-center gap-1 group">
+              <Brain className="w-3 h-3 group-hover:scale-110 transition-transform" />
+              AI Ethics Policy
+            </Link>
           </p>
         </div>
       </div>
@@ -449,5 +636,5 @@ const TermsOfServicePage = () => {
   );
 };
 
-export default TermsOfServicePage;
+export default AIEthicsPolicyPage;
 

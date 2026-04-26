@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: string, backImage: string) => void }) => {
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [backImage, setBackImage] = useState<string | null>(null);
-  const [isDraggingFront, setIsDraggingFront] = useState(false);
-  const [isDraggingBack, setIsDraggingBack] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[], type: 'front' | 'back') => {
@@ -40,16 +38,12 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
     onDrop: (files) => onDrop(files, 'front'),
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
     maxFiles: 1,
-    onDragEnter: () => setIsDraggingFront(true),
-    onDragLeave: () => setIsDraggingFront(false),
   });
 
   const { getRootProps: getBackRootProps, getInputProps: getBackInputProps, isDragActive: isBackDragActive } = useDropzone({
     onDrop: (files) => onDrop(files, 'back'),
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
     maxFiles: 1,
-    onDragEnter: () => setIsDraggingBack(true),
-    onDragLeave: () => setIsDraggingBack(false),
   });
 
   const handleContinue = () => {
@@ -72,8 +66,7 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
     image: string | null,
     getRootProps: ReturnType<typeof useDropzone>['getRootProps'],
     getInputProps: ReturnType<typeof useDropzone>['getInputProps'],
-    isDragActive: boolean,
-    isDragging: boolean
+    isDragActive: boolean
   ) => {
     const isFront = type === 'front';
     const title = isFront ? 'Front View' : 'Back View';
@@ -108,7 +101,7 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
             cursor-pointer transition-all duration-300
             ${image 
               ? 'border-accent/30 bg-accent/5' 
-              : isDragActive || isDragging
+              : isDragActive
                 ? 'border-accent bg-accent/10 shadow-lg scale-[1.02]'
                 : 'border-border/60 bg-card hover:border-accent/40 hover:bg-accent/5 hover:shadow-md'
             }
@@ -153,13 +146,13 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
               >
                 <motion.div
                   animate={{ 
-                    y: isDragActive || isDragging ? [-2, 2, -2] : 0,
+                    y: isDragActive ? [-2, 2, -2] : 0,
                   }}
-                  transition={{ duration: 0.6, repeat: isDragActive || isDragging ? Infinity : 0 }}
+                  transition={{ duration: 0.6, repeat: isDragActive ? Infinity : 0 }}
                 >
                   <div className={`
                     w-20 h-20 rounded-2xl flex items-center justify-center mb-4
-                    ${isDragActive || isDragging 
+                    ${isDragActive 
                       ? 'bg-accent/20' 
                       : 'bg-muted/50'
                     }
@@ -167,13 +160,13 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
                   `}>
                     <UploadCloud 
                       size={40} 
-                      className={`transition-all duration-300 ${isDragActive || isDragging ? 'text-accent scale-110' : 'text-muted-foreground'}`} 
+                      className={`transition-all duration-300 ${isDragActive ? 'text-accent scale-110' : 'text-muted-foreground'}`} 
                     />
                   </div>
                 </motion.div>
                 
                 <p className="text-sm text-primary font-medium mb-1">
-                  {isDragActive || isDragging ? 'Drop your image here' : 'Click to upload or drag & drop'}
+                  {isDragActive ? 'Drop your image here' : 'Click to upload or drag & drop'}
                 </p>
                 <p className="text-xs text-muted-foreground mb-3">
                   PNG, JPG, WEBP (Max. 5MB)
@@ -237,8 +230,8 @@ const AIUploadSection = ({ onUploadComplete }: { onUploadComplete: (frontImage: 
 
       {/* Upload Grid */}
       <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-        {renderUploadBox('front', frontImage, getFrontRootProps, getFrontInputProps, isFrontDragActive, isDraggingFront)}
-        {renderUploadBox('back', backImage, getBackRootProps, getBackInputProps, isBackDragActive, isDraggingBack)}
+        {renderUploadBox('front', frontImage, getFrontRootProps, getFrontInputProps, isFrontDragActive)}
+        {renderUploadBox('back', backImage, getBackRootProps, getBackInputProps, isBackDragActive)}
       </div>
 
       {/* Requirements Checklist */}

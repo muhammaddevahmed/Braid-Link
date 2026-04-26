@@ -14,8 +14,10 @@ import { toast } from "sonner";
 interface SubscriptionPlan {
   id: string;
   name: string;
+  signUpFee: number;
   monthlyPrice: number;
   yearlyPrice: number;
+  commissionRate: string;
   description: string;
   features: string[];
   notIncluded?: string[];
@@ -43,8 +45,10 @@ const AdminSubscriptions = () => {
     setEditingId(plan.id);
     setFormData({
       name: plan.name,
+      signUpFee: plan.signUpFee,
       monthlyPrice: plan.monthlyPrice,
       yearlyPrice: plan.yearlyPrice,
+      commissionRate: plan.commissionRate,
       description: plan.description,
       features: [...plan.features]
     });
@@ -94,7 +98,7 @@ const AdminSubscriptions = () => {
   const getPlanIcon = (planName: string) => {
     switch(planName.toLowerCase()) {
       case "basic": return <Zap className="w-5 h-5" />;
-      case "professional": return <Crown className="w-5 h-5" />;
+      case "pro": return <Crown className="w-5 h-5" />;
       case "premium": return <Award className="w-5 h-5" />;
       default: return <Package className="w-5 h-5" />;
     }
@@ -109,7 +113,7 @@ const AdminSubscriptions = () => {
         button: "bg-blue-600",
         lightBg: "bg-blue-50"
       };
-      case "professional": return {
+      case "pro": return {
         bg: "from-purple-500/10 to-purple-500/5",
         border: "border-purple-500/30",
         text: "text-purple-600",
@@ -136,7 +140,7 @@ const AdminSubscriptions = () => {
   const stats = {
     total: plans.length,
     basic: plans.filter(p => p.name.toLowerCase() === "basic").length,
-    professional: plans.filter(p => p.name.toLowerCase() === "professional").length,
+    pro: plans.filter(p => p.name.toLowerCase() === "pro").length,
     premium: plans.filter(p => p.name.toLowerCase() === "premium").length,
     avgPrice: Math.round(plans.reduce((acc, p) => acc + p.monthlyPrice, 0) / plans.length)
   };
@@ -177,7 +181,7 @@ const AdminSubscriptions = () => {
             {stats.basic} Basic
           </div>
           <div className="bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-purple-200">
-            {stats.professional} Pro
+            {stats.pro} Pro
           </div>
           <div className="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-200">
             {stats.premium} Premium
@@ -260,6 +264,31 @@ const AdminSubscriptions = () => {
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                            <DollarSign className="w-3 h-3 text-accent" /> Sign-up Fee
+                          </label>
+                          <input
+                            type="number"
+                            value={formData?.signUpFee || 0}
+                            onChange={(e) => setFormData(prev => prev ? { ...prev, signUpFee: Number(e.target.value) } : null)}
+                            className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3 text-accent" /> Commission
+                          </label>
+                          <input
+                            type="text"
+                            value={formData?.commissionRate || ""}
+                            onChange={(e) => setFormData(prev => prev ? { ...prev, commissionRate: e.target.value } : null)}
+                            className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                            placeholder="e.g. 15%"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                             <DollarSign className="w-3 h-3 text-accent" /> Monthly
                           </label>
                           <input
@@ -288,7 +317,7 @@ const AdminSubscriptions = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="mb-4">
+                    <div className="mb-4 space-y-2">
                       <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-bold text-primary">£{plan.monthlyPrice}</span>
                         <span className="text-muted-foreground">/mo</span>
@@ -297,9 +326,21 @@ const AdminSubscriptions = () => {
                         <span className="text-xl font-bold text-primary">£{plan.yearlyPrice}</span>
                         <span className="text-xs text-muted-foreground">/year</span>
                       </div>
-                      <p className="text-xs text-emerald-600 mt-2 bg-emerald-50 px-2 py-1 rounded-full w-fit">
-                        Save £{plan.monthlyPrice * 12 - plan.yearlyPrice} yearly
-                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full inline-flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          £{plan.signUpFee} sign-up
+                        </span>
+                        <span className="text-xs font-medium bg-accent/10 text-accent px-2 py-1 rounded-full inline-flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" />
+                          {plan.commissionRate} commission
+                        </span>
+                      </div>
+                      {plan.yearlyPrice > 0 && (
+                        <p className="text-xs text-emerald-600 mt-1 bg-emerald-50 px-2 py-1 rounded-full w-fit">
+                          Save £{plan.monthlyPrice * 12 - plan.yearlyPrice} yearly
+                        </p>
+                      )}
                     </div>
                   )}
 

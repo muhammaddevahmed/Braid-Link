@@ -21,6 +21,7 @@ const Footer = () => {
       { label: "Contact Us", to: "/contact" },
       { label: "Privacy Policy", to: "/privacy-policy" },
       { label: "Terms of Service", to: "/terms-of-service" },
+      { label: "AI Ethics Policy", to: "/ai-ethics-policy" },
     ],
   };
 
@@ -262,6 +263,9 @@ const Footer = () => {
             </Link>
             <Link to="/terms-of-service" className="text-xs text-white/60 hover:text-accent transition-all hover:underline underline-offset-4">
               Terms
+            </Link>
+            <Link to="/ai-ethics-policy" className="text-xs text-white/60 hover:text-accent transition-all hover:underline underline-offset-4">
+              AI Ethics
             </Link>
             <Link to="/contact" className="text-xs text-white/60 hover:text-accent transition-all hover:underline underline-offset-4">
               Contact

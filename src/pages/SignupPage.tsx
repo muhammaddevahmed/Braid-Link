@@ -626,7 +626,7 @@ const SignupPage = () => {
             {/* Terms - Premium */}
             <p className="text-xs text-center text-muted-foreground mt-4">
               By creating an account, you agree to our{" "}
-              <Link to="/terms" className="text-accent hover:underline font-medium">Terms of Service</Link>{" "}
+<Link to="/terms-of-service" className="text-accent hover:underline font-medium">Terms of Service</Link>
               and{" "}
               <Link to="/privacy-policy" className="text-accent hover:underline font-medium">Privacy Policy</Link>
             </p>

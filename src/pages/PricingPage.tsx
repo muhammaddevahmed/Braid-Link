@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { subscriptionPlans } from "@/data/demo-data";
-import { Check, X, Clock, Sparkles, Crown, Star, Shield, Zap, ChevronRight, Award, Gift, Users, BadgeCheck, TrendingUp, Calendar, CreditCard } from "lucide-react";
+import { Check, X, Clock, Sparkles, Crown, Star, Shield, Zap, ChevronRight, Award, Gift, Users, BadgeCheck, TrendingUp, Calendar, CreditCard, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Switch } from "@/components/ui/switch";
@@ -11,6 +11,7 @@ const PricingPage = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
+  const [showComparison, setShowComparison] = useState(false);
   const { user } = useAuth();
 
   if (user?.role === "customer") {
@@ -255,7 +256,7 @@ const PricingPage = () => {
                   <p className="text-sm text-muted-foreground mb-6">{plan.description}</p>
                   
                   {/* Price - Premium */}
-                  <div className="mb-6">
+                  <div className="mb-6 space-y-2">
                     <div className="flex items-end gap-1">
                       <span className="text-3xl font-bold text-primary">£</span>
                       <span className="text-6xl font-bold text-primary">
@@ -267,14 +268,24 @@ const PricingPage = () => {
                         /{billingCycle === "monthly" ? "mo" : "yr"}
                       </span>
                     </div>
-                    {billingCycle === 'yearly' && (
-                      <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1.5">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1.5 rounded-full inline-flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        £{plan.signUpFee} sign-up fee
+                      </span>
+                      <span className="text-xs font-medium bg-accent/10 text-accent px-3 py-1.5 rounded-full inline-flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        {plan.commissionRate} commission on bookings
+                      </span>
+                    </div>
+                    {billingCycle === 'yearly' && plan.yearlyPrice > 0 && (
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
                         <BadgeCheck className="w-3.5 h-3.5 text-accent" />
                         Billed annually (£{plan.yearlyPrice}/year)
                       </p>
                     )}
-                    {plan.popular && billingCycle === 'yearly' && (
-                      <p className="text-xs text-accent font-semibold mt-2 bg-accent/10 px-3 py-1.5 rounded-full inline-block">
+                    {plan.popular && billingCycle === 'yearly' && plan.yearlyPrice > 0 && (
+                      <p className="text-xs text-accent font-semibold mt-1 bg-accent/10 px-3 py-1.5 rounded-full inline-block">
                         Save £{(plan.monthlyPrice * 12) - plan.yearlyPrice} per year!
                       </p>
                     )}
@@ -332,12 +343,144 @@ const PricingPage = () => {
             ))}
           </div>
 
-          {/* FAQ Teaser - Premium redesign */}
+          {/* Comparison Table Toggle */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35 }}
+            className="text-center mt-16"
+          >
+            <button
+              onClick={() => setShowComparison(!showComparison)}
+              className="text-accent hover:text-accent/80 text-sm font-semibold flex items-center gap-1 mx-auto group"
+            >
+              <span>{showComparison ? "Hide" : "Show"} detailed comparison</span>
+              <ChevronRight className={`w-4 h-4 transition-all group-hover:translate-x-1 ${showComparison ? "rotate-90" : ""}`} />
+            </button>
+          </motion.div>
+
+          {/* Comparison Table */}
+          <AnimatePresence>
+            {showComparison && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="bg-card rounded-xl p-6 border border-border mt-4 max-w-5xl mx-auto">
+                  <h3 className="font-serif font-semibold text-primary mb-4">Plan Comparison</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-3 px-4 text-muted-foreground font-medium">Feature</th>
+                          {subscriptionPlans.map((plan) => (
+                            <th key={plan.id} className="text-center py-3 px-4">
+                              <span className="font-semibold text-primary">{plan.name}</span>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { label: "Monthly Fee", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.monthlyPrice}` },
+                          { label: "Yearly Fee (15% off)", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.yearlyPrice}` },
+                          { label: "Sign-up Fee", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.signUpFee}` },
+                          { label: "Commission Rate", getValue: (plan: typeof subscriptionPlans[0]) => plan.commissionRate },
+                          { label: "Profile Listing", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Receive Bookings", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Portfolio Images", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "10" : plan.name === "Pro" ? "20" : "Unlimited" },
+                          { label: "Customer Messaging", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Calendar", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "Basic" : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Earnings Dashboard", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Reviews", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Service Locations", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "1" : plan.name === "Pro" ? "3" : "Unlimited" },
+                          { label: "AI Demand Forecasting", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Performance Insights", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Price Optimisation", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Priority Search Ranking", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "Cancellation Protection", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                          { label: "AI Business Assistant", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "Premium Lead Priority", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "Dynamic Pricing", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "Customer Retention Analytics", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "Peak-time Revenue Optimisation", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "VIP Support", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                          { label: "Verified Badge", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                        ].map((feature, i) => (
+                          <tr key={i} className="border-b border-border/50">
+                            <td className="py-3 px-4 text-muted-foreground">{feature.label}</td>
+                            {subscriptionPlans.map((plan) => (
+                              <td key={plan.id} className="text-center py-3 px-4">
+                                {feature.getValue(plan)}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Plan FAQs */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mt-20 text-center"
+            className="mt-16 max-w-3xl mx-auto"
+          >
+            <div className="bg-card rounded-2xl p-8 border border-border/50 shadow-xl">
+              <h3 className="font-serif text-2xl font-bold text-primary mb-6 flex items-center gap-2">
+                <HelpCircle className="w-6 h-6 text-accent" />
+                Frequently Asked Questions
+              </h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "What is the sign-up fee for?",
+                    a: "The one-time sign-up fee covers your account verification, profile setup, and initial platform onboarding. It ensures only committed professionals join our network."
+                  },
+                  {
+                    q: "How does the commission work?",
+                    a: "We take a small percentage from each booking you receive. Basic plan is 15%, Pro is 12%, and Premium is 10%. The rest is yours — you keep the majority of every payment."
+                  },
+                  {
+                    q: "Can I change plans anytime?",
+                    a: "Yes! You can upgrade or downgrade your plan at any time. Changes take effect on your next billing cycle, and your data stays intact."
+                  },
+                  {
+                    q: "Is there a free trial?",
+                    a: "The Basic plan has no monthly fee — just a £10 sign-up fee. This effectively acts as your low-risk entry point to try the platform."
+                  },
+                  {
+                    q: "What happens if I cancel?",
+                    a: "You can cancel anytime. Your profile remains visible until the end of your billing period. There are no cancellation penalties."
+                  },
+                  {
+                    q: "Do I pay the sign-up fee again if I switch plans?",
+                    a: "No, the sign-up fee is only paid once when you first join. Switching plans only changes your monthly fee and commission rate."
+                  }
+                ].map((faq, i) => (
+                  <div key={i} className="p-4 bg-accent/5 rounded-xl border border-accent/10">
+                    <p className="text-sm font-semibold text-primary mb-1">{faq.q}</p>
+                    <p className="text-sm text-muted-foreground">{faq.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* FAQ Teaser - Premium redesign */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-16 text-center"
           >
             <div className="bg-gradient-to-br from-card to-secondary/5 rounded-3xl p-8 md:p-10 border border-border/50 max-w-2xl mx-auto shadow-xl">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center mx-auto mb-5">

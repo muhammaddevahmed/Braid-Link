@@ -1,5 +1,5 @@
 import { subscriptionPlans } from "@/data/demo-data";
-import { Check, X, Crown, Sparkles, Award, Shield, Star, Zap, Gift, ChevronRight } from "lucide-react";
+import { Check, X, Crown, Sparkles, Award, Shield, Star, Zap, Gift, ChevronRight, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,7 +17,7 @@ const StylistSubscription = () => {
   const getPlanIcon = (planName: string) => {
     switch(planName) {
       case "Basic": return <Zap className="w-5 h-5" />;
-      case "Professional": return <Crown className="w-5 h-5" />;
+      case "Pro": return <Crown className="w-5 h-5" />;
       case "Premium": return <Award className="w-5 h-5" />;
       default: return <Star className="w-5 h-5" />;
     }
@@ -31,7 +31,7 @@ const StylistSubscription = () => {
         text: "text-blue-600",
         button: "bg-blue-600 hover:bg-blue-700"
       };
-      case "Professional": return {
+      case "Pro": return {
         bg: "from-purple-500/10 to-purple-500/5",
         border: "border-purple-500/20",
         text: "text-purple-600",
@@ -112,7 +112,7 @@ const StylistSubscription = () => {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Current Plan</p>
-              <p className="text-xl font-bold text-primary">Professional Plan</p>
+              <p className="text-xl font-bold text-primary">Pro Plan</p>
               <p className="text-xs text-muted-foreground mt-1">Next billing: April 15, 2026</p>
             </div>
           </div>
@@ -143,8 +143,8 @@ const StylistSubscription = () => {
                   : "border-border hover:border-accent/30 shadow-md hover:shadow-xl"
               }`}
             >
-              {/* Popular Badge for Professional */}
-              {plan.name === "Professional" && (
+              {/* Popular Badge for Pro */}
+              {plan.name === "Pro" && (
                 <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-center py-2 text-xs font-bold flex items-center justify-center gap-1">
                   <Sparkles className="w-3 h-3" />
                   MOST POPULAR
@@ -153,7 +153,7 @@ const StylistSubscription = () => {
               )}
 
               {/* Plan Header */}
-              <div className={`p-6 ${plan.name === "Professional" ? "pt-10" : ""}`}>
+              <div className={`p-6 ${plan.name === "Pro" ? "pt-10" : ""}`}>
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colors.bg} flex items-center justify-center mb-4 border ${colors.border}`}>
                   <div className={colors.text}>{Icon}</div>
                 </div>
@@ -162,13 +162,23 @@ const StylistSubscription = () => {
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
                 
                 {/* Price */}
-                <div className="mb-6">
+                <div className="mb-6 space-y-2">
                   <div className="flex items-end gap-1">
                     <span className="text-3xl font-bold text-primary">£{displayPrice}</span>
                     <span className="text-muted-foreground text-sm mb-1">/{billingCycle === "monthly" ? "mo" : "yr"}</span>
                   </div>
-                  {billingCycle === "yearly" && (
-                    <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-full w-fit">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full inline-flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      £{plan.signUpFee} sign-up
+                    </span>
+                    <span className="text-xs font-medium bg-accent/10 text-accent px-2 py-1 rounded-full inline-flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3" />
+                      {plan.commissionRate} commission
+                    </span>
+                  </div>
+                  {billingCycle === "yearly" && plan.yearlyPrice > 0 && (
+                    <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-full w-fit">
                       <Gift className="w-3 h-3" />
                       Save £{(plan.monthlyPrice * 12 - yearlyPrice)} per year!
                     </p>
@@ -258,28 +268,36 @@ const StylistSubscription = () => {
                   </thead>
                   <tbody>
                     {[
-                      "Monthly Price",
-                      "Yearly Price (15% off)",
-                      "Booking Management",
-                      "Calendar Sync",
-                      "Priority Support",
-                      "Featured Listing",
+                      { label: "Monthly Fee", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.monthlyPrice}` },
+                      { label: "Yearly Fee (15% off)", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.yearlyPrice}` },
+                      { label: "Sign-up Fee", getValue: (plan: typeof subscriptionPlans[0]) => `£${plan.signUpFee}` },
+                      { label: "Commission Rate", getValue: (plan: typeof subscriptionPlans[0]) => plan.commissionRate },
+                      { label: "Profile Listing", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Receive Bookings", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Portfolio Images", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "10" : plan.name === "Pro" ? "20" : "Unlimited" },
+                      { label: "Customer Messaging", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Calendar", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "Basic" : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Earnings Dashboard", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Reviews", getValue: (plan: typeof subscriptionPlans[0]) => <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Service Locations", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? "1" : plan.name === "Pro" ? "3" : "Unlimited" },
+                      { label: "AI Demand Forecasting", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Performance Insights", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Price Optimisation", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Priority Search Ranking", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "Cancellation Protection", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Basic" ? <X className="w-4 h-4 text-muted-foreground mx-auto" /> : <Check className="w-4 h-4 text-emerald-600 mx-auto" /> },
+                      { label: "AI Business Assistant", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "Premium Lead Priority", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "Dynamic Pricing", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "Customer Retention Analytics", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "Peak-time Revenue Optimisation", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "VIP Support", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
+                      { label: "Verified Badge", getValue: (plan: typeof subscriptionPlans[0]) => plan.name === "Premium" ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" /> },
                     ].map((feature, i) => (
                       <tr key={i} className="border-b border-border/50">
-                        <td className="py-3 px-4 text-muted-foreground">{feature}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{feature.label}</td>
                         {subscriptionPlans.map((plan) => (
                           <td key={plan.id} className="text-center py-3 px-4">
-                            {feature === "Monthly Price" && `£${plan.monthlyPrice}`}
-                            {feature === "Yearly Price (15% off)" && `£${Math.round(plan.monthlyPrice * 12 * 0.85)}`}
-                            {feature !== "Monthly Price" && feature !== "Yearly Price (15% off)" && (
-                              plan.name === "Basic" ? (
-                                i < 5 ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                              ) : plan.name === "Professional" ? (
-                                i < 7 ? <Check className="w-4 h-4 text-emerald-600 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                              ) : (
-                                <Check className="w-4 h-4 text-emerald-600 mx-auto" />
-                              )
-                            )}
+                            {feature.getValue(plan)}
                           </td>
                         ))}
                       </tr>
@@ -310,8 +328,8 @@ const StylistSubscription = () => {
               a: "Yes, you can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle."
             },
             {
-              q: "Is there a setup fee?",
-              a: "No, there are no setup fees. You only pay the monthly or yearly subscription amount."
+              q: "Is there a sign-up fee?",
+              a: "Yes, there is a one-time sign-up fee depending on your plan: £10 for Basic, £15 for Pro, and £20 for Premium."
             },
             {
               q: "What payment methods are accepted?",

@@ -5,7 +5,7 @@ import { subscriptionPlans } from "@/data/demo-data";
 import { 
   Check, CreditCard, Lock, ShieldCheck, ChevronLeft, 
   Sparkles, Crown, Award, Zap, Gift, Star, Calendar,
-  ArrowRight, AlertCircle, Info
+  ArrowRight, AlertCircle, Info, TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -228,13 +228,23 @@ const SelectPlanPage = () => {
                       <p className="text-sm text-detail mb-4 h-12">{plan.description}</p>
 
                       {/* Price */}
-                      <div className="mb-6">
+                      <div className="mb-6 space-y-2">
                         <div className="flex items-end gap-1">
                           <span className="text-4xl font-bold text-primary">£{displayPrice}</span>
                           <span className="text-detail mb-1">/{billingCycle === "monthly" ? "mo" : "yr"}</span>
                         </div>
-                        {billingCycle === "yearly" && (
-                          <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full inline-flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            £{plan.signUpFee} sign-up
+                          </span>
+                          <span className="text-xs font-medium bg-accent/10 text-accent px-2 py-1 rounded-full inline-flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3" />
+                            {plan.commissionRate} commission
+                          </span>
+                        </div>
+                        {billingCycle === "yearly" && plan.yearlyPrice > 0 && (
+                          <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                             <Gift className="w-3 h-3" />
                             Save £{plan.monthlyPrice * 12 - yearlyPrice} per year!
                           </p>
@@ -405,6 +415,15 @@ const SelectPlanPage = () => {
                       <span className="font-medium text-primary">£{currentPrice}</span>
                     </div>
 
+                    {selectedPlanDetails && (
+                      <div className="flex justify-between items-center py-2 border-b border-border">
+                        <span className="text-detail flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-primary" /> Sign-up Fee
+                        </span>
+                        <span className="font-medium text-primary">£{selectedPlanDetails.signUpFee}</span>
+                      </div>
+                    )}
+
                     {billingCycle === "yearly" && (
                       <div className="flex justify-between items-center py-2 border-b border-border">
                         <span className="text-detail flex items-center gap-1">
@@ -416,7 +435,7 @@ const SelectPlanPage = () => {
 
                     <div className="flex justify-between items-center py-3">
                       <span className="font-bold text-primary text-lg">Total</span>
-                      <span className="font-bold text-3xl text-primary">£{currentPrice}</span>
+                      <span className="font-bold text-3xl text-primary">£{currentPrice + (selectedPlanDetails?.signUpFee || 0)}</span>
                     </div>
 
                     
@@ -438,7 +457,7 @@ const SelectPlanPage = () => {
                     ) : (
                       <>
                         <Lock className="w-4 h-4" />
-                        Pay £{currentPrice} & Activate Account
+                        Pay £{currentPrice + (selectedPlanDetails?.signUpFee || 0)} & Activate Account
                       </>
                     )}
                   </motion.button>
